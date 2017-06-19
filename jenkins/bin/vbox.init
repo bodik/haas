@@ -94,12 +94,13 @@ vm_shutdown() {
 
 	RET=1
 	for i in `seq 1 60`; do
-		/puppet/jenkins/bin/vbox.init ssh /bin/true 1>/dev/null
+		front_ssh "pgrep -f '/usr/lib/virtualbox/VBoxHeadless -s $VMNAME'"
 		if [ $? = 1 ]; then
 			rreturn $? "shutdown"
 		fi
 		sleep 1
 	done
+
 
 	rreturn 1 "shutdown did not finished in time"
 }
