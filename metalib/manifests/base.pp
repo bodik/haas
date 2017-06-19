@@ -61,10 +61,9 @@ class metalib::base() {
 
 
 	package { "krb5-user": ensure => installed }
-	metalib::wget::download { "/etc/krb5.conf":
-                uri => "https://download.zcu.cz/public/config/krb5/krb5.conf",
+	file { "/etc/krb5.conf":
+                source => "puppet:///modules/${module_name}/etc/krb5.conf",
                 owner => "root", group => "root", mode => "0644",
-                timeout => 900;
 	}
 
 
