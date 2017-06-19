@@ -19,10 +19,15 @@ fi
 #fi
 
 
-sh /puppet/gpostfix/tests/postfix.sh
+/usr/lib/nagios/plugins/check_procs --argument-array=/usr/lib/postfix/sbin/master -c 1:1
 if [ $? -ne 0 ]; then
-	rreturn 1 "$0 postfix check failed"
+        rreturn 1 "$0 postfix check_procs"
 fi
+mailq 1>/dev/null
+if [ $? -ne 0 ]; then
+        rreturn 1 "$0 postfix mailq"
+fi
+
 
 
 sh /puppet/iptables/tests/iptables.sh
