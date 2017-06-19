@@ -26,7 +26,7 @@ rreturn() {
 
 vm_id() {
 	#not really used
-	/puppet/jenkins/bin/vbox.init list | grep "$VMNAME" | awk '{print $2}'
+	/puppet/jenkins/bin/vboxlocal.init list | grep "^$VMNAME " | awk '{print $2}'
 }
 
 
@@ -36,12 +36,15 @@ vm_destroy() {
 }
 
 vm_ssh() {
-	ssh -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMNAME "$1"
+	VMID=$(/puppet/jenkins/bin/vboxlocal.init id)
+	VMMAC=$(VBoxManage showvminfo $VMID | grep 'NIC 1:' | awk '{print $4}' | sed 's/,//')
+	VMIP=$(cat /proc/net/arp  | sed 's/://g' | grep -i $VMMAC | awk '{print $1}')
+	ssh -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMIP "$1"
 	rreturn $? "$0 ssh $@"
 }
 
 vm_start() {
-	/puppet/jenkins/bin/vbox.init status
+	/puppet/jenkins/bin/vboxlocal.init status
 	if [ $? -eq 0 ]; then
 		rreturn $? "vbox vm already running"
 	fi
@@ -50,7 +53,7 @@ vm_start() {
 }
 
 vm_status() {
-	/puppet/jenkins/bin/vbox.init list | grep running | grep "^$VMNAME "
+	/puppet/jenkins/bin/vboxlocal.init list | grep running | grep "^$VMNAME "
 	rreturn $? "$0 status"
 }
 
@@ -70,7 +73,7 @@ vm_build() {
 		rreturn 1 "vm already exists"
 	fi
 
-	VBoxManage clonevm template-debian-jessie --name ${VMNAME}
+	VBoxManage clonevm template-debian-stretch --name ${VMNAME}
 	if [ $? -ne 0 ]; then
 		rreturn 1 "$0 clone failed"
 	fi
@@ -101,15 +104,6 @@ vm_list() {
 		UID=$(echo $all | awk '{print $2}')
 		STATE=$(VBoxManage showvminfo $UID | grep "^State" | sed 's/State:\s*\(.*\)\s* (.*/\1/' | sed 's/ /_/g')
 		printf "%-25s %-40s %-10s\n" "${NAME}" "${UID}" "${STATE}"
-	done
-}
-
-metacloud_update() {
-	echo "ERROR: not implemented"
-	exit 1
-
-	for all in $(x.init list|grep "R[CS]-"| awk '{print $4}'); do
-		VMNAME=$all x.init ssh 'cd /puppet && sh bootstrap.install.sh'
 	done
 }
 
