@@ -7,8 +7,6 @@ if [ -z $VMNAME ]; then
 fi
 cd /tmp || exit 1
 
-
-
 rreturn() {
 	RET=$1
 	MSG=$2
@@ -22,6 +20,24 @@ rreturn() {
 
 	echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
 	exit 1
+}
+
+
+
+vm_list() {
+	ALLVMS=$(VBoxManage list vms)
+	echo "$ALLVMS" | while read all; do 
+		#echo $all
+		NAME=$(echo $all | awk '{print $1}' | sed 's/"//g')
+		UID=$(echo $all | awk '{print $2}')
+		STATE=$(VBoxManage showvminfo $UID | grep "^State" | sed 's/State:\s*\(.*\)\s* (.*/\1/' | sed 's/ /_/g')
+		printf "%-25s %-40s %-10s\n" "${NAME}" "${UID}" "${STATE}"
+	done
+}
+
+vm_status() {
+	/puppet/jenkins/bin/vboxlocal.init list | grep running | grep "^$VMNAME "
+	rreturn $? "$0 status"
 }
 
 vm_id() {
@@ -40,43 +56,8 @@ vm_ip() {
 	return 0
 }
 
-vm_destroy() {
-	VBoxManage unregistervm ${VMNAME} --delete
-	rreturn $? "$0 destroy $@"
-}
 
-vm_ssh() {
-	VMIP=$(/puppet/jenkins/bin/vboxlocal.init ip)
-	if [ $? -ne 0 ]; then
-		rreturn 1 "$0 ssh vmip not detected"
-	fi
-	ssh -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMIP "$1"
-	rreturn $? "$0 ssh $@"
-}
 
-vm_start() {
-	/puppet/jenkins/bin/vboxlocal.init status
-	if [ $? -eq 0 ]; then
-		rreturn $? "vbox vm already running"
-	fi
-	VBoxHeadless -s ${VMNAME} --vrdeproperty "TCP/Ports=$(perl -e "print int(50000+rand(1000));")" --vrdeproperty="TCP/Address=127.0.0.1" --vrdeproperty VNCPassword="$(/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print $1}' | sed 's/^.\{50\}//')" &
-	rreturn $? "$0 start"
-}
-
-vm_status() {
-	/puppet/jenkins/bin/vboxlocal.init list | grep running | grep "^$VMNAME "
-	rreturn $? "$0 status"
-}
-
-vm_fixup() {
-	echo "ERROR: not implemented"
-	exit 1
-}
-
-vm_shutdown() {
-	VBoxManage controlvm $VMNAME acpipowerbutton 
-	rreturn $? "$0 shutdown"
-}
 
 vm_build() {
 	mkdir "${VBOXBASE}/vms/${VMNAME}"
@@ -94,53 +75,56 @@ vm_build() {
 	rreturn $? "$0 build"
 }
 
+vm_start() {
+	/puppet/jenkins/bin/vboxlocal.init status
+	if [ $? -eq 0 ]; then
+		rreturn $? "vbox vm already running"
+	fi
+	VBoxHeadless -s ${VMNAME} --vrdeproperty "TCP/Ports=$(perl -e "print int(50000+rand(1000));")" --vrdeproperty="TCP/Address=127.0.0.1" --vrdeproperty VNCPassword="$(/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print $1}' | sed 's/^.\{50\}//')" &
+	rreturn $? "$0 start"
+}
+
+vm_fixup() {
+	echo "ERROR: not implemented"
+	exit 1
+}
+
+
+
+vm_ssh() {
+	VMIP=$(/puppet/jenkins/bin/vboxlocal.init ip)
+	if [ $? -ne 0 ]; then
+		rreturn 1 "$0 ssh vmip not detected"
+	fi
+	ssh -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMIP "$1"
+	rreturn $? "$0 ssh $@"
+}
+
 vbox_console() {
 	CMD=$(ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | grep -v grep | sed 's/.* TCP\/Ports=\(.*\) .*=TCP\/Address=\(.*\) .* VNCPassword=\(.*\)$/echo -n "\3" | xvncviewer -autopass \2:\1/')
 	sh -c "$CMD"
 }
 
-vm_list() {
-	ALLVMS=$(VBoxManage list vms)
-	echo "$ALLVMS" | while read all; do 
-		#echo $all
-		NAME=$(echo $all | awk '{print $1}' | sed 's/"//g')
-		UID=$(echo $all | awk '{print $2}')
-		STATE=$(VBoxManage showvminfo $UID | grep "^State" | sed 's/State:\s*\(.*\)\s* (.*/\1/' | sed 's/ /_/g')
-		printf "%-25s %-40s %-10s\n" "${NAME}" "${UID}" "${STATE}"
-	done
+
+
+vm_shutdown() {
+	VBoxManage controlvm $VMNAME acpipowerbutton 
+	rreturn $? "$0 shutdown"
+}
+
+vm_destroy() {
+	VBoxManage unregistervm ${VMNAME} --delete
+	rreturn $? "$0 destroy $@"
 }
 
 
+
 case "$1" in
-	console|con)
-		vbox_console
-	;;
 	list)
 		vm_list "$2"
 	;;
-	build)
-		vm_build
-	;;
-	start)
-		vm_start "$2"
-	;;
 	status)
 		vm_status
-	;;
-	shutdown)
-		vm_shutdown
-	;;
-	destroy)
-		vm_destroy
-	;;
-	ssh)
-		vm_ssh "$2"
-	;;
-	node)
-		VMNAME=$2 x.init ssh "$3"
-	;;
-	fixup)
-		vm_fixup
 	;;
 	id)
 		vm_id
@@ -148,6 +132,45 @@ case "$1" in
 	ip)
 		vm_ip
 	;;
+
+
+
+
+	build)
+		vm_build
+	;;
+	start)
+		vm_start "$2"
+	;;
+	fixup)
+		vm_fixup
+	;;
+
+
+
+
+	ssh)
+		vm_ssh "$2"
+	;;
+	node)
+		VMNAME=$2 x.init ssh "$3"
+	;;
+	console|con)
+		vbox_console
+	;;
+
+
+
+	shutdown)
+		vm_shutdown
+	;;
+	destroy)
+		vm_destroy
+	;;
+
+
+
+
 	*)
 		rreturn 1 "$0 wrong command"
 	;;
