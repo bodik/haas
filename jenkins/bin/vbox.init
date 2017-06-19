@@ -1,0 +1,169 @@
+#!/bin/sh
+
+export VBOXUSER="$(cat /dev/shm/username)"
+export VBOXRSA="/dev/shm/sshkey"
+export FRONT="78.128.214.62"
+
+if [ -z $VMNAME ]; then
+	VMNAME="RS"
+fi
+cd /tmp || exit 1
+
+
+
+rreturn() {
+	RET=$1
+	MSG=$2
+	if [ $RET -eq 0 ]; then
+		echo "RESULT: OK $MSG"
+		exit 0
+	else
+		echo "RESULT: FAILED $MSG"
+		exit 1
+	fi
+
+	echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
+	exit 1
+}
+
+
+vm_destroy() {
+	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init destroy"
+	rreturn $? "$0 destroy $@"
+}
+
+vm_ssh() {
+	VMID=$(front_ssh "VMNAME=$VMNAME /puppet/jenkins/bin/vboxlocal.init id")
+	VMMAC=$(front_ssh "VBoxManage showvminfo $VMID | grep 'NIC 1:' | awk '{print \$4}' | sed 's/,//'")
+	VMIP=$(front_ssh "cat /proc/net/arp  | sed 's/://g' | grep -i $VMMAC | awk '{print \$1}'")
+
+	ssh -i $VBOXRSA -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@${VMIP} "$1"
+	rreturn $? "$0 ssh $@"
+}
+
+vm_start() {
+	/puppet/jenkins/bin/vbox.init list | grep running | grep "^$VMNAME "
+	if [ $? -eq 0 ]; then
+		rreturn $? "vm already running"
+	fi
+
+	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init start"
+	RET=1
+	for i in `seq 1 600`; do
+		/puppet/jenkins/bin/vbox.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
+		/puppet/jenkins/bin/vbox.init status
+		sleep 1
+	done
+	if [ $RET -ne 0 ]; then
+		rreturn $RET "$0 start failed $VMNAME"
+	fi
+	rreturn $? "$0 start $VMNAME"
+}
+
+vm_status() {
+	/puppet/jenkins/bin/vbox.init list | grep running | grep "^$VMNAME "
+	rreturn $? "$0 status"
+}
+
+vm_fixup() {
+	rreturn 0 "$0 fixup"
+}
+
+vm_shutdown() {
+	/puppet/jenkins/bin/vbox.init ssh /bin/true
+	if [ $? -ne 0 ]; then
+		rreturn $? "shutdown vm not running"
+	fi
+
+	echo "INFO: sending poweroff"
+	timeout 60 /puppet/jenkins/bin/vbox.init ssh poweroff
+	if [ $? -ne 0 ]; then
+		rreturn $? "shutdown cannot shutdown vm"
+	fi
+
+	RET=1
+	for i in `seq 1 60`; do
+		/puppet/jenkins/bin/vbox.init ssh /bin/true 1>/dev/null
+		if [ $? = 1 ]; then
+			rreturn $? "shutdown"
+		fi
+		sleep 1
+	done
+
+	rreturn 1 "shutdown did not finished in time"
+}
+
+vm_build() {
+	/puppet/jenkins/bin/vbox.init shutdown
+	/puppet/jenkins/bin/vbox.init destroy
+	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init build"
+	rreturn $? "$0 build"
+}
+
+vm_list() {
+	front_ssh 'sh /puppet/jenkins/bin/vboxlocal.init list'
+}
+
+vbox_login() {
+	echo "INFO: no login in $0"
+}
+
+vbox_creds() {
+	echo "transfer credentials to /dev/shm and then login"
+	su jenkins
+	echo "chown jenkins /dev/shm/sshkey"
+}
+
+
+front_ssh() {
+	ssh -i $VBOXRSA -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' -o 'NumberOfPasswordPrompts=0' ${VBOXUSER}@$FRONT "$1"
+	if [ $? -ne 0 ]; then
+		rreturn 1 "$0 cannt reach vbox frontent"
+	fi
+}
+
+
+
+case "$1" in
+	creds)
+		vbox_creds
+	;;
+	login)
+		vbox_login
+	;;
+	list)
+		vm_list "$2"
+	;;
+	build)
+		vm_build
+	;;
+	start)
+		vm_start "$2"
+	;;
+	status)
+		vm_status
+	;;
+	shutdown)
+		vm_shutdown
+	;;
+	destroy)
+		vm_destroy
+	;;
+	ssh)
+		vm_ssh "$2"
+	;;
+	node)
+		VMNAME=$2 /puppet/jenkins/bin/vbox.init ssh "$3"
+	;;
+	fixup)
+		vm_fixup
+	;;
+	
+	front)
+		front_ssh "$2"
+	;;
+	*)
+		rreturn 1 "$0 wrong command"
+	;;
+esac
+
