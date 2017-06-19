@@ -103,10 +103,6 @@ vm_list() {
 	front_ssh 'sh /puppet/jenkins/bin/vboxlocal.init list'
 }
 
-vbox_login() {
-	echo "INFO: no login in $0"
-}
-
 vbox_creds() {
 	echo "transfer credentials to /dev/shm and then login"
 	su jenkins
@@ -126,9 +122,6 @@ front_ssh() {
 case "$1" in
 	creds)
 		vbox_creds
-	;;
-	login)
-		vbox_login
 	;;
 	list)
 		vm_list "$2"

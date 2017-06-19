@@ -94,14 +94,6 @@ vm_build() {
 	rreturn $? "$0 build"
 }
 
-vbox_login() {
-	echo "INFO: no login in vbox"
-}
-
-vbox_creds() {
-	echo "INFO: no creds in vbox"
-}
-
 vbox_console() {
 	CMD=$(ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | grep -v grep | sed 's/.* TCP\/Ports=\(.*\) .*=TCP\/Address=\(.*\) .* VNCPassword=\(.*\)$/echo -n "\3" | xvncviewer -autopass \2:\1/')
 	sh -c "$CMD"
@@ -120,12 +112,6 @@ vm_list() {
 
 
 case "$1" in
-	creds)
-		vbox_creds
-	;;
-	login)
-		vbox_login
-	;;
 	console|con)
 		vbox_console
 	;;
