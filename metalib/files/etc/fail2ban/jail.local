@@ -2,7 +2,7 @@
 
 ignoreip = 127.0.0.1 78.128.214.0/26
 
-[ssh]
+[sshd]
 
 enabled = true
 port    = ssh
