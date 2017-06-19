@@ -34,8 +34,11 @@ vm_destroy() {
 
 vm_ssh() {
 	VMID=$(front_ssh "VMNAME=$VMNAME /puppet/jenkins/bin/vboxlocal.init id")
+	if [ -z $VMID ]; then rreturn 1 "$0 ssh VMID not detected"; fi
 	VMMAC=$(front_ssh "VBoxManage showvminfo $VMID | grep 'NIC 1:' | awk '{print \$4}' | sed 's/,//'")
+	if [ -z $VMMAC ]; then rreturn 1 "$0 ssh VMMAC not detected"; fi
 	VMIP=$(front_ssh "cat /proc/net/arp  | sed 's/://g' | grep -i $VMMAC | awk '{print \$1}'")
+	if [ -z $VMIP ]; then rreturn 1 "$0 ssh VMIP not detected"; fi
 
 	ssh -i $VBOXRSA -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@${VMIP} "$1"
 	rreturn $? "$0 ssh $@"
@@ -47,7 +50,7 @@ vm_start() {
 		rreturn $? "vm already running"
 	fi
 
-	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init start"
+	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init start 1>/dev/null 2>/dev/null </dev/null"
 	RET=1
 	for i in `seq 1 600`; do
 		/puppet/jenkins/bin/vbox.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
