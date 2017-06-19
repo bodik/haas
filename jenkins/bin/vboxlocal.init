@@ -25,10 +25,20 @@ rreturn() {
 }
 
 vm_id() {
-	#not really used
 	/puppet/jenkins/bin/vboxlocal.init list | grep "^$VMNAME " | awk '{print $2}'
 }
 
+vm_ip() {
+	VMID=$(/puppet/jenkins/bin/vboxlocal.init id)
+	if [ -z $VMID ]; then rreturn 1 "$0 VMID not detected"; fi
+	VMMAC=$(VBoxManage showvminfo $VMID | grep 'NIC 1:' | awk '{print $4}' | sed 's/,//')
+	if [ -z $VMMAC ]; then rreturn 1 "$0 VMMAC not detected"; fi
+	VMIP=$(cat /proc/net/arp | sed 's/://g' | grep -i $VMMAC | awk '{print $1}')
+	if [ -z $VMIP ]; then rreturn 1 "$0 ssh VMIP not detected"; fi
+
+	echo $VMID
+	return 0
+}
 
 vm_destroy() {
 	VBoxManage unregistervm ${VMNAME} --delete
@@ -36,9 +46,10 @@ vm_destroy() {
 }
 
 vm_ssh() {
-	VMID=$(/puppet/jenkins/bin/vboxlocal.init id)
-	VMMAC=$(VBoxManage showvminfo $VMID | grep 'NIC 1:' | awk '{print $4}' | sed 's/,//')
-	VMIP=$(cat /proc/net/arp  | sed 's/://g' | grep -i $VMMAC | awk '{print $1}')
+	VMIP=$(/puppet/jenkins/bin/vboxlocal.init ip)
+	if [ $? -ne 0 ]; then
+		rreturn 1 "$0 ssh vmip not detected"
+	fi
 	ssh -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMIP "$1"
 	rreturn $? "$0 ssh $@"
 }
@@ -107,17 +118,6 @@ vm_list() {
 	done
 }
 
-all_warden3_nodes() {
-	echo "ERROR: not implemented"
-	exit 1
-
-	CMD=$1
-
-	for all in $( x.init list | egrep "(WS-|H[A-Z]+-)" | awk '{print $4}' ); do
-                VMNAME=$all x.init ssh "$CMD"
-	done
-	rreturn 0 "$0 aw3"
-}
 
 case "$1" in
 	creds)
@@ -153,32 +153,14 @@ case "$1" in
 	node)
 		VMNAME=$2 x.init ssh "$3"
 	;;
-	sshs)
-		VMNAME=$(x.init list|grep "RS-"|awk '{print $4}') x.init ssh "$2"
-	;;
-	sshc)
-		VMNAME=$(x.init list|grep "RC-"|head -1|awk '{print $4}') x.init ssh "$2"
-	;;
-	sshe)
-		VMNAME=$(x.init list|grep "ELK-"|head -1|awk '{print $4}') x.init ssh "$2"
-	;;
-	sshdev)
-		VMNAME=$(x.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') x.init ssh "$2"
-	;;
-	sshw)
-		VMNAME=$(x.init list|grep "WS-"|head -1|awk '{print $4}') x.init ssh "$2"
-	;;
 	fixup)
 		vm_fixup
 	;;
-	update)
-		metacloud_update
-	;;
-	aw3)
-		all_warden3_nodes "$2"
-	;;
 	id)
 		vm_id
+	;;
+	ip)
+		vm_ip
 	;;
 	*)
 		rreturn 1 "$0 wrong command"
