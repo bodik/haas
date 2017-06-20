@@ -5,9 +5,7 @@ export TEMP="/tmp/"
 export LANG="C"
 
 SAVE="/var/lib/bacula"
-BACKUPUSER="bckup"
-BACKUPUSERPASSWORD=$(cat /etc/bacula/scripts/mysql_buser.wpass || exit 1)
-HOST="127.0.0.1"
+HOST="localhost"
 PORT="3306"
 NAME="mysql,$(hostname -f)"
 BASE=${SAVE}/${NAME}
@@ -23,9 +21,9 @@ else
  	find ${BASE} -type f -delete
 fi
 
-for db in $(mysql -h $HOST -P $PORT -u $BACKUPUSER -p$BACKUPUSERPASSWORD -e 'show databases'| sed '1d'); do
+for db in $(mysql -h $HOST -P $PORT -e 'show databases'| sed '1d'); do
 	DBS=$(($DBS+1))
-	for table in $(mysql -h $HOST -P $PORT -u $BACKUPUSER -p$BACKUPUSERPASSWORD -e 'show tables' $db | sed '1d'); do
+	for table in $(mysql -h $HOST -P $PORT -e 'show tables' $db | sed '1d'); do
 		TABS=$(($TABS+1))
 		OPTS="--triggers --events"
 
@@ -39,7 +37,7 @@ for db in $(mysql -h $HOST -P $PORT -u $BACKUPUSER -p$BACKUPUSERPASSWORD -e 'sho
                         continue;
                 fi
 
-                mysqldump $OPTS -h $HOST -P $PORT -u $BACKUPUSER -p$BACKUPUSERPASSWORD $db $table > ${BASE}/${NAME},${db},${table}.sql
+                mysqldump $OPTS -h $HOST -P $PORT $db $table > ${BASE}/${NAME},${db},${table}.sql
 		if [ $? -ne 0 ]; then
 			echo "ERROR: cannt dump $db $table"
 			ERR=$(( $ERR + 1))
