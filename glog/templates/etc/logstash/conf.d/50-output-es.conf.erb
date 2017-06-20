@@ -1,0 +1,14 @@
+output {
+        elasticsearch {
+		hosts => ["http://<%= @esd_bind_host %><%= @esd_network_host %>:39200"]
+                index => "logstash-%{+YYYY.MM.dd}"
+
+                manage_template => true
+                template_overwrite => "true"
+#                template => "/puppet/glog/files/elasticsearch-template.json"
+        }
+
+	#stdout { codec => rubydebug }
+}
+
+
