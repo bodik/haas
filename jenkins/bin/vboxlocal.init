@@ -47,11 +47,22 @@ vm_id() {
 vm_ip() {
 	VMID=$(/puppet/jenkins/bin/vboxlocal.init id)
 	if [ -z $VMID ]; then rreturn 1 "$0 VMID not detected"; fi
-	VMMAC=$(timeout 10 VBoxManage showvminfo $VMID | grep 'NIC 1:' | awk '{print $4}' | sed 's/,//')
+	VMMAC=$(timeout 10 VBoxManage showvminfo $VMID | grep 'NIC 1:' | awk '{print $4}' | sed 's/,//' | xargs python -c 'import sys;print ":".join([sys.argv[1][i:i+2] for i in range(0, len(sys.argv[1]), 2)])')
 	if [ -z $VMMAC ]; then rreturn 1 "$0 VMMAC not detected"; fi
-	VMIP=$(cat /proc/net/arp | sed 's/://g' | grep -i $VMMAC | awk '{print $1}')
-	if [ -z $VMIP ]; then rreturn 1 "$0 ssh VMIP not detected"; fi
+	VMIP=$(ip neigh show | grep -v FAILED | grep -i $VMMAC | awk '{print $1}')
 
+	# in case of reboots, arp cache does not age by itself from old entries
+	if [ $(echo $VMIP | wc -l) -gt 1 ]; then
+		VMIPS=$(ip neigh show |  grep -v FAILED | grep -i $VMMAC | awk '{print $1}')
+		for all in $VMIPS; do
+			ping -c1 -w1 $all 1>/dev/null 2>/dev/null &
+		done
+		wait
+		sleep 1
+		VMIP=$(ip neigh show | grep -v FAILED | grep -i $VMMAC | awk '{print $1}')
+	fi
+
+	if [ -z $VMIP ]; then rreturn 1 "$0 ssh VMIP not detected"; fi
 	echo $VMIP
 	return 0
 }
