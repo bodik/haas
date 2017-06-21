@@ -1,5 +1,4 @@
 #pulls vals from warden config file
-
 require "puppet"
 require "json"
 module Puppet::Parser::Functions
