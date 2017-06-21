@@ -757,7 +757,7 @@ class MySQL(ObjectBase):
 
 
     def getLastReceivedId(self, client):
-        res = self.query("SELECT event_id as id FROM last_events WHERE client_id = %s ORDER BY last_events.id DESC LIMIT 1", client.id, commit=True).fetchall()
+        res = self.query("SELECT event_id as id FROM last_events WHERE client_id = %s ORDER BY last_events.id DESC LIMIT 1", [client.id], commit=True).fetchall()
         try:
             row = res[0]
         except IndexError:
