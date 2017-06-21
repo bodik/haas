@@ -1,0 +1,16 @@
+[Unit]
+Description=warden_tologstash
+
+[Service]
+ExecStart=/usr/bin/python <%= @install_dir %>/warden_tologstash.py
+WorkingDirectory=<%= @install_dir %>
+Restart=always
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=warden_tologstash.py
+User=<%= @tologstash_user %>
+Group=<%= @tologstash_user %>
+
+[Install]
+WantedBy=multi-user.target
