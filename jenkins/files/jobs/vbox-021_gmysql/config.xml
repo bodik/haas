@@ -23,11 +23,8 @@
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh metalib/tests/phase2.sh&apos;
 
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh lamp.install.sh&apos;
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh lamp/tests/lamp.sh&apos;
-
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh glog2.install.sh&apos;
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh glog/tests/glog2.sh&apos;
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh gmysql.install.sh&apos;
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh gmysql/tests/gmysql.sh&apos;
 
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hostspecs.install.sh&apos;</command>
     </hudson.tasks.Shell>
