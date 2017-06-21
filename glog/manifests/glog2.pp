@@ -155,6 +155,12 @@ class glog::glog2(
 		require => Package["logstash"],
 		notify => Service["logstash"],
 	}
+	file { "/etc/logstash/conf.d/11-input-tcp.conf":
+		content => template("${module_name}/etc/logstash/conf.d/11-input-tcp.conf.erb"),
+		owner => "root", group => "root", mode => "0644",
+		require => Package["logstash"],
+		notify => Service["logstash"],
+	}
 	file { "/etc/logstash/conf.d/50-outout-es.conf":
 		content => template("${module_name}/etc/logstash/conf.d/50-output-es.conf.erb"),
 		owner => "root", group => "root", mode => "0644",
