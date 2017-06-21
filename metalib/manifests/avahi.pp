@@ -13,6 +13,12 @@ class metalib::avahi() {
 	package { ["avahi-daemon", "avahi-utils"]:
 	        ensure => installed,
 	}
+	augeas { "/etc/avahi/avahi-daemon.conf":
+                context => "/files/etc/avahi/avahi-daemon.conf",
+                changes => ["set /files/etc/avahi/avahi-daemon.conf/server/use-ipv6 no",],
+		require => Package["avahi-daemon"],
+		notify => Service["avahi-daemon"],
+        }
 	service { "avahi-daemon": 
 		ensure => running, 
 	}
