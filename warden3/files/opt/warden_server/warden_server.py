@@ -1441,7 +1441,7 @@ def modify_client(**kwargs):
             for label in hostname.split("."))
 
     def isValidNSID(nsid):
-        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_]*\\.)*[a-zA-Z_][a-zA-Z0-9_]*$")
+        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_\-]*\\.)*[a-zA-Z_][a-zA-Z0-9_\-]*$")
         return allowed.match(nsid)
 
     def isValidEmail(mail):
