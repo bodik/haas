@@ -1,0 +1,19 @@
+{
+	"Log": {
+		"type": "SysLogger",
+		"level": "debug"
+	},
+	"Handler": {
+		"send_events_limit": 2500,
+		"get_events_limit": 2500,
+		"description": "Warden 3"
+	},
+	"DB": {
+		"type": "MySQL",
+		"host": "<%= @mysql_host %>",
+		"port": <%= @mysql_port %>,
+		"dbname": "<%= @mysql_db %>",
+		"user": "<%= @mysql_db %>",
+		"password": "<%= @mysql_password_real %>"
+	}
+}

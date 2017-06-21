@@ -1,0 +1,19 @@
+commit 9cffde198cb5da24b11f5b693ab28ba2c13e53ce
+Author: root <root@dhcp-flab2-52.cesnet.cz>
+Date:   Wed Jun 21 11:01:51 2017 +0200
+
+    properly propagate fail upwards calling stack
+
+diff --git a/warden3/files/opt/warden_server/warden_server.py b/warden3/files/opt/warden_server/warden_server.py
+index 8f0b0b6..ba4d95d 100755
+--- a/warden3/files/opt/warden_server/warden_server.py
++++ b/warden3/files/opt/warden_server/warden_server.py
+@@ -1423,7 +1423,7 @@ def register_client(**kwargs):
+     if kwargs["write"] is None: kwargs["write"] = 0
+     if kwargs["debug"] is None: kwargs["debug"] = 0
+     if kwargs["test"] is None: kwargs["test"] = 1
+-    modify_client(id=None, **kwargs)
++    return modify_client(id=None, **kwargs)
+ 
+ 
+ def modify_client(**kwargs):

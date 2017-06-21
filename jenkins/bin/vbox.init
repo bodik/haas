@@ -1,8 +1,8 @@
 #!/bin/sh
 
-export VBOXUSER="$(cat /dev/shm/username)"
-export VBOXRSA="/dev/shm/sshkey"
-export FRONT="78.128.214.62"
+export VBOXUSER="$(cat ~/.ssh/haas.username)"
+export VBOXRSA="~/.ssh/haas"
+export FRONT="$(cat ~/.ssh/haas.server)"
 
 if [ -z $VMNAME ]; then
 	VMNAME="RS"
