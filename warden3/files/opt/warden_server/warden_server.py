@@ -1423,7 +1423,7 @@ def register_client(**kwargs):
     if kwargs["write"] is None: kwargs["write"] = 0
     if kwargs["debug"] is None: kwargs["debug"] = 0
     if kwargs["test"] is None: kwargs["test"] = 1
-    modify_client(id=None, **kwargs)
+    return modify_client(id=None, **kwargs)
 
 
 def modify_client(**kwargs):
