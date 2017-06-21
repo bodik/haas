@@ -8,7 +8,8 @@
 # revoke keys
 #  puppet cert revoke
 
-export HOME="$(dirname $0)"
+SELFPATH=$(readlink -f $0)
+export HOME=$(dirname $SELFPATH)
 OPTS="--confdir $HOME"
 
 usage() {
