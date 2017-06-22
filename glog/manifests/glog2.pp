@@ -150,41 +150,10 @@ class glog::glog2(
 #	}
 
 
-	file { "/etc/logstash/conf.d/10-input-udp.conf":
-		content => template("${module_name}/etc/logstash/conf.d/10-input-udp.conf.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => Package["logstash"],	notify => Service["logstash"],
-	}
-	file { "/etc/logstash/conf.d/11-input-tcp.conf":
-		content => template("${module_name}/etc/logstash/conf.d/11-input-tcp.conf.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => Package["logstash"],	notify => Service["logstash"],
-	}
-	file { "/etc/logstash/conf.d/30-filter-wb.conf":
-		content => template("${module_name}/etc/logstash/conf.d/30-filter-wb.conf.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => Package["logstash"],	notify => Service["logstash"],
-	}
-	file { "/etc/logstash/conf.d/50-output-es.conf":
-		content => template("${module_name}/etc/logstash/conf.d/50-output-es.conf.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => Package["logstash"],	notify => Service["logstash"],
-	}
-
-
-
-	# TODO: https://homeproj.cesnet.cz/issues/3545
-#	define logstash_config_file() {
-#		file {  "${name}":
-#			content => template("${module_name}${name}.erb"),
-#			owner => "root", group => "root", mode => "0644",
-#			require => Package["logstash"],	notify => Service["logstash"],
-#	} }
-#	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/10-input-udp.conf": }
-#	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/11-input-tcp.conf": }
-#	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/30-filter-wb.conf": }
-#	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/50-output-es.conf": }
-
+	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/10-input-udp.conf": }
+	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/11-input-tcp.conf": }
+	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/30-filter-wb.conf": }
+	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/50-output-es.conf": }
 
 
 	# kibana
@@ -257,5 +226,11 @@ class glog::glog2(
 			line => "${line}",
                 	require => Package["kibana"],
 	                notify => Service["kibana"],
+	} }
+	define logstash_config_file() {
+		file {  "${name}":
+			content => template("${module_name}${name}.erb"),
+			owner => "root", group => "root", mode => "0644",
+			require => Package["logstash"],	notify => Service["logstash"],
 	} }
 }

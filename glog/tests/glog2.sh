@@ -13,7 +13,7 @@ fi
 ESD_AGE=$(ps h -o etimes $(pgrep -f org.elasticsearch.bootstrap.Elasticsearch))
 if [ $ESD_AGE -lt 60 ] ; then
 	echo "INFO: esd warming up"
-	sleep 60
+	sleep 120
 fi
 
 netstat -nlpa | grep " $(pgrep -f org.elasticsearch.bootstrap.Elasticsearch)/java" | grep LISTEN | grep ":39200"
@@ -42,7 +42,7 @@ fi
 LOGSTASH_AGE=$(ps h -o etimes $(pgrep -f logstash/runner.rb))
 if [ $LOGSTASH_AGE -lt 60 ] ; then
 	echo "INFO: logstash warming up"
-	sleep 60
+	sleep 120
 fi
 
 netstat -nlpa | grep " $(pgrep -f logstash/runner.rb)/java" | egrep "udp.*:::39994"
