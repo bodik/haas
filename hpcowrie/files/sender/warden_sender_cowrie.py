@@ -135,7 +135,7 @@ def gen_event_idea_cowrie_download(detect_time, src_ip, dst_ip,	sessionid, url, 
 def get_iinput(sessionid):
 	ret = []
        	query = "SELECT GROUP_CONCAT(input SEPARATOR '--SEP--') as i FROM input WHERE session=%s GROUP BY session;"
-	crs.execute(query, sessionid)
+	crs.execute(query, (sessionid,))
         rows = crs.fetchall()
         for row in rows:
 		ret.append(row["i"])
@@ -145,14 +145,14 @@ def get_iinput(sessionid):
 def get_ttylog(sessionid):
 	ret = ""
        	query = "SELECT id, session, ttylog FROM ttylog WHERE session=%s;"
-	crs.execute(query, sessionid)
+	crs.execute(query, (sessionid,))
         rows = crs.fetchall()
         for row in rows:
 		try:
 			tf = tempfile.NamedTemporaryFile(delete=False)
 			with open(tf.name, 'w') as f:
 				f.write(row['ttylog'])
-			ret = subprocess.check_output(["/usr/bin/python", "/opt/cowrie/utils/playlog.py", "-m0", tf.name])
+			ret = subprocess.check_output(["/opt/cowrie/bin/playlog", "-m0", tf.name])
 		finally:
 			os.remove(tf.name)
 
@@ -184,18 +184,17 @@ events = []
 
 
 #old senders data
-query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00')) as starttime, s.ip, COUNT(s.id) as attack_scale, sn.ip as sensor \
+query = "SELECT UNIX_TIMESTAMP(s.starttime) as starttime, s.ip, COUNT(s.id) as attack_scale, sn.ip as sensor \
 	FROM sessions s \
 	LEFT JOIN sensors sn ON s.sensor=sn.id \
-	WHERE CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
+	WHERE s.starttime > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
 	GROUP BY s.ip ORDER BY s.starttime ASC;"
 
-crs.execute(query, awin)
+crs.execute(query, (awin,))
 etime = format_timestamp(time())
 stime = format_timestamp(time() - awin)
 rows = crs.fetchall()
 for row in rows:
-	dtime = format_timestamp(row['starttime'])
 	a = gen_event_idea_cowrie_info(
 		detect_time = format_timestamp(row['starttime']),
 		src_ip = row['ip'],
@@ -211,9 +210,9 @@ for row in rows:
 
 
 #success login
-query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(a.timestamp, @@global.time_zone, '+00:00')) as timestamp, s.ip as sourceip, sn.ip as sensor, a.session as sessionid, a.username as username, a.password as password \
+query =  "SELECT UNIX_TIMESTAMP(a.timestamp) as timestamp, s.ip as sourceip, sn.ip as sensor, a.session as sessionid, a.username as username, a.password as password \
 	FROM auth a JOIN sessions s ON s.id=a.session JOIN sensors sn ON s.sensor=sn.id \
-	WHERE a.success=1 AND CONVERT_TZ(a.timestamp, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
+	WHERE a.success=1 AND a.timestamp > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
 	ORDER BY a.timestamp ASC;"
 
 crs.execute(query, (awin,))
@@ -231,9 +230,9 @@ for row in rows:
 	events.append(a)
 
 #ttylog+iinput reporter
-query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00')) as starttime, s.ip as sourceip, sn.ip as sensor, t.session as sessionid \
+query =  "SELECT UNIX_TIMESTAMP(s.starttime) as starttime, s.ip as sourceip, sn.ip as sensor, t.session as sessionid \
           FROM ttylog t JOIN sessions s ON s.id=t.session JOIN sensors sn ON s.sensor=sn.id \
-          WHERE CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
+          WHERE s.starttime > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
           ORDER BY s.starttime ASC;"
 
 crs.execute(query, (awin,))
@@ -252,9 +251,9 @@ for row in rows:
 
 
 #download
-query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00')) as starttime, s.ip as sourceip, sn.ip as sensor, d.session as sessionid, d.url as url, d.outfile as ofile \
+query =  "SELECT UNIX_TIMESTAMP(s.starttime) as starttime, s.ip as sourceip, sn.ip as sensor, d.session as sessionid, d.url as url, d.outfile as ofile \
 	FROM downloads d JOIN sessions s ON s.id=d.session JOIN sensors sn ON s.sensor=sn.id \
-	WHERE CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
+	WHERE s.starttime > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
 	ORDER BY s.starttime ASC;"
 
 crs.execute(query, (awin,))
