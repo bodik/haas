@@ -92,13 +92,29 @@ def register_sensor(self):
 	
 		hostname = _resolve_client_address(self.client_address[0])
 
+	except Exception as e:
+		print "Unexpected error:", sys.exc_info()[0], e
+		return 500
+
+
+	try:
 		cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (qs['sensor_name'][0], hostname)
 		print "DEBUG:",cmd
 		data = subprocess.check_output(cmd.split(" "))
 
+	except subprocess.CalledProcessError as e:
+		if ( e.returncode == 101 ):
+			# client already register, but we accept the state for cloud testing
+			print "WARN: client already registered"
+			pass
+		else:
+			print "Unexpected error:", sys.exc_info()[0], e
+			return 500
+
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0], e
 		return 500
+
 
 	return 200
 

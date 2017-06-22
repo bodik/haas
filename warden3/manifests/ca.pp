@@ -61,6 +61,7 @@ class warden3::ca (
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.py",
 		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
 		require => File["${install_dir}"],
+		notify => Service["warden_ca_http"],
 	}
 	file { "/lib/systemd/system/warden_ca_http.service":
 		content => template("${module_name}/warden_ca_http.service.erb"),
