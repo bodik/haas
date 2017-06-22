@@ -19,14 +19,14 @@ while getopts "s:n:d:" o; do
     esac
 done
 shift $((OPTIND-1))
-
+CA_SERVICE="http://${WARDEN_SERVER}:45444"
 
 #if tagfile exist, a sensor is probably already registred, this is just puppet helper conditional
 if [ -f $DEST_DIR/registered-at-warden-server ]; then
 	exit 0
 fi
 
-URL="http://${WARDEN_SERVER}:45444/register_sensor?sensor_name=${SENSOR_NAME}"
+URL="${CA_SERVICE}/register_sensor?sensor_name=${SENSOR_NAME}"
 curl --silent --write-out '%{http_code}' $URL | grep 200 1>/dev/null 2>/dev/null
 if [ $? -eq 0 ]; then
 	echo "$URL" > ${DEST_DIR}/registered-at-warden-server
