@@ -1,6 +1,6 @@
 output {
         elasticsearch {
-		hosts => ["http://<%= @esd_bind_host %><%= @esd_network_host %>:39200"]
+		hosts => ["http://<%= @esd_network_host %>:39200"]
                 index => "logstash-%{+YYYY.MM.dd}"
 
                 manage_template => true
