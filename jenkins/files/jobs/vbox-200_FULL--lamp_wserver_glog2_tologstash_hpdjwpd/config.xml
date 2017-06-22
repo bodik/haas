@@ -13,7 +13,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;HAAS-test&quot;
+      <command>export VMNAME=&quot;HAAS-full&quot;
 /puppet/jenkins/bin/vbox.init build
 /puppet/jenkins/bin/vbox.init start
 /puppet/jenkins/bin/vbox.init fixup
@@ -26,8 +26,18 @@
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh lamp.install.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh lamp/tests/lamp.sh&apos;
 
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh warden3-server.install.sh&apos;
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh warden3/tests/server.sh&apos;
+
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh glog2.install.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh glog/tests/glog2.sh&apos;
+
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh warden3-tologstash.install.sh&apos;
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh warden3/tests/tologstash.sh&apos;
+
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpjdwpd.install.sh&apos;
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpjdwpd/tests/hpjdwpd.sh&apos;
+
 
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hostspecs.install.sh&apos;</command>
     </hudson.tasks.Shell>
