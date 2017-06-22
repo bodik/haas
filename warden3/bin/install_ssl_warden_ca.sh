@@ -37,7 +37,7 @@ openssl req -newkey rsa:4096 -nodes -keyout ${FQDN}.key -out ${FQDN}.csr -subj "
 
 echo "INFO: signing $FQDN.csr"
 #TODO: (in)secure
-curl --insecure --data-urlencode @${FQDN}.csr "http://${WARDEN_SERVER}:45444/put_csr"
+curl --insecure --fail --data-urlencode @${FQDN}.csr "http://${WARDEN_SERVER}:45444/put_csr"
 if [ $? -ne 0 ]; then
 	echo "ERROR: cannot contact warden_ca"
 	exit 1
