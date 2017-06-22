@@ -1478,7 +1478,7 @@ def modify_client(**kwargs):
     for c in server.handler.db.get_clients():
         if kwargs["name"] is not None and kwargs["name"].lower()==c.name:
             print >>sys.stderr, "Clash with existing name: %s" % str(c)
-            return 254
+            return 101
         if kwargs["secret"] is not None and kwargs["secret"]==c.secret:
             print >>sys.stderr, "Clash with existing secret: %s" % str(c)
             return 254
