@@ -77,12 +77,13 @@ class hpcowrie (
 		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; cd ${install_dir}; git checkout 3d12c8c54b4317dc53baa89c53dbe4bd9480b201; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
 		creates => "${install_dir}/start.sh",
 	} 
-	package { ["python-mysqldb", "git", "libmpfr-dev", "libssl-dev", "libmpc-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind"]: 
+	package { ["python-pip", "python-mysqldb", "git", "libmpfr-dev", "libssl-dev", "libmpc-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind"]: 
 		ensure => installed, 
 	}
 	exec { "pip install reqs":
 		command => "/usr/bin/pip install -r ${install_dir}/requirements.txt",
 		creates => "${install_dir}/start.sh",
+		require => Package["python-pip"],
 	} 
 	user { "$cowrie_user": 	
 		ensure => present, 
