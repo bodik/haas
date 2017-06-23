@@ -136,13 +136,7 @@ curl \
     --data '{#$%^' \
     "$url/getEvents?client=$client&secret=$secret" \
     --silent --show-error \
-> $tmpfile
-cat $tmpfile
 echo
-#grep '"error": 400' $tmpfile 1>/dev/null 2>/dev/null
-#if [ $? -ne 0 ]; then
-#	rreturn 1 "$0 Test  Deserialization"
-#fi
 
 echo "Test  Called with unknown category"
 curl \

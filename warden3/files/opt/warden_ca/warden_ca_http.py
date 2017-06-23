@@ -3,7 +3,6 @@
 
 import json
 import logging
-import netifaces
 import os
 import shlex
 import socket
@@ -16,7 +15,6 @@ from urlparse import urlparse, parse_qs
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s '+os.path.basename(sys.argv[0])+'[%(process)d] %(levelname)s %(funcName)s() %(message)s')
-local_ip_addresses = [netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr'] for iface in netifaces.interfaces() if netifaces.AF_INET in netifaces.ifaddresses(iface)]
 
 
 
