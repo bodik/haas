@@ -3,7 +3,7 @@
 class hpdio (
 	$install_dir = "/opt/dionaea",
 
-	$dio_user = "dio",
+	$dio_user = "dionaea",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -28,6 +28,9 @@ class hpdio (
 	file { "${install_dir}":
 		ensure => directory,
 		owner => "$dio_user", group => "$dio_user", mode => "0755",
+		recurse => true,
+		purge => true,
+		force => true,
 		require => User["$dio_user"],
 	}
 
@@ -44,7 +47,36 @@ class hpdio (
 		command => "/puppet/${module_name}/bin/build.sh ${install_dir}",
 		require => Exec["clone dio"],
 	}
-
+	file {"${install_dir}/etc/dionaea/services-enabled":
+		ensure => directory,
+                recurse => true,
+                purge => true,
+                force => true,
+	}
+	file { '/opt/dionaea/etc/dionaea/services-enabled/epmap.yaml':
+  		ensure => 'link',
+		target => '/opt/dionaea/etc/dionaea/services-available/epmap.yaml',
+	}
+	file { '/opt/dionaea/etc/dionaea/services-enabled/ftp.yaml':
+  		ensure => 'link',
+		target => '/opt/dionaea/etc/dionaea/services-available/ftp.yaml',
+	}
+	file { '/opt/dionaea/etc/dionaea/services-enabled/mysql.yaml':
+  		ensure => 'link',
+		target => '/opt/dionaea/etc/dionaea/services-available/mysql.yaml',
+	}
+	file { '/opt/dionaea/etc/dionaea/services-enabled/sip.yaml':
+  		ensure => 'link',
+		target => '/opt/dionaea/etc/dionaea/services-available/sip.yaml',
+	}
+	file { '/opt/dionaea/etc/dionaea/services-enabled/smb.yaml':
+  		ensure => 'link',
+		target => '/opt/dionaea/etc/dionaea/services-available/smb.yaml',
+	}
+	file { '/opt/dionaea/etc/dionaea/services-enabled/tftp.yaml':
+  		ensure => 'link',
+		target => '/opt/dionaea/etc/dionaea/services-available/tftp.yaml',
+	}
 	package { "p0f":
 		ensure => installed,
 		require => Exec["clone dio"],
@@ -74,8 +106,18 @@ class hpdio (
 		content => template("${module_name}/dionaea.cfg.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => Exec["build dio"],
-		#notify => Service["dio"],
 	}
+	file { "/lib/systemd/system/dionaea.service":
+                content => template("${module_name}/dionaea.service.erb"),
+                owner => "root", group => "root", mode => "0644",
+		require => Exec["build dio"],
+        }
+        service { "dionaea":
+                enable => true,
+                ensure => running,
+                require => File["/lib/systemd/system/dionaea.service"],
+        }
+
 	#exec { "install selfcert":
 	#	command => "/bin/sh /puppet/metalib/bin/install_sslselfcert.sh ${install_dir}/etc/dionaea",
 	#	creates => "${install_dir}/etc/dionaea/${fqdn}.crt",
@@ -151,12 +193,12 @@ class hpdio (
 		require => User["$dio_user"],
 	}
 
-	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
-	}
-	exec { "register dio sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.dionaea -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => Exec["build dio"],
-	}
+	#warden3::hostcert { "hostcert":
+	#	warden_server => $warden_server_real,
+	#}
+	#exec { "register dio sensor":
+	#	command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.dionaea -d ${install_dir}",
+	#	creates => "${install_dir}/registered-at-warden-server",
+	#	require => Exec["build dio"],
+	#}
 }
