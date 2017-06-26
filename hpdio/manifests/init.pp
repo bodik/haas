@@ -34,7 +34,7 @@ class hpdio (
 		require => User["$dio_user"],
 	}
 
-	$packages = ["autoconf", "automake", "build-essential", "check", "cython3", "libcurl4-openssl-dev", "libemu-dev", "libev-dev", "libglib2.0-dev", "libloudmouth1-dev" ,"libnetfilter-queue-dev", "libnl-3-dev", "libpcap-dev", "libssl-dev", "libtool" ,"libudns-dev", "python3", "python3-dev", "python3-yaml"]
+	$packages = ["autoconf", "automake", "build-essential", "check", "cython3", "libcurl4-openssl-dev", "libemu-dev", "libev-dev", "libglib2.0-dev", "libloudmouth1-dev" ,"libnetfilter-queue-dev", "libnl-3-dev", "libpcap-dev", "libssl-dev", "libtool" ,"libudns-dev", "python3", "python3-dev", "python3-yaml", "sqlite3"]
 
 	package { $packages:
 		ensure => installed,
@@ -134,18 +134,6 @@ class hpdio (
 	#	require => Exec["install selfcert"],
 	#}
 
-	#file { "/etc/init.d/dio":
-	#	content => template("${module_name}/dio.init.erb"),
-	#	owner => "root", group => "root", mode => "0755",
-	#	require => [File["${install_dir}/var", "${install_dir}/etc/dionaea/dionaea.conf", "${install_dir}/etc/dionaea/server.key", "${install_dir}/etc/dionaea/server.crt"], File["/etc/init.d/p0f"]],
-	#	notify => [Service["dio"], Exec["systemd_reload"]]
-	#}
-	#service { "dio": 
-	#	enable => true,
-	#	ensure => running,
-	#	require => [File["/etc/init.d/dio"], Exec["systemd_reload"]],
-	#}
-
 
 
 	##autotest
@@ -193,12 +181,12 @@ class hpdio (
 		require => User["$dio_user"],
 	}
 
-	#warden3::hostcert { "hostcert":
-	#	warden_server => $warden_server_real,
-	#}
-	#exec { "register dio sensor":
-	#	command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.dionaea -d ${install_dir}",
-	#	creates => "${install_dir}/registered-at-warden-server",
-	#	require => Exec["build dio"],
-	#}
+	warden3::hostcert { "hostcert":
+		warden_server => $warden_server_real,
+	}
+	exec { "register dio sensor":
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.dionaea -d ${install_dir}",
+		creates => "${install_dir}/registered-at-warden-server",
+		require => Exec["build dio"],
+	}
 }
