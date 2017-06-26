@@ -137,7 +137,7 @@ class hpdio (
 
 
 	##autotest
-	#package { ["netcat"]: ensure => installed, }
+	package { ["netcat"]: ensure => installed, }
 
 
 	# warden_client pro kippo (basic w3 client, reporter stuff, run/persistence/daemon)

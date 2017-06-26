@@ -125,15 +125,16 @@ def gen_event_idea_dio(logger, binaries_path, report_binaries, client_name, anon
   
   if data['service'] == 'mysqld':
     #Clean exported data 
-    mysql_data = re.sub("select @@version_comment limit 1,?", "", data['mysql_query']) 
-    if mysql_data != "":
-    	# Generate "MySQL Attach" part of IDEA
-    	a = gen_attach_idea_mysql(logger, mysql_data)
+    if data['mysql_query'] is not None:
+	    mysql_data = re.sub("select @@version_comment limit 1,?", "", data['mysql_query']) 
+	    if mysql_data != "":
+		# Generate "MySQL Attach" part of IDEA
+		a = gen_attach_idea_mysql(logger, mysql_data)
 
-	category.append('Attempt.Exploit')
-	proto.append('mysql')
-    	event['Source'][0]['AttachHand'] = ['att1']
-    	event['Attach'] = [a]
+		category.append('Attempt.Exploit')
+		proto.append('mysql')
+		event['Source'][0]['AttachHand'] = ['att1']
+		event['Attach'] = [a]
 	
   event['Source'][0]['Port']  = [data['src_port']]
   event['Target'][0]['Port']  = [data['dst_port']]
