@@ -527,6 +527,8 @@ class MySQL(ObjectBase):
         crs = kwargs.pop("crs", None)
         while True:
             try:
+                if self.con is None:
+                    self.connect()
                 if crs is None:
                     crs = self.con.cursor()
                 self.log.debug("execute: %s %s" % (args, kwargs))
@@ -540,9 +542,16 @@ class MySQL(ObjectBase):
                 self.log.info("execute: Database down, trying to reconnect (%d attempts left)..." % countdown)
                 if countdown<self.retry_count:
                     sleep(self.retry_pause)    # no need to melt down server on longer outage
-                self.close()
-                self.connect()
+                try:
+                    crs.close()
+                except Exception:
+                    pass
+                try:
+                    self.close()
+                except Exception:
+                    pass
                 crs = None
+                self.con = None
                 countdown -= 1
 
 
@@ -757,7 +766,7 @@ class MySQL(ObjectBase):
 
 
     def getLastReceivedId(self, client):
-        res = self.query("SELECT event_id as id FROM last_events WHERE client_id = %s ORDER BY last_events.id DESC LIMIT 1", [client.id], commit=True).fetchall()
+        res = self.query("SELECT event_id as id FROM last_events WHERE client_id = %s ORDER BY last_events.id DESC LIMIT 1", (client.id,), commit=True).fetchall()
         try:
             row = res[0]
         except IndexError:
@@ -791,15 +800,15 @@ class MySQL(ObjectBase):
 
     def purge_lastlog(self, days):
         try:
-            self.query(
+            crs = self.query(
                 "DELETE FROM last_events "
                 " USING last_events LEFT JOIN ("
                 "    SELECT MAX(id) AS last FROM last_events"
                 "    GROUP BY client_id"
                 " ) AS maxids ON last=id"
                 " WHERE timestamp < DATE_SUB(CURDATE(), INTERVAL %s DAY) AND last IS NULL",
-                days)
-            affected = self.con.affected_rows()
+                (days,))
+            affected = crs.rowcount
             self.con.commit()
         except Exception as e:
             self.con.rollback()
@@ -808,11 +817,19 @@ class MySQL(ObjectBase):
 
 
     def purge_events(self, days):
+        affected = 0
         try:
-            self.query(
-                "DELETE FROM events WHERE received < DATE_SUB(CURDATE(), INTERVAL %s DAY)",
-                days)
-            affected = self.con.affected_rows()
+            id_ = self.query(
+                "SELECT MAX(id) as id"
+                "  FROM events"
+                "  WHERE received < DATE_SUB(CURDATE(), INTERVAL %s DAY)",
+                (days,),
+                commit=True
+            ).fetchall()[0]["id"]
+            crs = self.query("DELETE FROM events WHERE id <= %s", (id_,))
+            affected = crs.rowcount
+            self.query("DELETE FROM event_category_mapping WHERE event_id <= %s", (id_,))
+            self.query("DELETE FROM event_tag_mapping WHERE event_id <= %s", (id_,))
             self.con.commit()
         except Exception as e:
             self.con.rollback()
@@ -1414,6 +1431,7 @@ def list_clients(id=None):
     divider = ["-" * l for l in col_width]
     for line in [Client._fields, divider] + lines:
         print " ".join([val.ljust(width) for val, width in zip(line, col_width)])
+    return 0
 
 
 def register_client(**kwargs):
@@ -1441,7 +1459,7 @@ def modify_client(**kwargs):
             for label in hostname.split("."))
 
     def isValidNSID(nsid):
-        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_\-]*\\.)*[a-zA-Z_][a-zA-Z0-9_\-]*$")
+        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_]*\\.)*[a-zA-Z_][a-zA-Z0-9_]*$")
         return allowed.match(nsid)
 
     def isValidEmail(mail):
@@ -1478,18 +1496,19 @@ def modify_client(**kwargs):
     for c in server.handler.db.get_clients():
         if kwargs["name"] is not None and kwargs["name"].lower()==c.name:
             print >>sys.stderr, "Clash with existing name: %s" % str(c)
-            return 101
+            return 254
         if kwargs["secret"] is not None and kwargs["secret"]==c.secret:
             print >>sys.stderr, "Clash with existing secret: %s" % str(c)
             return 254
 
     newid = server.handler.db.add_modify_client(**kwargs)
 
-    list_clients(id=newid)
+    return list_clients(id=newid)
 
 
 def load_maps():
     server.handler.db.load_maps()
+    return 0
 
 
 def purge(days=30, lastlog=None, events=None):
@@ -1501,6 +1520,7 @@ def purge(days=30, lastlog=None, events=None):
     if events:
         count = server.handler.db.purge_events(days)
         print "Purged %d events." % count
+    return 0
 
 
 def add_client_args(subargp, mod=False):
