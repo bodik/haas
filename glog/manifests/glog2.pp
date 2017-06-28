@@ -100,20 +100,20 @@ class glog::glog2(
 		creates => "/opt/elasticsearch-head/package.json",
 		require => [Package["nodejs"], File["/usr/local/bin/node"]],
 	}
-	file { "/lib/systemd/system/elasticsearch-head.service":
-		source => "puppet:///modules/${module_name}/elasticsearch-head/elasticsearch-head.service",
+	file { "/opt/elasticsearch-head/Gruntfile.js":
+		source => "puppet:///modules/${module_name}/elasticsearch-head/Gruntfile.js",
 		owner => "root", group => "root", mode => "0644",
 		require => Exec["elasticsearch-head install"],
 	}
-	file { "/opt/elasticsearch-head/Gruntfile.js":
-		source => "puppet:///modules/${module_name}/elasticsearch-head/Gruntfile.js",
+	file { "/etc/systemd/system/elasticsearch-head.service":
+		source => "puppet:///modules/${module_name}/elasticsearch-head/elasticsearch-head.service",
 		owner => "root", group => "root", mode => "0644",
 		require => Exec["elasticsearch-head install"],
 	}
 	service { "elasticsearch-head":
 		ensure => running,
 		enable => true,
-		require => [File["/lib/systemd/system/elasticsearch-head.service"], File["/opt/elasticsearch-head/Gruntfile.js"]],
+		require => [File["/etc/systemd/system/elasticsearch-head.service"], File["/opt/elasticsearch-head/Gruntfile.js"]],
 	}
 
 
@@ -181,11 +181,6 @@ class glog::glog2(
 	glog::glog2::kibana_config { "server.port":
 		path => "/etc/kibana/kibana.yml",
 		match => "^server.port", line => "server.port: 5601",
-	}
-	file { "/lib/systemd/system/kibana.service":
-		ensure => link, target => "/etc/systemd/system/kibana.service",
-		require => Package["kibana"],
-		before => Service['kibana'],
 	}
 	exec { "import kibana defaults":
 		command => "/bin/sh /puppet/glog/bin/kibana-restore.sh",

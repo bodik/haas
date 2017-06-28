@@ -77,23 +77,23 @@ class iptables (
 	file { "/etc/init.d/iptables":
 		source => "puppet:///modules/${module_name}/etc/init.d/iptables",
 		owner => "root", group => "root", mode => "0755",
-		notify => Exec["systemd_reload"],
+		notify => Exec["systemctl daemon-reload"],
 	}
 	file { "/etc/init.d/ip6tables":
 		source => "puppet:///modules/${module_name}/etc/init.d/ip6tables",
 		owner => "root", group => "root", mode => "0755",
-		notify => Exec["systemd_reload"],
+		notify => Exec["systemctl daemon-reload"],
 	}
-	ensure_resource( 'exec', "systemd_reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )	
+	ensure_resource( 'exec', "systemctl daemon-reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )
 	service { "iptables": 
 		ensure => running,
 		enable => true, 
-		require => [File["/etc/init.d/iptables"], File["/var/lib/iptables/active"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/iptables"], File["/var/lib/iptables/active"], Exec["systemctl daemon-reload"]],
 	}
 	service { "ip6tables": 
 		ensure => running,
 		enable => true, 
-		require => [File["/etc/init.d/ip6tables"], File["/var/lib/ip6tables/active"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/ip6tables"], File["/var/lib/ip6tables/active"], Exec["systemctl daemon-reload"]],
 	}
 
 

@@ -90,7 +90,7 @@ class warden3::tologstash (
 	}
 
 
-	file { "/lib/systemd/system/warden_tologstash.service":
+	file { "/etc/systemd/system/warden_tologstash.service":
 		content => template("${module_name}/warden_tologstash.service.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => [
@@ -104,7 +104,7 @@ class warden3::tologstash (
 	service { "warden_tologstash":
 		enable => true,
 		ensure => running,
-		require => File["/lib/systemd/system/warden_tologstash.service"],
+		require => File["/etc/systemd/system/warden_tologstash.service"],
 	}
 
 

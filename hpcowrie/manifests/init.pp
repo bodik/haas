@@ -168,18 +168,15 @@ class hpcowrie (
 		owner => "root", group => "root", mode => "0644",
 		notify => Service["fail2ban"],
 	}
-        file { "/lib/systemd/system/cowrie.service":
+        file { "/etc/systemd/system/cowrie.service":
                 content => template("${module_name}/cowrie.service.erb"),
                 owner => "root", group => "root", mode => "0644",
         }
-	exec { "systemd_reload":
-		command     => '/bin/systemctl daemon-reload',
-		refreshonly => true,
-	}
+	ensure_resource( 'exec', "systemctl daemon-reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )
 	service { "cowrie": 
 		enable => true,
 		ensure => running,
-		require => [Exec["systemd_reload"], File["/lib/systemd/system/cowrie.service"], Exec["install database"], Mysql_grant["${mysql_db}@localhost/${mysql_db}.*"] ],
+		require => [Exec["systemctl daemon-reload"], File["/etc/systemd/system/cowrie.service"], Exec["install database"], Mysql_grant["${mysql_db}@localhost/${mysql_db}.*"] ],
 	}
 
 

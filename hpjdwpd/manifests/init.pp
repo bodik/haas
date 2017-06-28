@@ -55,7 +55,7 @@ class hpjdwpd (
 	
 
 
-	file { "/lib/systemd/system/jdwpd.service":
+	file { "/etc/systemd/system/jdwpd.service":
 		content => template("${module_name}/jdwpd.service.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => [File["${install_dir}/jdwpd.py", "${install_dir}/jdwpd.cfg"]],
@@ -63,7 +63,7 @@ class hpjdwpd (
 	service { "jdwpd":
 		enable => true,
 		ensure => running,
-		require => File["/lib/systemd/system/jdwpd.service"],
+		require => File["/etc/systemd/system/jdwpd.service"],
 	}
 
 

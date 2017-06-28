@@ -70,14 +70,14 @@ class warden3::ca (
 
 
 	# service
-	file { "/lib/systemd/system/warden_ca_http.service":
+	file { "/etc/systemd/system/warden_ca_http.service":
 		content => template("${module_name}/warden_ca_http.service.erb"),
 		owner => "root", group => "root", mode => "0644",
 	}
 	service { "warden_ca_http":
 		enable => true,
 		ensure => running,
-		require => File["/lib/systemd/system/warden_ca_http.service"],
+		require => File["/etc/systemd/system/warden_ca_http.service"],
 	}
 
 

@@ -87,14 +87,14 @@ class hpdio (
 		target => '/opt/dionaea/etc/dionaea/ihandlers-available/p0f.yaml',
 	}
         
-	file { "/lib/systemd/system/p0f.service":
+	file { "/etc/systemd/system/p0f.service":
                 content => template("${module_name}/p0f.service.erb"),
                 owner => "root", group => "root", mode => "0644",
         }
         service { "p0f":
                 enable => true,
                 ensure => running,
-                require => File["/lib/systemd/system/p0f.service"], 
+                require => File["/etc/systemd/system/p0f.service"], 
         }
 
 	file { "${install_dir}/var":
@@ -107,7 +107,7 @@ class hpdio (
 		owner => "root", group => "root", mode => "0755",
 		require => Exec["build dio"],
 	}
-	file { "/lib/systemd/system/dionaea.service":
+	file { "/etc/systemd/system/dionaea.service":
                 content => template("${module_name}/dionaea.service.erb"),
                 owner => "root", group => "root", mode => "0644",
 		require => Exec["build dio"],
@@ -115,7 +115,7 @@ class hpdio (
         service { "dionaea":
                 enable => true,
                 ensure => running,
-                require => File["/lib/systemd/system/dionaea.service"],
+                require => File["/etc/systemd/system/dionaea.service"],
         }
 
 	#exec { "install selfcert":
