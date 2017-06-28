@@ -1,7 +1,7 @@
 #!/bin/bash
-#
 
-SAVE="/var/lib/bacula"
+BASE="/var/lib/bacula"
 NAME="mysql,$(hostname -f)"
-rm -v ${SAVE}/${NAME}.tar.gz
+ARCHIVE="${BASE}/${NAME}.tar.gz"
+rm -v ${ARCHIVE}
 
