@@ -4,6 +4,7 @@
 import json
 import logging
 import os
+import re
 import shlex
 import socket
 import subprocess
@@ -28,13 +29,18 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		"/put_csr": "put_csr",
 		"/register_sensor": "register_sensor",
 	}
+
 	def do_GET(self):
 		self.process_request()
 	def do_POST(self):
 		self.process_request()
 	def process_request(self):
-		uri = urlparse(self.path).path
+		if config["same_subnet"] and (not self._same_subnet()):
+			self.send_response(403)
+			self.end_headers()
+			
 
+		uri = urlparse(self.path).path
 		try:
 			if uri in self.routes.keys():
     				method = getattr(ca_handler, self.routes[uri])
@@ -79,34 +85,31 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		filename = "ssl/ca/requests/%s.pem" % hostname
 		length = int(self.headers['Content-Length'])
 	        post_data = urllib.unquote(self.rfile.read(length).decode('utf-8'))
-	
+
 		#subseqent calls if we want to reissue certificate for same DN, cloud testing and such...
 		try:
 			cmd = "/bin/sh warden_ca.sh revoke %s" % hostname 
-                       	data = subprocess.check_output(shlex.split(cmd))
+	               	data = subprocess.check_output(shlex.split(cmd))
 			cmd = "/bin/sh warden_ca.sh clean %s" % hostname 
 			data = subprocess.check_output(shlex.split(cmd))
 		except Exception as e:
 			pass
-	
+		
 		csr_file = open(filename, 'w')
 		csr_file.write(post_data)
-		csr_file.flush()
 		csr_file.close()
 
-		# TODO: self.client_address[0] in same subnet 
-		same_subnet = True
-		if same_subnet and os.path.exists("AUTOSIGN"):
+		if config["autosign"]:
 			self._sign(hostname)
-	
-		return (200, None)
 
+		return (200, None)
+		
 
 
 
 	
 	def register_sensor(self):
-		if os.path.exists("AUTOSIGN") == False:
+		if not config["autosign"]:
 			return (403, None)
 
 		qs = parse_qs(urlparse(self.path).query)
@@ -151,6 +154,15 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 data = subprocess.check_output(shlex.split(cmd))
 		return 0
 
+	def _same_subnet(self):
+		data = subprocess.check_output(shlex.split("ip neigh show")).splitlines()
+		for tmp in data:
+			#192.168.214.49 dev eth0 lladdr a0:f3:e4:32:86:01 REACHABLE
+			pattern = "^%s dev eth0 lladdr ([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2}) REACHABLE$" % self.client_address[0]
+			if re.match(pattern, tmp):
+				return True
+		return False
+
 
 
 		
@@ -165,7 +177,16 @@ if __name__=="__main__":
         sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
         sys.stderr = os.fdopen(sys.stderr.fileno(), 'w', 0)
 
-	httpd = ca_tcpserver(('0.0.0.0', 45444), ca_handler)
+	config = {
+		"network_address": "0.0.0.0",
+		"listen_port": 45444,
+		"same_subnet": True,
+		"autosign": True,
+		}
+	if os.path.exists("warden_ca_http.cfg"):
+		config.update(json.loads("warden_ca_http.cfg"))
+
+	httpd = ca_tcpserver((config["network_address"], config["listen_port"]), ca_handler)
 	try:
 	    httpd.serve_forever()
 	except KeyboardInterrupt:
