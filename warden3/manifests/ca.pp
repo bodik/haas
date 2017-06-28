@@ -27,8 +27,13 @@ class warden3::ca (
 	$install_dir = "/opt/warden_ca",
 	$ca_user = "wardenca",
 	$ca_name = "warden3ca",
-	$autosign = true,
 ) {
+
+	# deps
+	package { "python-netifaces": ensure => installed, }	
+
+
+	# install
 	user { "$ca_user": 	
 		ensure => present, 
 		managehome => false,
@@ -36,7 +41,6 @@ class warden3::ca (
 		home => "${install_dir}",
 		groups => "www-data",
 	}
-
 	file { "${install_dir}":
 		ensure => directory,
 		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
@@ -60,9 +64,12 @@ class warden3::ca (
 	file { "${install_dir}/warden_ca_http.py":
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.py",
 		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
-		require => File["${install_dir}"],
+		require => [File["${install_dir}"], Package["python-netifaces"]],
 		notify => Service["warden_ca_http"],
 	}
+
+
+	# service
 	file { "/lib/systemd/system/warden_ca_http.service":
 		content => template("${module_name}/warden_ca_http.service.erb"),
 		owner => "root", group => "root", mode => "0644",
@@ -74,12 +81,4 @@ class warden3::ca (
 	}
 
 
-	if ($autosign) {
-		file { "${install_dir}/AUTOSIGN":
-			content => "AUTOSIGN ENABLED",
-			owner => "${ca_user}", group => "${ca_user}", mode => "0600",
-	 	}
-	} else {
-		file { "${install_dir}/AUTOSIGN": ensure => absent }
-	}
 }

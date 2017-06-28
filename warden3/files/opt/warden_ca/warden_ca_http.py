@@ -3,6 +3,7 @@
 
 import json
 import logging
+import netifaces
 import os
 import re
 import shlex
@@ -16,7 +17,7 @@ from urlparse import urlparse, parse_qs
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s '+os.path.basename(sys.argv[0])+'[%(process)d] %(levelname)s %(funcName)s() %(message)s')
-
+local_ip_addresses = [netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr'] for iface in netifaces.interfaces() if netifaces.AF_INET in netifaces.ifaddresses(iface)]
 
 
 
@@ -155,6 +156,9 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		return 0
 
 	def _same_subnet(self):
+		if self.client_address[0] in local_ip_addresses:
+			return True
+
 		data = subprocess.check_output(shlex.split("ip neigh show")).splitlines()
 		for tmp in data:
 			#192.168.214.49 dev eth0 lladdr a0:f3:e4:32:86:01 REACHABLE
