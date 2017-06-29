@@ -20,45 +20,37 @@ class hpjdwpd (
         }
 
 	# application
+
+	package { ["python-twisted"]: ensure => installed, }	
 	user { "$jdwpd_user": 	
 		ensure => present, 
 		managehome => false,
 	}
-
 	file { "${install_dir}":
 		ensure => directory,
 		owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0755",
 		require => User["$jdwpd_user"],
 	}
-	package { ["python-twisted"]:
-		ensure => installed, 
-	}                            	
 	file { "${install_dir}/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${jdwpd_user}", group => "${jdwpd_user}", mode => "0755",
                 require => File["${install_dir}"],
         }
-	file { "${install_dir}/jdwpd.py":
-		source => "puppet:///modules/${module_name}/jdwpd.py",
-		owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0755",
-		require => File["${install_dir}", "${install_dir}/warden_utils_flab.py"],
-	}
-
-
-
     	file { "${install_dir}/jdwpd.cfg":
                 content => template("${module_name}/jdwpd.cfg.erb"),
                 owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0644",
-                require => File["${install_dir}/jdwpd.py"],
+                require => File["${install_dir}"],
         }
-
-	
-
+	file { "${install_dir}/jdwpd.py":
+		source => "puppet:///modules/${module_name}/jdwpd.py",
+		owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0755",
+		require => File["${install_dir}", "${install_dir}/warden_utils_flab.py", "${install_dir}/jdwpd.cfg"],
+	}
 
 	file { "/etc/systemd/system/jdwpd.service":
 		content => template("${module_name}/jdwpd.service.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => [File["${install_dir}/jdwpd.py", "${install_dir}/jdwpd.cfg"]],
+		require => File["${install_dir}/jdwpd.py"],
 	}
 	service { "jdwpd":
 		enable => true,
@@ -67,8 +59,10 @@ class hpjdwpd (
 	}
 
 
+
 	#autotest
 	package { ["netcat"]: ensure => installed, }
+
 
 
 	# warden_client
@@ -105,7 +99,6 @@ class hpjdwpd (
 	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
-
 	exec { "register jdwpd sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.jdwpd -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
