@@ -20,3 +20,4 @@ cd $INSTALL_DIR
 
 make
 make install
+find ${INSTALL_DIR}/etc/dionaea/services-enabled -type f -delete

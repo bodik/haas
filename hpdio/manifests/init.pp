@@ -28,17 +28,12 @@ class hpdio (
 	file { "${install_dir}":
 		ensure => directory,
 		owner => "$dio_user", group => "$dio_user", mode => "0755",
-#		recurse => true,
-#		purge => true,
-#		force => true,
 		require => User["$dio_user"],
 	}
 
 	$packages = ["autoconf", "automake", "build-essential", "check", "cython3", "libcurl4-openssl-dev", "libemu-dev", "libev-dev", "libglib2.0-dev", "libloudmouth1-dev" ,"libnetfilter-queue-dev", "libnl-3-dev", "libpcap-dev", "libssl-dev", "libtool" ,"libudns-dev", "python3", "python3-dev", "python3-yaml", "sqlite3"]
+	package { $packages: ensure => installed, }
 
-	package { $packages:
-		ensure => installed,
-	}
 	exec { "clone dio":
 		command => "/usr/bin/git clone https://github.com/DinoTools/dionaea ${install_dir}",
 		require => Package[$packages],
@@ -48,35 +43,27 @@ class hpdio (
 		command => "/puppet/${module_name}/bin/build.sh ${install_dir}",
 		require => Exec["clone dio"],
 	}
-	file {"${install_dir}/etc/dionaea/services-enabled":
+	file { "${install_dir}/etc/dionaea/services-enabled":
 		ensure => directory,
-                recurse => true,
-                purge => true,
-                force => true,
+		owner => "root", group => "root", mode => "0755",
 	}
-	file { '/opt/dionaea/etc/dionaea/services-enabled/epmap.yaml':
-  		ensure => 'link',
-		target => '/opt/dionaea/etc/dionaea/services-available/epmap.yaml',
+	file { "${install_dir}/etc/dionaea/services-enabled/epmap.yaml":
+  		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/epmap.yaml",
 	}
-	file { '/opt/dionaea/etc/dionaea/services-enabled/ftp.yaml':
-  		ensure => 'link',
-		target => '/opt/dionaea/etc/dionaea/services-available/ftp.yaml',
+	file { "${install_dir}/etc/dionaea/services-enabled/ftp.yaml":
+  		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/ftp.yaml",
 	}
-	file { '/opt/dionaea/etc/dionaea/services-enabled/mysql.yaml':
-  		ensure => 'link',
-		target => '/opt/dionaea/etc/dionaea/services-available/mysql.yaml',
+	file { "${install_dir}/etc/dionaea/services-enabled/mysql.yaml":
+  		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/mysql.yaml",
 	}
-	file { '/opt/dionaea/etc/dionaea/services-enabled/sip.yaml':
-  		ensure => 'link',
-		target => '/opt/dionaea/etc/dionaea/services-available/sip.yaml',
+	file { "${install_dir}/etc/dionaea/services-enabled/sip.yaml":
+  		ensure => link, target => "${install_dir}/etc/dionaea/services-available/sip.yaml",
 	}
-	file { '/opt/dionaea/etc/dionaea/services-enabled/smb.yaml':
-  		ensure => 'link',
-		target => '/opt/dionaea/etc/dionaea/services-available/smb.yaml',
+	file { "${install_dir}/etc/dionaea/services-enabled/smb.yaml":
+  		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/smb.yaml",
 	}
-	file { '/opt/dionaea/etc/dionaea/services-enabled/tftp.yaml':
-  		ensure => 'link',
-		target => '/opt/dionaea/etc/dionaea/services-available/tftp.yaml',
+	file { "${install_dir}/etc/dionaea/services-enabled/tftp.yaml":
+  		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/tftp.yaml",
 	}
 	#package { "p0f":
 	#	ensure => installed,
@@ -141,6 +128,7 @@ class hpdio (
 	package { ["netcat"]: ensure => installed, }
 
 
+
 	# warden_client pro kippo (basic w3 client, reporter stuff, run/persistence/daemon)
 	file { "${install_dir}/warden":
 		ensure => directory,
@@ -157,7 +145,6 @@ class hpdio (
 		owner => "${dio_user}", group => "${dio_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
-
 
 	#reporting
 	file { "${install_dir}/warden/warden_utils_flab.py":
