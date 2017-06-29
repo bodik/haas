@@ -170,12 +170,6 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 
 		
-class ca_tcpserver(SocketServer.TCPServer):
-	def server_bind(self):
-        	#import socket
-	        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        	self.socket.bind(self.server_address)
-
 if __name__=="__main__":
 	# python unbuffered output ?
         sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
@@ -190,7 +184,8 @@ if __name__=="__main__":
 	if os.path.exists("warden_ca_http.cfg"):
 		config.update(json.loads("warden_ca_http.cfg"))
 
-	httpd = ca_tcpserver((config["network_address"], config["listen_port"]), ca_handler)
+	SocketServer.TCPServer.allow_reuse_address = True
+	httpd = SocketServer.TCPServer((config["network_address"], config["listen_port"]), ca_handler)
 	try:
 	    httpd.serve_forever()
 	except KeyboardInterrupt:
