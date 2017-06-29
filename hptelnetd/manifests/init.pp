@@ -19,7 +19,7 @@ class hptelnetd (
         }
 
 	# application
-	package { ["python-twisted"]: ensure => installed, }
+	package { ["python-twisted", "sudo"]: ensure => installed, }
 	user { "$telnetd_user": 	
 		ensure => present, 
 		managehome => false,
@@ -41,11 +41,6 @@ class hptelnetd (
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
                 require => File["${install_dir}"],
         }
-    	file { "${install_dir}/iptables":
-                content => template("${module_name}/iptables.erb"),
-                owner => "root", group => "root", mode => "0644",
-                require => File["${install_dir}"],
-        }
     	file { "${install_dir}/telnetd.cfg":
                 content => template("${module_name}/telnetd.cfg.erb"),
                 owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
@@ -57,20 +52,25 @@ class hptelnetd (
 		require => File["${install_dir}/commands", "${install_dir}/warden_utils_flab.py", "${install_dir}/telnetd.cfg"],
 	}
 
+
+    	file { "/opt/telnetd-iptables":
+                content => template("${module_name}/telnetd-iptables.erb"),
+                owner => "root", group => "root", mode => "0755",
+        }
+	file { "/etc/sudoers.d/telnetd":
+		content => "${telnetd_user} ALL=(ALL) NOPASSWD: /opt/telnetd-iptables\n",
+		owner => "root", group => "root", mode => "0755",
+		require => [Package["sudo"], File["/opt/telnetd-iptables"]],
+	}
 	file { "/etc/systemd/system/telnetd.service":
 		content => template("${module_name}/telnetd.service.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => File["${install_dir}/telnetd.py"],
-	}
-	file { "/etc/systemd/system/telnetd-iptables.service":
-		content => template("${module_name}/telnetd-iptables.service.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => File["${install_dir}/iptables"],
+		require => File["${install_dir}/telnetd.py", "/etc/sudoers.d/telnetd"],
 	}
 	service { "telnetd": 
 		enable => true,
 		ensure => running,
-		require => File["/etc/systemd/system/telnetd.service", "/etc/systemd/system/telnetd-iptables.service"],
+		require => File["/etc/systemd/system/telnetd.service"],
 	}
 
 
@@ -102,7 +102,7 @@ class hptelnetd (
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
    	file { "${install_dir}/warden_client_telnetd.cfg":
                 content => template("${module_name}/warden_client_telnetd.cfg.erb"),
-                owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
+                owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
                 require => File["${install_dir}/telnetd.py", "${install_dir}/warden_sender_telnetd.py"],
         }
     	file { "/etc/cron.d/warden_telnetd":
