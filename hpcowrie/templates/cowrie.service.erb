@@ -4,6 +4,7 @@ Documentation=https://github.com/micheloosterhof/cowrie
 After=network.target
 #Wants=syslog.target
 Wants=mysql.service
+Requires=cowrie-iptables.service
 
 [Service]
 Type=forking
@@ -12,7 +13,7 @@ Group=<%= @cowrie_user %>
 PIDFile=<%= @install_dir %>/var/run/cowrie.pid
 ExecStart=<%= @install_dir %>/bin/cowrie start
 ExecStop=<%= @install_dir %>/bin/cowrie stop
-ExecReload=<%= @install_dir %>/bin/cowrie stop && sleep 10 && /home/cowrie/cowrie/bin/cowrie start
+ExecReload=<%= @install_dir %>/bin/cowrie stop && sleep 10 && <%= @install_dir %>/bin/cowrie start
 WorkingDirectory=<%= @install_dir %>
 Restart=on-failure
 TimeoutSec=300
