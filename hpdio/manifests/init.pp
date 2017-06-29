@@ -77,25 +77,25 @@ class hpdio (
   		ensure => 'link',
 		target => '/opt/dionaea/etc/dionaea/services-available/tftp.yaml',
 	}
-	package { "p0f":
-		ensure => installed,
-		require => Exec["clone dio"],
-	}
+	#package { "p0f":
+	#	ensure => installed,
+	#	require => Exec["clone dio"],
+	#}
 
-	file { '/opt/dionaea/etc/dionaea/ihandlers-enabled/p0f.yaml':
-  		ensure => 'link',
-		target => '/opt/dionaea/etc/dionaea/ihandlers-available/p0f.yaml',
-	}
-        
-	file { "/etc/systemd/system/p0f.service":
-                content => template("${module_name}/p0f.service.erb"),
-                owner => "root", group => "root", mode => "0644",
-        }
-        service { "p0f":
-                enable => true,
-                ensure => running,
-                require => File["/etc/systemd/system/p0f.service"], 
-        }
+	#file { '/opt/dionaea/etc/dionaea/ihandlers-enabled/p0f.yaml':
+  	#	ensure => 'link',
+	#	target => '/opt/dionaea/etc/dionaea/ihandlers-available/p0f.yaml',
+	#}
+        #
+	#file { "/etc/systemd/system/p0f.service":
+        #        content => template("${module_name}/p0f.service.erb"),
+        #        owner => "root", group => "root", mode => "0644",
+        #}
+        #service { "p0f":
+        #        enable => true,
+        #        ensure => running,
+        #        require => File["/etc/systemd/system/p0f.service"], 
+        #}
 
 	file { "${install_dir}/var":
 		owner => "$dio_user", group => "$dio_user", #nomode
