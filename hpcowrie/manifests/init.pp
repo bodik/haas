@@ -123,18 +123,17 @@ class hpcowrie (
 		notify => Service["cowrie"],
 	}
 
-#	file { "${install_dir}/bin/cowrie":
-#		content => template("${module_name}/cowrie.erb"),
-#                owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
-#                require => File["${install_dir}/cowrie.cfg"],
-#        }
 	file_line { "${install_dir}/bin/cowrie":
 		ensure => present, path => "${install_dir}/bin/cowrie",
 		match => "^VIRTUALENV_ENABLED=", line => "VIRTUALENV_ENABLED=no",
 		require => Exec["clone cowrie"],
 		notify => Service["cowrie"],
 	}
-
+	file { "${install_dir}/bin/iptables":
+		content => template("${module_name}/iptables.erb"),
+                owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
+                require => File["${install_dir}/cowrie.cfg"],
+        }
 
 	file { "${install_dir}/data/userdb.txt":
 		source => "puppet:///modules/${module_name}/userdb.txt",
