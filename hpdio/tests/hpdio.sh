@@ -27,7 +27,7 @@ fi
 
 
 
-ls -l /opt/dionaea/var/dionaea/logsql.sqlite
+ls -l /opt/dionaea/var/dionaea/dionaea.sqlite
 if [ $? -ne 0 ]; then
         rreturn 1 "$0 dionaea logdb not created"
 fi

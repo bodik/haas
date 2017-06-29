@@ -28,9 +28,9 @@ class hpdio (
 	file { "${install_dir}":
 		ensure => directory,
 		owner => "$dio_user", group => "$dio_user", mode => "0755",
-		recurse => true,
-		purge => true,
-		force => true,
+#		recurse => true,
+#		purge => true,
+#		force => true,
 		require => User["$dio_user"],
 	}
 
@@ -42,6 +42,7 @@ class hpdio (
 	exec { "clone dio":
 		command => "/usr/bin/git clone https://github.com/DinoTools/dionaea ${install_dir}",
 		require => Package[$packages],
+		creates => "${install_dir}/LICENSE",
 	}
 	exec { "build dio":
 		command => "/puppet/${module_name}/bin/build.sh ${install_dir}",
