@@ -1,9 +1,0 @@
-[Unit]
-Description=iptables telnetd service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/bin/sh /puppet/hptelnetd/bin/iptables start
-ExecStop=/bin/sh /puppet/hptelnetd/bin/iptables stop
-

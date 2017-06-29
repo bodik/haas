@@ -3,6 +3,8 @@ Description=telnetd
 
 [Service]
 ExecStart=/usr/bin/python <%= @install_dir %>/telnetd.py
+ExecStartPost=/usr/bin/sudo /opt/telnetd-iptables start
+ExecStopPost=/usr/bin/sudo /opt/telnetd-iptables stop
 WorkingDirectory=<%= @install_dir %>
 Restart=always
 StandardOutput=syslog
