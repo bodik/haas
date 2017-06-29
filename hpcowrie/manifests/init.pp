@@ -27,6 +27,7 @@ class hpcowrie (
 	
 	#mysql server
 	#Replaced by gmysql component 
+	class { "gmysql::server": }
 	
 	#mysql db
         if( $mysql_db) {
