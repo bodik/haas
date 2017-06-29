@@ -1,0 +1,13 @@
+[Unit]
+Description=Passive TCP/IP stack fingerprinting tool
+Documentation=http://lcamtuf.coredump.cx/p0f3/
+After=network.target
+#Wants=syslog.target
+
+[Service]
+#Type=forking
+User=root
+Group=<%= @dio_user %>
+ExecStart=/usr/sbin/p0f -i any -u <%= @dio_user %> -s /tmp/p0f.sock -o /var/log/p0f.log
+WorkingDirectory=<%= @install_dir %>
+Restart=allways

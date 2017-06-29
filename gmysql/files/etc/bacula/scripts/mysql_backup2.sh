@@ -1,61 +1,56 @@
 #!/bin/bash
 
-export TMPDIR="/tmp/"
-export TEMP="/tmp/"
-export LANG="C"
+BASE="/var/lib/bacula"
+NAME="mysql,$(hostname -f)"
+BACKUPDIR="${BASE}/${NAME}"
+ARCHIVE="${BASE}/${NAME}.tar.gz"
 
-SAVE="/var/lib/bacula"
 HOST="localhost"
 PORT="3306"
-NAME="mysql,$(hostname -f)"
-BASE=${SAVE}/${NAME}
-ARCH=${SAVE}/${NAME}.tar.gz
 
-DBS=0
-TABS=0
-ERR=0
+DATABASES=0
+TABLES=0
+ERRORS=0
 
-if [ ! -d ${BASE} ]; then
-	mkdir -p ${BASE}
+if [ ! -d ${BACKUPDIR} ]; then
+	mkdir -p ${BACKUPDIR}
 else
- 	find ${BASE} -type f -delete
+ 	find ${BACKUPDIR} -type f -delete
 fi
 
-for db in $(mysql -h $HOST -P $PORT -e 'show databases'| sed '1d'); do
-	DBS=$(($DBS+1))
-	for table in $(mysql -h $HOST -P $PORT -e 'show tables' $db | sed '1d'); do
-		TABS=$(($TABS+1))
-		OPTS="--triggers --events"
+for db in $(mysql -h${HOST} -P${PORT} -NBe 'show databases'); do
+        if [ "$db" = "performance_schema" ]; then continue; fi
+        if [ "$db" = "information_schema" ]; then continue; fi
+	DATABASES=$(($DATABASES+1))
 
-                if [ "x$db" = "xmysql" ]; then
-                        if [ "x$table" = "xgeneral_log" -o "x$table" = "xslow_log" ]; then
-                                OPTS="$opts --skip-lock-tables"
+	for table in $(mysql -h${HOST} -P${PORT} -NBe 'show tables' $db); do
+		TABLES=$(($TABLES+1))
+		OPTS="--triggers --events"
+                if [ $db = "mysql" ]; then
+                        if [ "$table" = "general_log" -o "$table" = "slow_log" ]; then
+                                OPTS="$OPTS --skip-lock-tables"
                         fi
                 fi
-                if [ "x$db" = "xperformance_schema" ]; then
-			#nejaka virtualni databaze, nezalohovat
-                        continue;
-                fi
 
-                mysqldump $OPTS -h $HOST -P $PORT $db $table > ${BASE}/${NAME},${db},${table}.sql
+                mysqldump $OPTS -h$HOST -P$PORT $db $table > ${BACKUPDIR}/${NAME},${db},${table}.sql
 		if [ $? -ne 0 ]; then
-			echo "ERROR: cannt dump $db $table"
-			ERR=$(( $ERR + 1))
+			echo "ERROR: cannot dump $db $table"
+			ERRORS=$(($ERRORS+1))
 		fi
 	done
 done
 
-tar czf $ARCH ${BASE} || exit 1
-rm -r ${BASE}
+tar czf $ARCHIVE ${BACKUPDIR} || exit 1
+rm -r ${BACKUPDIR}
 
 echo -n "db archive: "
-ls -l $ARCH
-echo "RES: ERR=$ERR DATABASES=$DBS TABLES=$TABS"
+ls -l $ARCHIVE
+echo "RES: ERRORS=$ERRORS DATABASES=$DATABASES TABLES=$TABLES"
 
-if [ $DBS -eq 0 ]; then
+if [ $DATABASES -eq 0 ]; then
 	echo "ERROR: no databases dumped"
-	ERR=1
+	ERRORS=1
 fi
 
-exit $ERR
+exit $ERRORS
 

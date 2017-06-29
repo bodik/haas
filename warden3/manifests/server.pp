@@ -90,6 +90,7 @@ class warden3::server (
 	file { "${install_dir}/warden_server.py":
 		source => "${sources}/warden_server.py",
 		owner => "root", group => "root", mode => "0755",
+		notify => Service["apache2"],
 	}
 	file { "${install_dir}/catmap_mysql.json":
 		source => "${sources}/catmap_mysql.json",

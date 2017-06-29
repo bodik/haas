@@ -15,7 +15,10 @@ class metalib::avahi() {
 	}
 	augeas { "/etc/avahi/avahi-daemon.conf":
                 context => "/files/etc/avahi/avahi-daemon.conf",
-                changes => ["set /files/etc/avahi/avahi-daemon.conf/server/use-ipv6 no",],
+                changes => [
+			"set /files/etc/avahi/avahi-daemon.conf/server/use-ipv6 no",
+			"set /files/etc/avahi/avahi-daemon.conf/publish/publish-aaaa-on-ipv4 no",
+		],
 		require => Package["avahi-daemon"],
 		notify => Service["avahi-daemon"],
         }

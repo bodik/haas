@@ -100,20 +100,20 @@ class glog::glog2(
 		creates => "/opt/elasticsearch-head/package.json",
 		require => [Package["nodejs"], File["/usr/local/bin/node"]],
 	}
-	file { "/lib/systemd/system/elasticsearch-head.service":
-		source => "puppet:///modules/${module_name}/elasticsearch-head/elasticsearch-head.service",
+	file { "/opt/elasticsearch-head/Gruntfile.js":
+		source => "puppet:///modules/${module_name}/elasticsearch-head/Gruntfile.js",
 		owner => "root", group => "root", mode => "0644",
 		require => Exec["elasticsearch-head install"],
 	}
-	file { "/opt/elasticsearch-head/Gruntfile.js":
-		source => "puppet:///modules/${module_name}/elasticsearch-head/Gruntfile.js",
+	file { "/etc/systemd/system/elasticsearch-head.service":
+		source => "puppet:///modules/${module_name}/elasticsearch-head/elasticsearch-head.service",
 		owner => "root", group => "root", mode => "0644",
 		require => Exec["elasticsearch-head install"],
 	}
 	service { "elasticsearch-head":
 		ensure => running,
 		enable => true,
-		require => [File["/lib/systemd/system/elasticsearch-head.service"], File["/opt/elasticsearch-head/Gruntfile.js"]],
+		require => [File["/etc/systemd/system/elasticsearch-head.service"], File["/opt/elasticsearch-head/Gruntfile.js"]],
 	}
 
 
@@ -149,26 +149,11 @@ class glog::glog2(
 #		notify => Service["logstash"],
 #	}
 
-	file { "/etc/logstash/conf.d/10-input-udp.conf":
-		content => template("${module_name}/etc/logstash/conf.d/10-input-udp.conf.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => Package["logstash"],
-		notify => Service["logstash"],
-	}
-	file { "/etc/logstash/conf.d/11-input-tcp.conf":
-		content => template("${module_name}/etc/logstash/conf.d/11-input-tcp.conf.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => Package["logstash"],
-		notify => Service["logstash"],
-	}
-	file { "/etc/logstash/conf.d/50-outout-es.conf":
-		content => template("${module_name}/etc/logstash/conf.d/50-output-es.conf.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => Package["logstash"],
-		notify => Service["logstash"],
-	}
 
-
+	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/10-input-udp.conf": }
+	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/11-input-tcp.conf": }
+	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/30-filter-wb.conf": }
+	glog::glog2::logstash_config_file { "/etc/logstash/conf.d/50-output-es.conf": }
 
 
 	# kibana
@@ -196,11 +181,6 @@ class glog::glog2(
 	glog::glog2::kibana_config { "server.port":
 		path => "/etc/kibana/kibana.yml",
 		match => "^server.port", line => "server.port: 5601",
-	}
-	file { "/lib/systemd/system/kibana.service":
-		ensure => link, target => "/etc/systemd/system/kibana.service",
-		require => Package["kibana"],
-		before => Service['kibana'],
 	}
 	exec { "import kibana defaults":
 		command => "/bin/sh /puppet/glog/bin/kibana-restore.sh",
@@ -241,5 +221,11 @@ class glog::glog2(
 			line => "${line}",
                 	require => Package["kibana"],
 	                notify => Service["kibana"],
+	} }
+	define logstash_config_file() {
+		file {  "${name}":
+			content => template("${module_name}${name}.erb"),
+			owner => "root", group => "root", mode => "0644",
+			require => Package["logstash"],	notify => Service["logstash"],
 	} }
 }

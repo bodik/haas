@@ -5,7 +5,6 @@ Description=jdwpd
 ExecStart=/usr/bin/python <%= @install_dir %>/jdwpd.py
 WorkingDirectory=<%= @install_dir %>
 Restart=always
-# Output to syslog
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=jdwpd.py
