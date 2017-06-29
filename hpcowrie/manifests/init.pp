@@ -71,7 +71,7 @@ class hpcowrie (
 
 	# application
 	exec { "clone cowrie":
-		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; cd ${install_dir}; git checkout 3d12c8c54b4317dc53baa89c53dbe4bd9480b201; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
+		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; cd ${install_dir}; git checkout 3d12c8c54b4317dc53baa89c53dbe4bd9480b201",
 		creates => "${install_dir}/INSTALL.md",
 	} 
 	package { ["python-pip", "python-mysqldb", "git", "libmpfr-dev", "libssl-dev", "libmpc-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind", "sudo"]: 
