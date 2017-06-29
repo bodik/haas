@@ -54,12 +54,11 @@ class hpucho::udp (
 		notify => Service["uchoudp"],
 	}
 
-	ensure_resource( 'exec', "systemctl daemon-reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )
 	file { "/etc/systemd/system/uchoudp.service":
 		content => template("${module_name}/uchoudp.service.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => File["${install_dir}/uchoudp.py"],
-		notify => [Service["uchoudp"], Exec["systemctl daemon-reload"]]
+		notify => Service["uchoudp"],
 	}
 	service { "uchoudp": 
 		enable => true,

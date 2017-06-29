@@ -56,12 +56,11 @@ class hpucho::tcp (
 		notify => Service["uchotcp"],
 	}
 
-	ensure_resource( 'exec', "systemctl daemon-reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )
 	file { "/etc/systemd/system/uchotcp.service":
 		content => template("${module_name}/uchotcp.service.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => File["${install_dir}/uchotcp.py"],
-		notify => [Service["uchotcp"], Exec["systemctl daemon-reload"]]
+		notify => Service["uchotcp"]
 	}
 	service { "uchotcp": 
 		enable => true,

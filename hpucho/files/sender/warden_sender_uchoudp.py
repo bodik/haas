@@ -27,7 +27,7 @@ def gen_event_idea_uchoudp(detect_time, src_ip, src_port, dst_ip, dst_port, prot
                 "ID": str(uuid4()),
                 "DetectTime": detect_time,
                 "Category": ["Recon.Scanning", "Test"],
-                "Note": "Ucho event",
+                "Note": "Uchoudp event",
                 "ConnCount": 1,
                 "Source": [{ "Proto": proto, "Port": [src_port] }],
                 "Target": [{ "Proto": proto, "Port": [dst_port] }],
