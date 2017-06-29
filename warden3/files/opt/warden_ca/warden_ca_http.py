@@ -162,7 +162,7 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		data = subprocess.check_output(shlex.split("ip neigh show")).splitlines()
 		for tmp in data:
 			#192.168.214.49 dev eth0 lladdr a0:f3:e4:32:86:01 REACHABLE
-			pattern = "^%s dev eth0 lladdr ([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2}) " % self.client_address[0]
+			pattern = "^%s dev [a-z0-9]+ lladdr ([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2}) " % self.client_address[0]
 			if re.match(pattern, tmp):
 				return True
 		return False
