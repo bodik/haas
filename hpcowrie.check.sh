@@ -1,4 +1,4 @@
-if [ -f /opt/cowrie/start.sh ]; then
+if [ -f /opt/cowrie/INSTALL.md ]; then
         echo "INFO: HPCOWRIECHECK ======================="
 
         for all in hpcowrie; do
