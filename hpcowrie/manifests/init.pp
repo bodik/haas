@@ -7,8 +7,6 @@ class hpcowrie (
 	$cowrie_ssh_version_string = undef,
 	$cowrie_user = "cowrie",
 
-	$virtualenv = "no",
-
 	$mysql_host = "localhost",
 	$mysql_port = 3306,
 	$mysql_db = "cowrie",
@@ -29,6 +27,7 @@ class hpcowrie (
 	
 	#mysql server
 	#Replaced by gmysql component 
+	class { "gmysql::server": }
 	
 	#mysql db
         if( $mysql_db) {
@@ -40,8 +39,8 @@ class hpcowrie (
                         $mysql_password_real = $mysql_password
                 } else {
                         if ( file_exists("${install_dir}/cowrie.cfg") == 1 ) {
-                                $mysql_password_real = myexec("/bin/grep ^password ${install_dir}/cowrie.cfg | /usr/bin/awk -F'=' '{print \$2}' | sed -e 's/^\s//'")
-                                #notice("INFO: mysql ${mysql_user}@localhost secret preserved")
+                                $mysql_password_real = myexec("/bin/grep '^password =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'=' '{print \$2}' | sed -e 's/^\s//'")
+                                notice("INFO: mysql ${mysql_db}@localhost secret preserved")
                         } else {
                                 $mysql_password_real = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
                                 notice("INFO: mysql ${mysql_db}@localhost secret generated")
@@ -72,17 +71,14 @@ class hpcowrie (
 
 	# application
 	exec { "clone cowrie":
-		#command => "/usr/bin/git clone https://github.com/desaster/kippo.git ${install_dir}",
-		#command => "/usr/bin/git clone https://gitlab.labs.nic.cz/honeynet/kippo.git ${install_dir}",
-		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; cd ${install_dir}; git checkout 3d12c8c54b4317dc53baa89c53dbe4bd9480b201; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
-		creates => "${install_dir}/start.sh",
+		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; cd ${install_dir}; git checkout 3d12c8c54b4317dc53baa89c53dbe4bd9480b201",
+		creates => "${install_dir}/INSTALL.md",
 	} 
-	package { ["python-pip", "python-mysqldb", "git", "libmpfr-dev", "libssl-dev", "libmpc-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind"]: 
+	package { ["python-pip", "python-mysqldb", "git", "libmpfr-dev", "libssl-dev", "libmpc-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind", "sudo"]: 
 		ensure => installed, 
 	}
-	exec { "pip install reqs":
+	exec { "pip install requirements":
 		command => "/usr/bin/pip install -r ${install_dir}/requirements.txt",
-		creates => "${install_dir}/start.sh",
 		require => Package["python-pip"],
 	} 
 	user { "$cowrie_user": 	
@@ -94,7 +90,7 @@ class hpcowrie (
 	}
 	file { ["${install_dir}/dl", "${install_dir}/dl/tty", "${install_dir}/data", "${install_dir}/log", "${install_dir}/log/tty", "${install_dir}/var/run", "${install_dir}/etc/", "/opt/cowrie/twisted/plugins/"]:
 		owner => "$cowrie_user", group => "$cowrie_user", mode => "0755",
-		require => [Exec["clone cowrie"], Exec["pip install reqs"], User["$cowrie_user"]],
+		require => [Exec["clone cowrie"], Exec["pip install requirements"], User["$cowrie_user"]],
 	}
 
 	$cowrie_ssh_version_strings = [
@@ -112,7 +108,7 @@ class hpcowrie (
                 $corwie_ssh_version_string_real = $cowrie_ssh_version_string
         } else {
         	if ( file_exists("${install_dir}/cowrie.cfg") == 1 ) {
-                	$cowrie_ssh_version_string_real = myexec("/bin/grep ^ssh_version_string ${install_dir}/cowrie.cfg | /usr/bin/awk -F'= ' '{print \$2}'")
+                	$cowrie_ssh_version_string_real = myexec("/bin/grep '^version =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'= ' '{print \$2}' | sed -e 's/^\s//'")
                 } else {
        			$seed = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
 	                $cowrie_ssh_version_string_real = $cowrie_ssh_version_strings[ fqdn_rand(size($cowrie_ssh_version_strings), $seed) ]
@@ -123,44 +119,35 @@ class hpcowrie (
 	file { "${install_dir}/cowrie.cfg":
 		content => template("${module_name}/cowrie.cfg.erb"),
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-		require => [Exec["clone cowrie"], Exec["pip install reqs"], File["${install_dir}/dl", "${install_dir}/dl/tty", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
+		require => [Exec["clone cowrie"], Exec["pip install requirements"], File["${install_dir}/dl", "${install_dir}/dl/tty", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
 		notify => Service["cowrie"],
 	}
-	file { "${install_dir}/bin/cowrie":
-		content => template("${module_name}/cowrie.erb"),
+
+	file_line { "${install_dir}/bin/cowrie":
+		ensure => present, path => "${install_dir}/bin/cowrie",
+		match => "^VIRTUALENV_ENABLED=", line => "VIRTUALENV_ENABLED=no",
+		require => Exec["clone cowrie"],
+		notify => Service["cowrie"],
+	}
+	file { "${install_dir}/bin/iptables":
+		content => template("${module_name}/iptables.erb"),
                 owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
                 require => File["${install_dir}/cowrie.cfg"],
         }
+        file { "/etc/sudoers.d/cowrie":
+                content => "${cowrie_user} ALL=(ALL) NOPASSWD: ${install_dir}/bin/iptables\n",
+                owner => "root", group => "root", mode => "0755",
+                require => [Package["sudo"], File["${install_dir}/bin/iptables"]],
+        }
+	
 	file { "${install_dir}/data/userdb.txt":
 		source => "puppet:///modules/${module_name}/userdb.txt",
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
 		require => File["${install_dir}/cowrie.cfg"],
 	}
-	file { "${install_dir}/honeyfs/etc/motd":
-		source => "puppet:///modules/${module_name}/motd",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-		require => File["${install_dir}/cowrie.cfg"],
-	}
-	file { "${install_dir}/honeyfs/etc/passwd":
-		source => "puppet:///modules/${module_name}/pas-swd",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-		require => File["${install_dir}/cowrie.cfg"],
-	}
-	file { "${install_dir}/honeyfs/etc/shadow":
-		source => "puppet:///modules/${module_name}/sha-dow",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-		require => File["${install_dir}/cowrie.cfg"],
-	}
-	#file { "${install_dir}/cowrie/commands/base.py":
-	#	source => "puppet:///modules/${module_name}/base.py",
-	#	owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-	#	require => File["${install_dir}/cowrie.cfg"],
-	#}
-	#file { "${install_dir}/cowrie/commands/uname.py":
-	#	source => "puppet:///modules/${module_name}/uname.py",
-	#	owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-	#	require => File["${install_dir}/cowrie.cfg"],
-	#}
+
+
+
 
 	service { "fail2ban": }
 	file { "/etc/fail2ban/jail.local":

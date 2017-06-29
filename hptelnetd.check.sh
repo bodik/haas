@@ -1,7 +1,7 @@
-if [ -f /opt/cowrie/INSTALL.md ]; then
-        echo "INFO: HPCOWRIECHECK ======================="
+if [ -f /opt/telnetd/telnetd.py ]; then
+        echo "INFO: HPTELNETDCHECK ======================="
 
-        for all in hpcowrie; do
+        for all in hptelnetd; do
                 echo "INFO: pa.sh -v --noop --show_diff -e \"include $all\""
                 pa.sh -v --noop --show_diff -e "include $all"
         done

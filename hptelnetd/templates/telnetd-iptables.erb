@@ -1,0 +1,11 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+	/sbin/iptables -t nat -I PREROUTING 1 ! -s 78.128.214.0/26 -p tcp --dport 23 -j REDIRECT --to-port <%= @telnetd_port %>
+	;;
+  stop)
+	/sbin/iptables -t nat -D PREROUTING ! -s 78.128.214.0/26 -p tcp --dport 23 -j REDIRECT --to-port <%= @telnetd_port %>
+	;;
+esac
+
