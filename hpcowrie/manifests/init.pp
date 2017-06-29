@@ -74,7 +74,7 @@ class hpcowrie (
 		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; cd ${install_dir}; git checkout 3d12c8c54b4317dc53baa89c53dbe4bd9480b201; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
 		creates => "${install_dir}/INSTALL.md",
 	} 
-	package { ["python-pip", "python-mysqldb", "git", "libmpfr-dev", "libssl-dev", "libmpc-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind"]: 
+	package { ["python-pip", "python-mysqldb", "git", "libmpfr-dev", "libssl-dev", "libmpc-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind", "sudo"]: 
 		ensure => installed, 
 	}
 	exec { "pip install requirements":
@@ -134,37 +134,20 @@ class hpcowrie (
                 owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
                 require => File["${install_dir}/cowrie.cfg"],
         }
-
+        file { "/etc/sudoers.d/cowrie":
+                content => "${cowrie_user} ALL=(ALL) NOPASSWD: ${install_dir}/bin/iptables\n",
+                owner => "root", group => "root", mode => "0755",
+                require => [Package["sudo"], File["${install_dir}/bin/iptables"]],
+        }
+	
 	file { "${install_dir}/data/userdb.txt":
 		source => "puppet:///modules/${module_name}/userdb.txt",
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
 		require => File["${install_dir}/cowrie.cfg"],
 	}
-	file { "${install_dir}/honeyfs/etc/motd":
-		source => "puppet:///modules/${module_name}/motd",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-		require => File["${install_dir}/cowrie.cfg"],
-	}
-	file { "${install_dir}/honeyfs/etc/passwd":
-		source => "puppet:///modules/${module_name}/pas-swd",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-		require => File["${install_dir}/cowrie.cfg"],
-	}
-	file { "${install_dir}/honeyfs/etc/shadow":
-		source => "puppet:///modules/${module_name}/sha-dow",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-		require => File["${install_dir}/cowrie.cfg"],
-	}
-	#file { "${install_dir}/cowrie/commands/base.py":
-	#	source => "puppet:///modules/${module_name}/base.py",
-	#	owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-	#	require => File["${install_dir}/cowrie.cfg"],
-	#}
-	#file { "${install_dir}/cowrie/commands/uname.py":
-	#	source => "puppet:///modules/${module_name}/uname.py",
-	#	owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
-	#	require => File["${install_dir}/cowrie.cfg"],
-	#}
+
+
+
 
 	service { "fail2ban": }
 	file { "/etc/fail2ban/jail.local":
@@ -174,10 +157,6 @@ class hpcowrie (
 	}
         file { "/etc/systemd/system/cowrie.service":
                 content => template("${module_name}/cowrie.service.erb"),
-                owner => "root", group => "root", mode => "0644",
-        }
-        file { "/etc/systemd/system/cowrie-iptables.service":
-                content => template("${module_name}/cowrie-iptables.service.erb"),
                 owner => "root", group => "root", mode => "0644",
         }
 	ensure_resource( 'exec', "systemctl daemon-reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )

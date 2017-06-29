@@ -1,8 +1,0 @@
-[Unit]
-Description=iptables Cowrie SSH and Telnet Honeypot
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/bin/sh <%= @install_dir %>/bin/iptables start
-ExecStop=/bin/sh <%= @install_dir %>/bin/iptables stop
