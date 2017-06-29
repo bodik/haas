@@ -12,7 +12,7 @@ pa.sh -e 'include warden3::tester'
 # some event comes in from sender, highest event.id becomes > 0
 # receiver comes again, with id 0 because of previous 0 items in queue, not that he wants to reset last_received_id, but server resets and receiver misses some of the first messages
 EVENTS=$(mysql -NBe 'select count(*) from events;' warden3)
-if [ $EVENTS -eq 0 ]; 
+if [ $EVENTS -eq 0 ]; then
 	python /opt/warden_tester/bootstrap_server.py
 fi
 
