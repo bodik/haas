@@ -2,14 +2,14 @@
 Description=uchoudp
 
 [Service]
-ExecStart=/usr/bin/python <%= @install_dir %>/uchoudp.py
-WorkingDirectory=<%= @install_dir %>
+ExecStart=/usr/bin/python <%= @install_dir %>/bin/uchoudp.py
+WorkingDirectory=<%= @install_dir %>/bin
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=uchoudp.py
-User=<%= @uchoudp_user %>
-Group=<%= @uchoudp_user %>
+User=<%= @service_user %>
+Group=<%= @service_user %>
 
 Type=idle
 LimitNOFILE=65535
