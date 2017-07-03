@@ -50,7 +50,7 @@ class hpucho::tcp (
         }
         file { "${install_dir}/bin/uchotcp.cfg":
                 content => template("${module_name}/uchotcp.cfg.erb"),
-                owner => "root", group => "root", mode => "0755",
+                owner => "root", group => "root", mode => "0644",
                 require => File["${install_dir}/bin"],
         }
 	file { "${install_dir}/bin/uchotcp.py":
@@ -88,7 +88,7 @@ class hpucho::tcp (
 	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
+		owner => "root", group => "root", mode => "0644",
 		require => File["${install_dir}/bin"],
 	}
 
@@ -101,7 +101,7 @@ class hpucho::tcp (
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
         file { "${install_dir}/bin/warden_client_uchotcp.cfg":
                 content => template("${module_name}/warden_client_uchotcp.cfg.erb"),
-                owner => "root", group => "root", mode => "0755",
+                owner => "root", group => "root", mode => "0644",
 		require => File["${install_dir}/bin"],
         }
         file { "/etc/cron.d/warden_uchotcp":

@@ -93,7 +93,7 @@ class hptelnetd (
 	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
+		owner => "root", group => "root", mode => "0644",
 		require => File["${install_dir}/bin"],
 	}
 

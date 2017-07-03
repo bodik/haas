@@ -92,7 +92,7 @@ class hpjdwpd (
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
    	file { "${install_dir}/bin/warden_client_jdwpd.cfg":
                 content => template("${module_name}/warden_client_jdwpd.cfg.erb"),
-                owner => "root", group => "root", mode => "0755",
+                owner => "root", group => "root", mode => "0644",
                 require => File["${install_dir}/bin/jdwpd.py", "${install_dir}/bin/warden_sender_jdwpd.py"],
         }
     	file { "/etc/cron.d/warden_jdwpd":
