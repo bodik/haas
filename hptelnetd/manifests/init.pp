@@ -53,7 +53,7 @@ class hptelnetd (
 	file { "${install_dir}/bin/telnetd.py":
 		source => "puppet:///modules/${module_name}/telnetd.py",
 		owner => "root", group => "root", mode => "0755",
-		require => File["${install_dir}/bin/commands", "${install_dir}/bin/warden_utils_flab.py", "${install_dir}/bin/telnetd.cfg"],
+		require => File["${install_dir}/bin/commands", "${install_dir}/bin/warden_utils_flab.py", "${install_dir}/bin/telnetd.cfg", "${install_dir}/bin/warden_client.py"],
 	}
 
 
