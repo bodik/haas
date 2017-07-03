@@ -2,14 +2,14 @@
 Description=uchotcp
 
 [Service]
-ExecStart=/usr/bin/python <%= @install_dir %>/uchotcp.py
-WorkingDirectory=<%= @install_dir %>
+ExecStart=/usr/bin/python <%= @install_dir %>/bin/uchotcp.py
+WorkingDirectory=<%= @install_dir %>/bin
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=uchotcp.py
-User=<%= @uchotcp_user %>
-Group=<%= @uchotcp_user %>
+User=<%= @service_user %>
+Group=<%= @service_user %>
 
 Type=idle
 LimitNOFILE=65535

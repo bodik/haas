@@ -48,12 +48,14 @@ class hpjdwpd (
 		source => "puppet:///modules/${module_name}/jdwpd.py",
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/bin", "${install_dir}/bin/warden_utils_flab.py", "${install_dir}/bin/warden_client.py", "${install_dir}/bin/jdwpd.cfg"],
+		notify => Service["jdwpd"],
 	}
 
 	file { "/etc/systemd/system/jdwpd.service":
 		content => template("${module_name}/jdwpd.service.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => File["${install_dir}/bin/jdwpd.py"],
+		notify => Service["jdwpd"],
 	}
 	service { "jdwpd":
 		enable => true,
