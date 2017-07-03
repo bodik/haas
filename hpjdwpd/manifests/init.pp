@@ -2,10 +2,8 @@
 
 class hpjdwpd (
 	$install_dir = "/opt/jdwpd",
-
-	$jdwpd_user = "jdwpd",
+	$service_user = "jdwpd",
 	$jdwpd_port = 8000,
-	$jdwpd_logfile = "jdwpd.log",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -22,35 +20,43 @@ class hpjdwpd (
 	# application
 
 	package { ["python-twisted"]: ensure => installed, }	
-	user { "$jdwpd_user": 	
+	user { "${service_user}": 	
 		ensure => present, 
 		managehome => false,
 	}
-	file { "${install_dir}":
+
+
+	file { ["${install_dir}", "${install_dir}/bin"]:
 		ensure => directory,
-		owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0755",
-		require => User["$jdwpd_user"],
+		owner => "root", group => "root", mode => "0755",
 	}
-	file { "${install_dir}/warden_utils_flab.py":
+	file { "${install_dir}/log":
+		ensure => directory,
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
+		require => [File["${install_dir}"], User["${service_user}"]],
+	}
+
+
+	file { "${install_dir}/bin/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "${jdwpd_user}", group => "${jdwpd_user}", mode => "0755",
-                require => File["${install_dir}"],
+                owner => "root", group => "root", mode => "0755",
+                require => File["${install_dir}/bin"],
         }
-    	file { "${install_dir}/jdwpd.cfg":
+    	file { "${install_dir}/bin/jdwpd.cfg":
                 content => template("${module_name}/jdwpd.cfg.erb"),
-                owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0644",
-                require => File["${install_dir}"],
+                owner => "root", group => "root", mode => "0644",
+                require => File["${install_dir}/bin"],
         }
-	file { "${install_dir}/jdwpd.py":
+	file { "${install_dir}/bin/jdwpd.py":
 		source => "puppet:///modules/${module_name}/jdwpd.py",
-		owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0755",
-		require => File["${install_dir}", "${install_dir}/warden_utils_flab.py", "${install_dir}/jdwpd.cfg"],
+		owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}/bin", "${install_dir}/bin/warden_utils_flab.py", "${install_dir}/bin/jdwpd.cfg"],
 	}
 
 	file { "/etc/systemd/system/jdwpd.service":
 		content => template("${module_name}/jdwpd.service.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => File["${install_dir}/jdwpd.py"],
+		require => File["${install_dir}/bin/jdwpd.py"],
 	}
 	service { "jdwpd":
 		enable => true,
@@ -66,42 +72,46 @@ class hpjdwpd (
 
 
 	# warden_client
-	file { "${install_dir}/warden_client.py":
+	file { "${install_dir}/bin/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0755",
-		require => File["${install_dir}"],
+		owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}/bin"],
 	}
 	$w3c_name = "cz.cesnet.flab.${hostname}"
-	file { "${install_dir}/warden_client.cfg":
+	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0640",
-		require => File["${install_dir}"],
+		owner => "root", group => "root", mode => "0644",
+		require => File["${install_dir}/bin"],
 	}
 
 	# reporting
-	file { "${install_dir}/warden_sender_jdwpd.py":
+	file { "${install_dir}/bin/warden_sender_jdwpd.py":
                 source => "puppet:///modules/${module_name}/sender/warden_sender_jdwpd.py",
-                owner => "${jdwpd_user}", group => "${jdwpd_user}", mode => "0755",
-        	require => File["${install_dir}/warden_utils_flab.py"],
+                owner => "root", group => "root", mode => "0755",
+        	require => File["${install_dir}/bin/warden_utils_flab.py"],
 	}
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-   	file { "${install_dir}/warden_client_jdwpd.cfg":
+   	file { "${install_dir}/bin/warden_client_jdwpd.cfg":
                 content => template("${module_name}/warden_client_jdwpd.cfg.erb"),
-                owner => "$jdwpd_user", group => "$jdwpd_user", mode => "0755",
-                require => File["${install_dir}/jdwpd.py", "${install_dir}/warden_sender_jdwpd.py"],
+                owner => "root", group => "root", mode => "0755",
+                require => File["${install_dir}/bin/jdwpd.py", "${install_dir}/bin/warden_sender_jdwpd.py"],
         }
     	file { "/etc/cron.d/warden_jdwpd":
                 content => template("${module_name}/warden_jdwpd.cron.erb"),
                 owner => "root", group => "root", mode => "0644",
-                require => User["$jdwpd_user"],
+                require => User["${service_user}"],
         }
+	file { "/etc/logrotate.d/jdwpd":
+		content => template("${module_name}/jdwpd.logrotate.erb"),
+                owner => "root", group => "root", mode => "0644",
+	}
 
 	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register jdwpd sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.jdwpd -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => File["${install_dir}"],
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.jdwpd -d ${install_dir}/bin",
+		creates => "${install_dir}/bin/registered-at-warden-server",
+		require => File["${install_dir}/bin"],
 	}
 }

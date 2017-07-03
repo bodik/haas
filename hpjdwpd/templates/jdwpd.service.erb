@@ -2,14 +2,14 @@
 Description=jdwpd
 
 [Service]
-ExecStart=/usr/bin/python <%= @install_dir %>/jdwpd.py
-WorkingDirectory=<%= @install_dir %>
+ExecStart=/usr/bin/python <%= @install_dir %>/bin/jdwpd.py
+WorkingDirectory=<%= @install_dir %>/bin
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=jdwpd.py
-User=<%= @jdwpd_user %>
-Group=<%= @jdwpd_user %>
+User=<%= @service_user %>
+Group=<%= @service_user %>
 
 [Install]
 WantedBy=multi-user.target

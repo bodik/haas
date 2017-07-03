@@ -1,1 +1,1 @@
-*/5 * * * * <%= @jdwpd_user %> cd <%= @install_dir %>; /usr/bin/python warden_sender_jdwpd.py 1>><%= @install_dir %>/warden_sender_jdwpd.log 2>&1
+*/5 * * * * <%= @service_user %> cd <%= @install_dir %>/bin; /usr/bin/python warden_sender_jdwpd.py 1>><%= @install_dir %>/log/warden_sender_jdwpd.log 2>&1

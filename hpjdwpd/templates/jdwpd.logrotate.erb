@@ -1,0 +1,15 @@
+<%= @install_dir %>/log/*log
+{
+	rotate 60
+	daily
+	missingok
+	compress
+	prerotate
+		su -c 'cd <%= @install_dir %>/bin; /usr/bin/python warden_sender_jdwpd.py 1>><%= @install_dir %>/log/warden_sender_jdwpd.log 2>&1' <%= @service_user %>
+		rm -f <%= @install_dir %>/log/jdwpd.log.offset
+	endscript
+	postrotate
+		invoke-rc.d jdwpd restart > /dev/null
+	endscript
+}
+
