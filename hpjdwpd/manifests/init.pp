@@ -24,8 +24,6 @@ class hpjdwpd (
 		ensure => present, 
 		managehome => false,
 	}
-
-
 	file { ["${install_dir}", "${install_dir}/bin"]:
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
@@ -35,7 +33,6 @@ class hpjdwpd (
 		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => [File["${install_dir}"], User["${service_user}"]],
 	}
-
 
 	file { "${install_dir}/bin/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
