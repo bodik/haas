@@ -2,8 +2,7 @@
 
 class hptelnetd (
 	$install_dir = "/opt/telnetd",
-
-	$telnetd_user = "telnetd",
+	$service_user = "telnetd",
 	$telnetd_port = 63023,
 	
 	$warden_server = undef,
@@ -20,52 +19,57 @@ class hptelnetd (
 
 	# application
 	package { ["python-twisted", "sudo"]: ensure => installed, }
-	user { "$telnetd_user": 	
+	user { "$service_user": 
 		ensure => present, 
 		managehome => false,
 	}
-	file { "${install_dir}":
+	file { ["${install_dir}", "${install_dir}/bin"]:
 		ensure => directory,
-		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => User["$telnetd_user"],
+		owner => "root", group => "root", mode => "0755",
 	}
-	file { "${install_dir}/commands":
+	file { "${install_dir}/log":
+		ensure => directory,
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
+                require => File["${install_dir}"],
+	}
+
+	file { "${install_dir}/bin/commands":
 		ensure => directory,
 		source => "puppet:///modules/${module_name}/commands/",
 		purge => true, recurse => true,
-                owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
-                require => File["${install_dir}"],
+                owner => "root", group => "root", mode => "0644",
+                require => File["${install_dir}/bin"],
 	}
-	file { "${install_dir}/warden_utils_flab.py":
+	file { "${install_dir}/bin/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
-                require => File["${install_dir}"],
+                owner => "root", group => "root", mode => "0755",
+                require => File["${install_dir}/bin"],
         }
-    	file { "${install_dir}/telnetd.cfg":
+    	file { "${install_dir}/bin/telnetd.cfg":
                 content => template("${module_name}/telnetd.cfg.erb"),
-                owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
-                require => File["${install_dir}"],
+                owner => "root", group => "root", mode => "0644",
+                require => File["${install_dir}/bin"],
         }
-	file { "${install_dir}/telnetd.py":
+	file { "${install_dir}/bin/telnetd.py":
 		source => "puppet:///modules/${module_name}/telnetd.py",
-		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => File["${install_dir}/commands", "${install_dir}/warden_utils_flab.py", "${install_dir}/telnetd.cfg"],
+		owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}/bin/commands", "${install_dir}/bin/warden_utils_flab.py", "${install_dir}/bin/telnetd.cfg"],
 	}
 
 
-    	file { "/opt/telnetd-iptables":
-                content => template("${module_name}/telnetd-iptables.erb"),
+    	file { "${install_dir}/bin/iptables":
+                content => template("${module_name}/iptables.erb"),
                 owner => "root", group => "root", mode => "0755",
         }
 	file { "/etc/sudoers.d/telnetd":
-		content => "${telnetd_user} ALL=(ALL) NOPASSWD: /opt/telnetd-iptables\n",
+		content => "${service_user} ALL=(ALL) NOPASSWD: ${install_dir}/bin/iptables\n",
 		owner => "root", group => "root", mode => "0755",
-		require => [Package["sudo"], File["/opt/telnetd-iptables"]],
+		require => [Package["sudo"], File["${install_dir}/bin/iptables"]],
 	}
 	file { "/etc/systemd/system/telnetd.service":
 		content => template("${module_name}/telnetd.service.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => File["${install_dir}/telnetd.py", "/etc/sudoers.d/telnetd"],
+		require => File["${install_dir}/bin/telnetd.py", "/etc/sudoers.d/telnetd"],
 	}
 	service { "telnetd": 
 		enable => true,
@@ -81,42 +85,46 @@ class hptelnetd (
 
 
 	# warden_client
-	file { "${install_dir}/warden_client.py":
+	file { "${install_dir}/bin/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => File["${install_dir}"],
+		owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}/bin"],
 	}
 	$w3c_name = "cz.cesnet.flab.${hostname}"
-	file { "${install_dir}/warden_client.cfg":
+	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "$telnetd_user", group => "$telnetd_user", mode => "0640",
-		require => File["${install_dir}"],
+		owner => "root", group => "root", mode => "0640",
+		require => File["${install_dir}/bin"],
 	}
 
 	# reporting
-	file { "${install_dir}/warden_sender_telnetd.py":
+	file { "${install_dir}/bin/warden_sender_telnetd.py":
                 source => "puppet:///modules/${module_name}/sender/warden_sender_telnetd.py",
-                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
-        	require => File["${install_dir}/warden_utils_flab.py"],
+                owner => "root", group => "root", mode => "0755",
+        	require => File["${install_dir}/bin/warden_utils_flab.py"],
 	}
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-   	file { "${install_dir}/warden_client_telnetd.cfg":
+   	file { "${install_dir}/bin/warden_client_telnetd.cfg":
                 content => template("${module_name}/warden_client_telnetd.cfg.erb"),
-                owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
-                require => File["${install_dir}/telnetd.py", "${install_dir}/warden_sender_telnetd.py"],
+                owner => "root", group => "root", mode => "0644",
+                require => File["${install_dir}/bin/telnetd.py", "${install_dir}/bin/warden_sender_telnetd.py"],
         }
     	file { "/etc/cron.d/warden_telnetd":
                 content => template("${module_name}/warden_telnetd.cron.erb"),
                 owner => "root", group => "root", mode => "0644",
-                require => User["$telnetd_user"],
+                require => User["$service_user"],
         }
+	file { "/etc/logrotate.d/telnetd":
+		content => template("${module_name}/telnetd.logrotate.erb"),
+                owner => "root", group => "root", mode => "0644",
+	}
 
 	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register telnetd sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.telnetd -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => File["${install_dir}"],
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.telnetd -d ${install_dir}/bin",
+		creates => "${install_dir}/bin/registered-at-warden-server",
+		require => File["${install_dir}/bin"],
 	}
 }

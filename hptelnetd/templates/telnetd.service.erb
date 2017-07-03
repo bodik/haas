@@ -2,16 +2,16 @@
 Description=telnetd
 
 [Service]
-ExecStart=/usr/bin/python <%= @install_dir %>/telnetd.py
-ExecStartPost=/usr/bin/sudo /opt/telnetd-iptables start
-ExecStopPost=/usr/bin/sudo /opt/telnetd-iptables stop
-WorkingDirectory=<%= @install_dir %>
+ExecStart=/usr/bin/python <%= @install_dir %>/bin/telnetd.py
+ExecStartPost=/usr/bin/sudo <%= @install_dir %>/bin/iptables start
+ExecStopPost=/usr/bin/sudo <%= @install_dir %>/bin/iptables stop
+WorkingDirectory=<%= @install_dir %>/bin
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=telnetd.py
-User=<%= @telnetd_user %>
-Group=<%= @telnetd_user %>
+User=<%= @service_user %>
+Group=<%= @service_user %>
 
 [Install]
 WantedBy=multi-user.target
