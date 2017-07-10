@@ -23,7 +23,7 @@ def render_parameters(data):
 
 	print "### Parameters\n"
 	for tmp in data:
-		print "**%s** _%s_ -- %s\n" % (tmp["name"], " ".join(tmp["types"]), tmp["text"])
+		print "**%s** _%s_ -- %s\n" % (tmp["name"], " ".join(tmp.get("types", ["N/A"])), tmp.get("text", "N/A"))
 
 
 
@@ -62,6 +62,8 @@ def render_item(chapter, item):
 		
 		for tag in tags:
 			render_other(get_tags(item["docstring"]["tags"], tag))
+
+	print ""
 
 
 
