@@ -1,4 +1,18 @@
-#!/usr/bin/puppet apply
+# HaaS hpucho udp
+# Installs ucho udp service
+#
+# @example Install service with default warden-server autodiscovery
+#   class { "hpucho::udp": }
+#
+# @param install_dir Installation directory
+# @param service_user User to run service as
+# @param port_start lowest port to listen
+# @param port_end highest port to listen
+# @param port_skip list of ports to skip
+#
+# @param warden_server warden server hostname
+# @param warden_server_auto warden server autodiscovery enable flag
+# @param warden_server_service avahi name of warden server service for autodiscovery
 
 class hpucho::udp (
 	$install_dir = "/opt/uchoudp",

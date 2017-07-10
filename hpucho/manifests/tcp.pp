@@ -1,15 +1,29 @@
-#!/usr/bin/puppet apply
+# HaaS hpucho tcp
+# Installs ucho tcp service
+#
+# @example Install service with default warden-server autodiscovery
+#   class { "hpucho::tcp": }
+#
+# @param install_dir Installation directory
+# @param service_user User to run service as
+# @param port_start lowest port to listen
+# @param port_end highest port to listen
+# @param port_skip list of ports to skip
+#
+# @param warden_server warden server hostname
+# @param warden_server_auto warden server autodiscovery enable flag
+# @param warden_server_service avahi name of warden server service for autodiscovery
 
 class hpucho::tcp (
-	$install_dir = "/opt/uchotcp",
-	$service_user = "uchotcp",
-	$port_start = 1,
-	$port_end = 9999,
-	$port_skip = "[22,1433,65535]",
+	String $install_dir = "/opt/uchotcp",
+	String $service_user = "uchotcp",
+	Integer $port_start = 1,
+	Integer $port_end = 9999,
+	Array $port_skip = "[22,1433,65535]",
 
-	$warden_server = undef,
-	$warden_server_auto = true,
-	$warden_server_service = "_warden-server._tcp",
+	String $warden_server = undef,
+	Boolean $warden_server_auto = true,
+	String $warden_server_service = "_warden-server._tcp",
 ) {
 
 	if ($warden_server) {

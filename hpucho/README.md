@@ -1,26 +1,23 @@
 ## puppet_classes: hpucho::tcp
 
-HaaS hpucho tcp
-Installs ucho tcp service
-
 ### Parameters
 
-**install_dir** _String_ -- Installation directory
-**service_user** _String_ -- User to run service as
-**port_start** _Integer_ -- lowest port to listen
-**port_end** _Integer_ -- highest port to listen
-**port_skip** _Array_ -- list of ports to skip
-**warden_server** _String_ -- warden server hostname
-**warden_server_auto** _Boolean_ -- warden server autodiscovery enable flag
-**warden_server_service** _String_ -- avahi name of warden server service for autodiscovery
+**install_dir** _String_ -- 
 
-### Examples
+**service_user** _String_ -- 
 
-Install service with default warden-server autodiscovery
+**port_start** _Integer_ -- 
 
-```
-class { "hpucho::tcp": }
-```
+**port_end** _Integer_ -- 
+
+**port_skip** _Array_ -- 
+
+**warden_server** _String_ -- 
+
+**warden_server_auto** _Boolean_ -- 
+
+**warden_server_service** _String_ -- 
+
 
 ## puppet_classes: hpucho::udp
 
