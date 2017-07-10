@@ -1,0 +1,28 @@
+<%= @install_dir %>/var/dionaea/dionaea*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    sharedscripts
+    postrotate
+	invoke-rc.d dionaea restart > /dev/null
+    endscript
+}
+
+<%= @install_dir %>/var/dionaea/logsql.sqlite {
+    monthly
+    missingok
+    rotate 12
+    compress
+    postrotate
+	invoke-rc.d dionaea restart > /dev/null
+    endscript
+}
+
+<%= @install_dir %>/warden/*log
+{
+        rotate 60
+        daily
+        missingok
+        compress
+}
