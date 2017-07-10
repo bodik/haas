@@ -1,10 +1,11 @@
-<%= @install_dir %>/var/dionaea/dionaea.log {
+<%= @install_dir %>/var/dionaea/dionaea*.log {
     daily
     missingok
     rotate 14
     compress
+    sharedscripts
     postrotate
-        /etc/init.d/dio restart > /dev/null
+	invoke-rc.d dionaea restart > /dev/null
     endscript
 }
 
@@ -14,6 +15,6 @@
     rotate 12
     compress
     postrotate
-        /etc/init.d/dio restart > /dev/null
+	invoke-rc.d dionaea restart > /dev/null
     endscript
 }

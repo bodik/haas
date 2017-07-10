@@ -8,6 +8,8 @@ class hpdio (
 	$warden_server = undef,
 	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
+
+	$log_history = 14,
 ) {
 
 	if ($warden_server) {
@@ -65,26 +67,8 @@ class hpdio (
 	file { "${install_dir}/etc/dionaea/services-enabled/tftp.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/tftp.yaml",
 	}
-	#package { "p0f":
-	#	ensure => installed,
-	#	require => Exec["clone dio"],
-	#}
 
-	#file { '/opt/dionaea/etc/dionaea/ihandlers-enabled/p0f.yaml':
-  	#	ensure => 'link',
-	#	target => '/opt/dionaea/etc/dionaea/ihandlers-available/p0f.yaml',
-	#}
-        #
-	#file { "/etc/systemd/system/p0f.service":
-        #        content => template("${module_name}/p0f.service.erb"),
-        #        owner => "root", group => "root", mode => "0644",
-        #}
-        #service { "p0f":
-        #        enable => true,
-        #        ensure => running,
-        #        require => File["/etc/systemd/system/p0f.service"], 
-        #}
-
+	
 	file { "${install_dir}/var":
 		owner => "$dio_user", group => "$dio_user", #nomode
 		recurse => true,
@@ -106,23 +90,15 @@ class hpdio (
                 require => File["/etc/systemd/system/dionaea.service"],
         }
 
-	#exec { "install selfcert":
-	#	command => "/bin/sh /puppet/metalib/bin/install_sslselfcert.sh ${install_dir}/etc/dionaea",
-	#	creates => "${install_dir}/etc/dionaea/${fqdn}.crt",
-	#	require => File["${install_dir}/etc/dionaea/dionaea.conf"],
-	#}
-	#file { "${install_dir}/etc/dionaea/server.key":
-	#	ensure => link,
-	#	target => "${install_dir}/etc/dionaea/${fqdn}.key",
-	#	require => Exec["install selfcert"],
-	#}
-	#file { "${install_dir}/etc/dionaea/server.crt":
-	#	ensure => link,
-	#	target => "${install_dir}/etc/dionaea/${fqdn}.crt",
-	#	require => Exec["install selfcert"],
-	#}
-
-
+	
+	file { "/etc/cron.d/dionaea":
+                content => template("${module_name}/dionaea.cron.erb"),
+                owner => "root", group => "root", mode => "0644",
+        }
+     	file { "/etc/logrotate.d/dionaea":
+                content => template("${module_name}/dionaea.logrotate.erb"),
+                owner => "root", group => "root", mode => "0644",
+        }
 
 	##autotest
 	package { ["netcat"]: ensure => installed, }
