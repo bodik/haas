@@ -31,3 +31,4 @@ class { "hpjdwpd":
   warden_server => "warden-test.cesnet.cz",
 }
 ```
+

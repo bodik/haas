@@ -1,13 +1,26 @@
-#!/usr/bin/puppet apply
-
+# HaaS Java Debug Wire Protocol
+# This is an example of how to document a Puppet class
+#
+# @example Declaring the class
+#   class { "hpjdwpd":
+#     jdwpd_port => 8001,
+#     warden_server => "warden-test.cesnet.cz",
+#   }
+#
+# @param install_dir Installation directory
+# @param service_user User to run service as
+# @param jdwpd_port Service listen port
+# @param warden_server warden server hostname
+# @param warden_server_auto warden server autodiscovery enable flag
+# @param warden_server_service avahi name of warden server service for autodiscovery
 class hpjdwpd (
-	$install_dir = "/opt/jdwpd",
-	$service_user = "jdwpd",
-	$jdwpd_port = 8000,
+	String $install_dir = "/opt/jdwpd",
+	String $service_user = "jdwpd",
+	Integer $jdwpd_port = 8000,
 	
-	$warden_server = undef,
-	$warden_server_auto = true,
-	$warden_server_service = "_warden-server._tcp",
+	String $warden_server = undef,
+	Boolean $warden_server_auto = true,
+	String $warden_server_service = "_warden-server._tcp",
 ) {
 
 	if ($warden_server) {
