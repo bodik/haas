@@ -9,29 +9,17 @@ This is an example of how to document a Puppet class
 
 ### Parameters
 
-**install_dir** _String_
+**install_dir** _String_ -- Installation directory
 
-> Installation directory
+**service_user** _String_ -- User to run service as
 
-**service_user** _String_
+**jdwpd_port** _Integer_ -- Service listen port
 
-> User to run service as
+**warden_server** _String_ -- warden server hostname
 
-**jdwpd_port** _Integer_
+**warden_server_auto** _Boolean_ -- warden server autodiscovery enable flag
 
-> Service listen port
-
-**warden_server** _String_
-
-> warden server hostname
-
-**warden_server_auto** _Boolean_
-
-> warden server autodiscovery enable flag
-
-**warden_server_service** _String_
-
-> avahi name of warden server service for autodiscovery
+**warden_server_service** _String_ -- avahi name of warden server service for autodiscovery
 
 ### Examples
 
