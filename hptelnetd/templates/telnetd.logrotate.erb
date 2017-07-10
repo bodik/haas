@@ -4,6 +4,7 @@
 	daily
 	missingok
 	compress
+	sharedscripts
 	prerotate
 		su -c 'cd <%= @install_dir %>/bin; /usr/bin/python warden_sender_telnetd.py 1>><%= @install_dir %>/log/warden_sender_telnetd.log 2>&1' <%= @service_user %>
 		rm -f <%= @install_dir %>/log/telnetd.log.offset
