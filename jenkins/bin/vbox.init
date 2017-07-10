@@ -87,10 +87,6 @@ vm_shutdown() {
 
 	echo "INFO: sending poweroff"
 	timeout 60 /puppet/jenkins/bin/vbox.init ssh poweroff
-# poweroff/ssh returns 1 even on success, but vm is still locked, we have to try wait for vboxmanage to stop
-#	if [ $? -ne 0 ]; then
-#		rreturn $? "shutdown cannot shutdown vm"
-#	fi
 
 	RET=1
 	for i in `seq 1 60`; do
@@ -107,7 +103,7 @@ vm_shutdown() {
 
 vm_destroy() {
 	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init destroy"
-	rreturn $? "$0 destroy $@"
+	rreturn $? "$0 destroy"
 }
 
 
@@ -126,17 +122,18 @@ front_ssh() {
 }
 
 
+vm_export() {
+	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init export $1"
+	rreturn $? "$0 export"
+}
+
+vm_import() {
+	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init import $1"
+	rreturn $? "$0 import $@"
+}
+
 
 case "$1" in
-	creds)
-		vbox_creds
-	;;
-	front)
-		front_ssh "$2"
-	;;
-
-
-
 	list)
 		vm_list "$2"
 	;;
@@ -175,7 +172,25 @@ case "$1" in
 	;;
 
 
-	
+
+	creds)
+		vbox_creds
+	;;
+	front)
+		front_ssh "$2"
+	;;
+
+
+
+	export)
+		vm_export "$2"
+	;;
+	import)
+		vm_import "$2"
+	;;
+
+
+
 	*)
 		rreturn 1 "$0 wrong command"
 	;;
