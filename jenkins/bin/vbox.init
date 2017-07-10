@@ -123,7 +123,7 @@ front_ssh() {
 
 
 vm_export() {
-	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init export"
+	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init export $1"
 	rreturn $? "$0 export"
 }
 
@@ -183,7 +183,7 @@ case "$1" in
 
 
 	export)
-		vm_export
+		vm_export "$2"
 	;;
 	import)
 		vm_import "$2"

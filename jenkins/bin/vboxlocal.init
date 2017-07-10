@@ -130,6 +130,29 @@ vm_destroy() {
 
 
 
+vm_export() {
+	if [ -z $1 ]; then
+		OUTFILE="${VBOXBASE}/builds/${VMNAME}-$(date --iso-8601=sec).ova"
+	else
+		OUTFILE="${VBOXBASE}/builds/$1"
+	fi
+	mkdir -p ${VBOXBASE}/builds/
+	VBoxManage export ${VMNAME} --vsys 0 --producturl "https://github.com/bodik/haas.git" --output ${OUTFILE}
+	ls -lh ${OUTFILE}
+	rreturn $? "$0 export"
+}
+
+vm_import() {
+	INPUTFILE="$1"
+	if [ ! -f $INPUTFILE ]; then
+		rreturn 1 "$0 inputfile not found"
+	fi
+	VBoxManage import $INPUTFILE --vsys 0 --vmname "HAAS-import-$$"
+	rreturn $? "$0 import"
+}
+
+
+
 case "$1" in
 	list)
 		vm_list "$2"
@@ -180,6 +203,13 @@ case "$1" in
 	;;
 
 
+	
+	export)
+		vm_export "$2"
+	;;
+	import)
+		vm_import "$2"
+	;;
 
 
 	*)
