@@ -12,6 +12,7 @@ part of the Operational Program Research and Development for Innovations, Reg.
 no. CZ.1.05/3.2.00/08.0144.
 
 
+
 ## Introduction
 
 HaaS is project to create develompment and build environment for generating
@@ -30,9 +31,27 @@ various preinstalled honeypots enabled for running and reporting to central
 information exchange server.
 
 
+
 ## Basic honeypot node installation
 
-TDB from VMs
+- download VM ova image from [TODO:repository](TODO), import VM into virtualization platform and run it
+- login to VM using default credentials `root:debian`
+
+- generate host certificate
+```
+sh /puppet/warden3/bin/haas_init.sh
+```
+- let Warden acknowleded certification authority sign it and place result under `/opt/hostcert/<FQDN>.crt`
+
+- [get client registered](https://warden.cesnet.cz/en/participation#registration) at Warden server
+
+- finalize VM configuration
+```
+sh /puppet/warden3/bin/haas_finalize.sh
+```
+
+- reboot VM
+
 
 
 ## Development information
