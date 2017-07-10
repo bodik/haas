@@ -1,0 +1,2 @@
+0  1 * * * cowrie /usr/bin/find <%= @install_dir %>/log/ <%= @install_dir %>/dl/ -type f -ctime +<%= @log_history %> -delete 1>/dev/null 2>&1
+0 10 * * * root /bin/sh <% @install_dir %>/bin/mysql-clean.sh 1>/dev/null 2>&1
