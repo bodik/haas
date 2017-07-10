@@ -10,7 +10,7 @@ import sys
 import textwrap
 
 logger = logging.getLogger()
-logging.basicConfig(stream=sys.stderr, level=logging.ERROR, format='%(asctime)-15s '+os.path.basename(sys.argv[0])+'[%(process)d] %(levelname)s %(message)s')
+logging.basicConfig(stream=sys.stderr, level=logging.WARN, format='%(asctime)-15s '+os.path.basename(sys.argv[0])+'[%(process)d] %(levelname)s %(message)s')
 
 
 def get_tags(data, tag_name):
@@ -94,6 +94,7 @@ if __name__ == "__main__":
 	try:
 		data = json.loads(subprocess.check_output(shlex.split("puppet strings generate --emit-json-stdout")))
 	except:
+		logger.warn("cannot generate code with puppet-strings; try `gem install puppet-strings`")
 		data = {}
 	logger.debug(json.dumps(data, indent=2))
 
