@@ -1,4 +1,3 @@
-# HaaS hpucho tcp
 # Installs ucho tcp service
 #
 # @example Install service with default warden-server autodiscovery
@@ -13,7 +12,6 @@
 # @param warden_server warden server hostname
 # @param warden_server_auto warden server autodiscovery enable flag
 # @param warden_server_service avahi name of warden server service for autodiscovery
-
 class hpucho::tcp (
 	String $install_dir = "/opt/uchotcp",
 	String $service_user = "uchotcp",

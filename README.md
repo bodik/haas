@@ -143,20 +143,19 @@ user's credentials and performing tasks towards available clouds and
 provisioned VMs. More documentation can be found in separate Jenkins component
 documentation.
 
-------
+### Available components
 
-== Available components
-
-* [metalib](metalib/README.md)
-* [jenkins](jenkins/README.md)
-* [lamp](lamp/README.md)
-* [gmysql](gmysql/README.md)
-* [glog2](glog2/README.md)
-* [warden3-server](warden3/README.md)
-  * [warden3-tologstash](warden3/README.md)
-  * [hpcowrie](hpcowrie/README.md)
-  * [hpdio](hpcowrie/README.md)
-  * [hptelnetd](hptelnetd/README.md)
-  * [hpucho](hpucho/README.md)
-  * [hpjdwpd](hpjdwpd/README.md)
+* [metalib](metalib/)
+  * [iptables](iptables/)
+* [jenkins](jenkins/)
+* [lamp](lamp/)
+* [gmysql](gmysql/)
+* [glog2](glog2/)
+* [warden3-server](warden3/)
+  * [warden3-tologstash](warden3/)
+  * [hpcowrie](hpcowrie/)
+  * [hpdio](hpcowrie/)
+  * [hptelnetd](hptelnetd/)
+  * [hpucho](hpucho/)
+  * [hpjdwpd](hpjdwpd/)
 

@@ -4,8 +4,7 @@ Module installs a reporting warden client service and custom honeypot service
 
 ## puppet_classes: hpjdwpd
 
-HaaS Java Debug Wire Protocol
-This is an example of how to document a Puppet class
+Installs jdwp honeypot
 
 ### Parameters
 

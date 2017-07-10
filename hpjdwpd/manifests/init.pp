@@ -1,5 +1,4 @@
-# HaaS Java Debug Wire Protocol
-# This is an example of how to document a Puppet class
+# Installs jdwp honeypot
 #
 # @example Declaring the class
 #   class { "hpjdwpd":
