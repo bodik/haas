@@ -18,7 +18,7 @@ Installs jdwp honeypot
 
 **warden_server_service** -- avahi name of warden server service for autodiscovery
 
-**secret** -- 
+**secret** -- warden client secret
 
 ### Examples
 

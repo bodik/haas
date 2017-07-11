@@ -11,6 +11,7 @@
 # @param jdwpd_port Service listen port
 # @param warden_server warden server hostname
 # @param warden_server_service avahi name of warden server service for autodiscovery
+# @param secret warden client secret
 class hpjdwpd (
 	$install_dir = "/opt/jdwpd",
 	$service_user = "jdwpd",
