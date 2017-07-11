@@ -10,7 +10,6 @@
 # @param service_user User to run service as
 # @param jdwpd_port Service listen port
 # @param warden_server warden server hostname
-# @param warden_server_auto warden server autodiscovery enable flag
 # @param warden_server_service avahi name of warden server service for autodiscovery
 class hpjdwpd (
 	String $install_dir = "/opt/jdwpd",
@@ -18,13 +17,14 @@ class hpjdwpd (
 	Integer $jdwpd_port = 8000,
 	
 	String $warden_server = undef,
-	Boolean $warden_server_auto = true,
 	String $warden_server_service = "_warden-server._tcp",
+	String $secret = undef,
 ) {
+        notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server
-        } elsif ( $warden_server_auto == true ) {
+        } else {
                 include metalib::avahi
                 $warden_server_real = avahi_findservice($warden_server_service)
         }

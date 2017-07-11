@@ -53,18 +53,11 @@ information exchange server.
      reboot
      ```
 
-2. generate host certificate
-```
-sh /puppet/warden3/bin/haas_init.sh
-```
+2. register client on warden server, obtain secret (needed by warden client config) and token (needed for obtaining certificate). Follow [Warden participation](https://warden.cesnet.cz/en/participation#registration)
 
-3. let Warden acknowleded certification authority sign it and place result under `/opt/hostcert/<FQDN>.crt`
-
-4. [get client registered](https://warden.cesnet.cz/en/participation#registration) at Warden server
-
-5. finalize VM configuration
+3. finalize VM configuration
 ```
-sh /puppet/warden3/bin/haas_finalize.sh
+sh /puppet/warden3/bin/haas_vm_finalize.sh -w warden-hub.cesnet.cz -s <secret> -t <token>
 ```
 
 6. reboot VM

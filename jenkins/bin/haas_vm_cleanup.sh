@@ -1,5 +1,6 @@
 #!/bin/sh
 
+echo "INFO: base VM cleanup"
 systemctl stop avahi-daemon.socket avahi-daemon.service
 systemctl stop cron
 systemctl stop postfix
@@ -8,9 +9,7 @@ systemctl stop atopacct
 systemctl stop dbus.socket dbus.service
 systemctl stop syslog.socket rsyslog.service
 
-
 apt-get clean
-
 
 /usr/sbin/logrotate -f /etc/logrotate.conf
 find /var/log -type f -name '*gz' -exec shred --force --remove {} \;
@@ -26,4 +25,8 @@ rm -rf /tmp/*
 rm -rf /var/tmp/*
 
 find /root -type f ! -name authorized_keys ! -name .bashrc ! -name .profile ! -name .vimrc -exec shred --force --remove {} \;
+
+
+# call all others cleanups from modules
+find /puppet -type f -name "vm_cleanup.sh" -exec sh {} \;
 

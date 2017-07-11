@@ -1,10 +1,6 @@
-if [ -f /opt/jdwpd/jdwpd.py ]; then
-        echo "INFO: HPJDWPDCHECK ======================="
+#!/bin/sh
 
-        for all in hpjdwpd; do
-                echo "INFO: pa.sh -v --noop --show_diff -e \"include $all\""
-                pa.sh -v --noop --show_diff -e "include $all"
-        done
-
+if [ -f /opt/jdwpd/bin/jdwpd.py ]; then
+        echo "INFO: CHECK HPJDWPD ===================="
+        pa.sh -v --noop --show_diff -e "include hpjdwpd"
 fi
-

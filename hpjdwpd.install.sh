@@ -1,2 +1,3 @@
-pa.sh -e 'include hpjdwpd'
+#!/bin/sh
 
+pa.sh -e "include hpjdwpd"
