@@ -2,8 +2,8 @@
 
 DESTDIR=/etc/apache2/ssl
 FQDN=$(facter fqdn)
-if [ -n $1 ]; then DESTDIR=$1; fi
-if [ -n $2 ]; then FQDN=$2; fi
+if [ -n "$1" ]; then DESTDIR="$1"; fi
+if [ -n "$2" ]; then FQDN="$2"; fi
 
 
 if [ -f "${DESTDIR}/${FQDN}.key" ]; then
