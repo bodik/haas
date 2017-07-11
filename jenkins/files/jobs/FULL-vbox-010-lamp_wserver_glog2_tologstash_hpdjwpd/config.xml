@@ -37,9 +37,7 @@
 
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpjdwpd.install.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpjdwpd/tests/hpjdwpd.sh&apos;
-
-
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hostspecs.install.sh&apos;</command>
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
