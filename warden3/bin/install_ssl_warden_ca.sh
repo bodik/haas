@@ -4,7 +4,7 @@ DESTDIR="/opt/hostcert"
 FQDN=$(facter fqdn)
 
 usage() { echo "Usage: $0 -w <WARDEN_SERVER> -d <DESTDIR>" 1>&2; exit 1; }
-while getopts "s:d:" o; do
+while getopts "w:d:" o; do
 	case "${o}" in
         	w) WARDEN_SERVER=${OPTARG} ;;
 		d) DESTDIR=${OPTARG} ;;
