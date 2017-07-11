@@ -4,6 +4,7 @@ class hptelnetd (
 	$install_dir = "/opt/telnetd",
 	$service_user = "telnetd",
 	$telnetd_port = 63023,
+	$real_telnetd_port = 23,
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
