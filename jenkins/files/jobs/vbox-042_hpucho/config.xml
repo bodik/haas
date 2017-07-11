@@ -27,8 +27,7 @@
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/tcp.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-udp.install.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/udp.sh&apos;
-
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hostspecs.install.sh&apos;</command>
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

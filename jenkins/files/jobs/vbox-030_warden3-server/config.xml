@@ -28,8 +28,7 @@
 
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh warden3-server.install.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh warden3/tests/server.sh&apos;
-
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hostspecs.install.sh&apos;</command>
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
