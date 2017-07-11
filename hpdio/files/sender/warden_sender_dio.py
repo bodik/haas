@@ -71,14 +71,15 @@ def gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, hashty
 
   return attach
 
-def gen_attach_idea_mysql(logger, mysql_query):
+def gen_attach_idea_db(logger, data):
   
   attach = {} 
   attach["Handle"] = 'att1'
   attach["Type"] = ["Malware"]
-  attach['ContentType'] = 'text/plain'
-  attach['Size'] = len(mysql_query)
-  attach['Content'] = mysql_query
+  attach['ContentType'] = 'application/octet-stream'
+  attach['ContentEncoding'] = 'base64'
+  attach['Size'] = len(data)
+  attach['Content'] = base64.b64encode(data)
 
   return attach
 
@@ -129,10 +130,23 @@ def gen_event_idea_dio(logger, binaries_path, report_binaries, client_name, anon
 	    mysql_data = re.sub("select @@version_comment limit 1,?", "", data['mysql_query']) 
 	    if mysql_data != "":
 		# Generate "MySQL Attach" part of IDEA
-		a = gen_attach_idea_mysql(logger, mysql_data)
+		a = gen_attach_idea_db(logger, mysql_data)
 
 		category.append('Attempt.Exploit')
 		proto.append('mysql')
+		event['Source'][0]['AttachHand'] = ['att1']
+		event['Attach'] = [a]
+  
+  if data['service'] == 'mssqld':
+    #Clean exported data 
+    if data['mssql_query'] is not None:
+	    mssql_data = data['mssql_query']
+	    if mssql_data != "":
+		# Generate "MSSQL Attach" part of IDEA
+		a = gen_attach_idea_db(logger, mssql_data)
+
+		category.append('Attempt.Exploit')
+		proto.append('mssql')
 		event['Source'][0]['AttachHand'] = ['att1']
 		event['Attach'] = [a]
 	
@@ -155,6 +169,7 @@ def main():
 
   con = sqlite3.connect(adbfile)
   con.row_factory = sqlite3.Row
+  con.text_factory = str
   crs = con.cursor()
 
   events = []
@@ -162,15 +177,17 @@ def main():
   query = "SELECT c.connection_timestamp AS timestamp, c.remote_host AS src_ip, c.remote_port AS src_port, c.connection_transport AS proto, \
             c.local_host AS dst_ip, c.local_port AS dst_port, COUNT(c.connection) as attack_scale, c.connection_protocol AS service, d.download_url, d.download_md5_hash, \
             v.virustotal_permalink, GROUP_CONCAT('urn:' || vt.virustotalscan_scanner || ':' || vt.virustotalscan_result,';') AS scan_result, \
-            group_concat(mca.mysql_command_arg_data) as mysql_query \
+            group_concat(mca.mysql_command_arg_data) as mysql_query, \
+	    group_concat(msc.mssql_command_cmd) as mssql_query \
             FROM connections AS c LEFT JOIN downloads AS d ON c.connection = d.connection \
             LEFT JOIN virustotals AS v ON d.download_md5_hash = v.virustotal_md5_hash \
             LEFT JOIN virustotalscans vt ON v.virustotal = vt.virustotal \
             LEFT JOIN mysql_commands mc ON c.connection = mc.connection  \
             LEFT JOIN mysql_command_args mca ON mc.mysql_command = mca.mysql_command \
-            WHERE datetime(connection_timestamp,'unixepoch') > datetime('now','-%d seconds') AND c.remote_host != '' \
-            GROUP BY c.remote_host, c.local_port ORDER BY c.connection_timestamp ASC;" % (awin)
-
+	    LEFT JOIN mssql_commands msc ON c.connection = msc.connection \
+	    WHERE datetime(connection_timestamp,'unixepoch') > datetime('now','-%d seconds') AND c.remote_host != '' \
+	    GROUP BY c.remote_host, c.local_port ORDER BY c.connection_timestamp ASC;" % (awin)
+            
   attempts = 0
   while attempts < aconattempts:
     try:
