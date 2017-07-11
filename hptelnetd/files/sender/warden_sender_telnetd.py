@@ -18,6 +18,7 @@ wconfig['name'] = aclient_name
 aanonymised = aconfig['anonymised']
 aanonymised_net  = aconfig['target_net']
 aanonymised = aanonymised if (aanonymised_net != '0.0.0.0/0') or (aanonymised_net == 'omit') else '0.0.0.0/0'
+arealtarget_port  = aconfig.get('target_port', None)
 wclient = Client(**wconfig)
 
 def gen_event_idea_telnetd(detect_time, src_ip, src_port, dst_ip, dst_port, proto, category, data):
@@ -50,12 +51,17 @@ try:
 	for line in w3u.Pygtail(filename=aconfig.get('logfile'), wait_timeout=0):
 		data = json.loads(line)
 
+		if arealtarget_port is not None:
+			dst_port = int(arealtarget_port)
+		else:
+			dst_port = data['dst_port']
+
 		a = gen_event_idea_telnetd(
 			detect_time = data['detect_time'], 
 			src_ip      = data['src_ip'],
 			src_port    = data['src_port'], 
 			dst_ip      = data['dst_ip'],
-			dst_port    = data['dst_port'],
+			dst_port    = dst_port,
 			proto       = data['proto'],
 			category    = data['category'],
 			data        = data['data']	
