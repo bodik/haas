@@ -35,36 +35,39 @@ information exchange server.
 ## Basic honeypot node installation
 
 1. prepare VM
-  1. download VM ova image from [TODO:repository](TODO)
-  2. import VM into virtualization platform
 
-  3. configure networking and fully qualified domain name using one of the following procedures:
+   1. download VM ova image from [TODO:repository](TODO)
 
-     - register MAC address of imported VM in DHCP and run the VM
+   2. import VM into virtualization platform
 
-     - boot the VM, login with default credentials `root:debian`, set proper IP address (`/etc/network/interfaces`) and fqdn (`/etc/hostname`), reboot VM
+   3. configure networking and fully qualified domain name using one of the following procedures:
 
-  4. finish base VM contextualization
+      - register MAC address of imported VM in DHCP and run the VM
+
+      - boot the VM, login with default credentials `root:debian`, set proper IP address (`/etc/network/interfaces`) and fqdn (`/etc/hostname`), reboot VM
+
+   4. finish base VM contextualization
      ```
      cd /puppet
      sh phase2.install.sh
      reboot
      ```
 
-3. generate host certificate
+2. generate host certificate
 ```
 sh /puppet/warden3/bin/haas_init.sh
 ```
-4. let Warden acknowleded certification authority sign it and place result under `/opt/hostcert/<FQDN>.crt`
 
-5. [get client registered](https://warden.cesnet.cz/en/participation#registration) at Warden server
+3. let Warden acknowleded certification authority sign it and place result under `/opt/hostcert/<FQDN>.crt`
 
-6. finalize VM configuration
+4. [get client registered](https://warden.cesnet.cz/en/participation#registration) at Warden server
+
+5. finalize VM configuration
 ```
 sh /puppet/warden3/bin/haas_finalize.sh
 ```
 
-7. reboot VM
+6. reboot VM
 
 
 
