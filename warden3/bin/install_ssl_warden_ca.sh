@@ -2,17 +2,17 @@
 
 DESTDIR="/opt/hostcert"
 FQDN=$(facter fqdn)
-CA_SERVICE="http://${WARDEN_SERVER}:45444"
 
-usage() { echo "Usage: $0 -s <WARDEN_SERVER> -d <DESTDIR>" 1>&2; exit 1; }
+usage() { echo "Usage: $0 -w <WARDEN_SERVER> -d <DESTDIR>" 1>&2; exit 1; }
 while getopts "s:d:" o; do
 	case "${o}" in
-        	s) WARDEN_SERVER=${OPTARG} ;;
+        	w) WARDEN_SERVER=${OPTARG} ;;
 		d) DESTDIR=${OPTARG} ;;
 		*) usage ;;
 	esac
 done
 shift "$(($OPTIND-1))"
+CA_SERVICE="http://${WARDEN_SERVER}:45444"
 
 
 
