@@ -114,14 +114,14 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 			return (403, None)
 
 		qs = parse_qs(urlparse(self.path).query)
-		if 'sensor_name' not in qs:
-			logger.error("parameter sensor_name missing")
+		if 'client_name' not in qs:
+			logger.error("parameter client_name missing")
 			return (400, None)
 
 		hostname = self._resolve_client_address(self.client_address[0])
 	
 		try:
-			cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (qs['sensor_name'][0], hostname)
+			cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (qs['client_name'][0], hostname)
 			logger.debug(cmd)
 			data = subprocess.check_output(shlex.split(cmd))
 	
