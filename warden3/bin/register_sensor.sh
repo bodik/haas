@@ -1,35 +1,34 @@
 #!/bin/sh
 # will register sensor at warden server
 
-usage() { echo "Usage: $0 -s <WARDEN_SERVER> -n <SENSOR_NAME> -d <DEST_DIR>" 1>&2; exit 1; }
-while getopts "s:n:d:" o; do
-    case "${o}" in
-        s)
-            WARDEN_SERVER=${OPTARG}
-            ;;
-        d)
-            DEST_DIR=${OPTARG}
-            ;;
-        n)
-            SENSOR_NAME=${OPTARG}
-            ;;
-        *)
-            usage
-        ;;
-    esac
-done
-shift $((OPTIND-1))
 CA_SERVICE="http://${WARDEN_SERVER}:45444"
 
+
+rreturn() { echo "$2"; exit $1; }
+usage() { echo "Usage: $0 -s <WARDEN_SERVER> -n <SENSOR_NAME> -d <DESTDIR>" 1>&2; exit 1; }
+while getopts "s:n:d:" o; do
+	case "${o}" in
+        	s) WARDEN_SERVER=${OPTARG} ;;
+	        n) SENSOR_NAME=${OPTARG} ;;
+		d) DESTDIR=${OPTARG} ;;
+		*) usage ;;
+	esac
+done
+shift "$(($OPTIND-1))"
+test -n "$WARDEN_SERVER" || rreturn 1 "ERROR: missing WARDEN_SERVER"
+test -n "$SENSOR_NAME" || rreturn 1 "ERROR: missing SENSOR_NAME"
+test -n "$DESTDIR" || rreturn 1 "ERROR: missing DESTDIR"
+
+
+
 #if tagfile exist, a sensor is probably already registred, this is just puppet helper conditional
-if [ -f $DEST_DIR/registered-at-warden-server ]; then
-	exit 0
-fi
+test -f "${DESTDIR}/registered-at-warden-server" || exit 0
+
 
 URL="${CA_SERVICE}/register_sensor?sensor_name=${SENSOR_NAME}"
-curl --silent --write-out '%{http_code}' $URL | grep 200 1>/dev/null 2>/dev/null
+curl --silent --write-out '%{http_code}' "${URL}" | grep 200 1>/dev/null 2>/dev/null
 if [ $? -eq 0 ]; then
-	echo "$URL" > ${DEST_DIR}/registered-at-warden-server
+	echo "$URL" > ${DESTDIR}/registered-at-warden-server
 	exit 0
 else
 	echo "ERROR: cannt register at warden server"
