@@ -9,7 +9,6 @@ parse_args() {
 	        	w) WARDEN_SERVER=${OPTARG} ;;
 		        s) SECRET=${OPTARG} ;;
 			t) TOKEN=${OPTARG} ;;
-			*) usage ;;
 		esac
 	done
 	shift "$(($OPTIND-1))"
