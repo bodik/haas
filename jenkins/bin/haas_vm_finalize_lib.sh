@@ -13,8 +13,9 @@ parse_args() {
 		esac
 	done
 	shift "$(($OPTIND-1))"
-	
+
 	test -n "$WARDEN_SERVER" || rreturn 1 "ERROR: missing -w WARDEN_SERVER"
 	test -n "$SECRET" || rreturn 1 "ERROR: missing -s SECRET"
+	test -n "$TOKEN" || rreturn 1 "ERROR: missing -t TOKEN"
 }
 

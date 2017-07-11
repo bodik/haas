@@ -1,7 +1,7 @@
 #!/bin/sh
 
 . /puppet/jenkins/bin/haas_vm_finalize_lib.sh
-parse_args
+parse_args $@
 
 
 # warden_apply get certificate to /opt/hostcert
