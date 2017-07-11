@@ -133,6 +133,7 @@ vm_destroy() {
 vm_export() {
 	OUTFILE="$1"
 	mkdir -p $(dirname $1)
+	rm -f "$OUTFILE"
 	VBoxManage export "${VMNAME}" --vsys 0 --producturl "https://github.com/bodik/haas.git" --output "${OUTFILE}"
 	ls -lh "${OUTFILE}"
 	rreturn $? "$0 export"
