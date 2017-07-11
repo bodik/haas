@@ -23,7 +23,7 @@ def render_parameters(data):
 
 	print "### Parameters\n"
 	for tmp in data:
-		print "**%s** _%s_ -- %s\n" % (tmp["name"], " ".join(tmp.get("types", ["N/A"])), tmp.get("text", "N/A"))
+		print "**%s** -- %s\n" % (tmp["name"], tmp.get("text", "N/A"))
 
 
 

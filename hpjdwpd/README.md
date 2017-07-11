@@ -8,17 +8,17 @@ Installs jdwp honeypot
 
 ### Parameters
 
-**install_dir** _String_ -- Installation directory
+**install_dir** -- Installation directory
 
-**service_user** _String_ -- User to run service as
+**service_user** -- User to run service as
 
-**jdwpd_port** _Integer_ -- Service listen port
+**jdwpd_port** -- Service listen port
 
-**warden_server** _String_ -- warden server hostname
+**warden_server** -- warden server hostname
 
-**warden_server_auto** _Boolean_ -- warden server autodiscovery enable flag
+**warden_server_service** -- avahi name of warden server service for autodiscovery
 
-**warden_server_service** _String_ -- avahi name of warden server service for autodiscovery
+**secret** -- 
 
 ### Examples
 

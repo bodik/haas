@@ -12,13 +12,13 @@
 # @param warden_server warden server hostname
 # @param warden_server_service avahi name of warden server service for autodiscovery
 class hpjdwpd (
-	String $install_dir = "/opt/jdwpd",
-	String $service_user = "jdwpd",
-	Integer $jdwpd_port = 8000,
+	$install_dir = "/opt/jdwpd",
+	$service_user = "jdwpd",
+	$jdwpd_port = 8000,
 	
-	String $warden_server = undef,
-	String $warden_server_service = "_warden-server._tcp",
-	String $secret = undef,
+	$warden_server = undef,
+	$warden_server_service = "_warden-server._tcp",
+	$secret = undef,
 ) {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
