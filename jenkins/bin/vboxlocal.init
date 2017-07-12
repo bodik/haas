@@ -124,8 +124,16 @@ vm_shutdown() {
 }
 
 vm_destroy() {
-	VBoxManage unregistervm ${VMNAME} --delete
-	rreturn $? "$0 destroy $@"
+	for i in $(seq 1 3); do
+		VBoxManage unregistervm ${VMNAME} --delete
+		if [ $? -eq 0 ]; then
+			rreturn 0 "$0 destroy $@"
+		else
+			echo "INFO: waiting for vm unlock"
+			sleep 3
+		fi
+	done
+	rreturn 1 "$0 destroy $@"
 }
 
 
