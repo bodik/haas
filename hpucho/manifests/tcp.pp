@@ -23,6 +23,7 @@ class hpucho::tcp (
 	Boolean $warden_server_auto = true,
 	String $warden_server_service = "_warden-server._tcp",
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server

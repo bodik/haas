@@ -27,6 +27,7 @@ class warden3::server (
 
 	$avahi_enable = true,
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($avahi_enable) {
 		include metalib::avahi

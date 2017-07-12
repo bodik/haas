@@ -12,6 +12,7 @@ class glog::glog2(
 	$esd_network_host = "127.0.0.1",
 	#$lsl_workers_real = 1,
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	# deps
 	ensure_resource("service", "apache2", {})

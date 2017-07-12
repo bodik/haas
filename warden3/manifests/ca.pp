@@ -28,6 +28,7 @@ class warden3::ca (
 	$ca_user = "wardenca",
 	$ca_name = "warden3ca",
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	# deps
 	package { "python-netifaces": ensure => installed, }	

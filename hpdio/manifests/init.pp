@@ -11,6 +11,7 @@ class hpdio (
 
 	$log_history = 14,
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server

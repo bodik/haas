@@ -1,10 +1,9 @@
+#!/bin/sh
+
 if [ -f /opt/warden_server/warden_server.py ]; then
-        echo "INFO: WARDENSERVERCHECK ======================="
-
-        for all in warden3::ca warden3::server warden3::tester; do
-                echo "INFO: pa.sh -v --noop --show_diff -e \"include $all\""
-                pa.sh -v --noop --show_diff -e "include $all"
-        done
-
+        echo "INFO: CHECK WARDENSERVER================"
+        pa.sh -v --noop --show_diff -e "include warden3::ca"
+        pa.sh -v --noop --show_diff -e "include warden3::server"
+        pa.sh -v --noop --show_diff -e "include warden3::tester"
 fi
 
