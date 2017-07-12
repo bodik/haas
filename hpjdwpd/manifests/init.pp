@@ -32,8 +32,8 @@ class hpjdwpd (
 	if ($secret) {
 		$secret_real = $secret
 	} else {
-		if(file_exists("/opt/jdwpd/bin/warden_client.cfg")==1) {
-			$secret_real = warden_config_secret("/opt/jdwpd/bin/warden_client.cfg")
+		if(file_exists("${install_dir}/bin/warden_client.cfg")==1) {
+			$secret_real = warden_config_secret("${install_dir}/bin/warden_client.cfg")
 			notice("INFO: warden_client secret persisted")
 		} else {
 			$secret_real = generate_secret(16)
