@@ -48,6 +48,7 @@ information exchange server.
 
    4. finish base VM contextualization
      ```
+     sh /puppet/warden3/bin/haas_vm_prepare.sh
      cd /puppet
      sh phase2.install.sh
      reboot

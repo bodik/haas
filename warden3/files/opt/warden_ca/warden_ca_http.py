@@ -117,22 +117,18 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		if "client_name" not in qs:
 			logger.error("parameter client_name missing")
 			return (400, None)
-		if "secret" not in qs:
-			logger.error("parameter secret missing")
-			return (400, None)
 
 		hostname = self._resolve_client_address(self.client_address[0])
 	
 		try:
-			cmd = "/usr/bin/python /opt/warden_server/warden_server.py register --name {client_name} --hostname {hostname} --secret {secret} --requestor bodik@cesnet.cz --read --write --notest".format(client_name=qs["client_name"][0], hostname=hostname, secret=qs["secret"][0])
+			cmd = "/usr/bin/python /opt/warden_server/warden_server.py register --name {client_name} --hostname {hostname} --requestor bodik@cesnet.cz --read --write --notest".format(client_name=qs["client_name"][0], hostname=hostname)
 			logger.debug(cmd)
 			data = subprocess.check_output(shlex.split(cmd))
 	
 		except subprocess.CalledProcessError as e:
 			if ( e.returncode == 101 ):
-				# client already register, we accept the state for cloud testing but have to enforce possibly new secret
+				# client already register, we accept the state for cloud testing
 				logger.warn("client already registerd")
-				self._enforce_secret(qs["client_name"][0], hostname, secret=qs["secret"][0])
 			else:
 				# client registration failed for other reason
 				raise e
@@ -142,20 +138,6 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 			raise e
 	
 		return (200, None)
-
-
-	def _enforce_secret(self, client_name, hostname, secret):
-		try:
-			with open("/opt/warden_server/warden_server.cfg") as f:
-				tmp = json.loads(f.read())
-			cmd = "mysql -u{dbuser} -p{dbpassword} -NBe 'update clients set secret = \"{secret}\" where name=\"{client_name}\" and hostname=\"{hostname}\" and requestor=\"bodik@cesnet.cz\";' {dbname}".format(
-				dbuser=tmp["DB"]["user"], dbpassword=tmp["DB"]["password"], dbname=tmp["DB"]["dbname"],
-				client_name=client_name, hostname=hostname, secret=secret)
-			logger.debug(cmd)
-			subprocess.check_call(shlex.split(cmd))
-		except Exception as e:
-			raise e
-
 
 
 	def _resolve_client_address(self, ip):
