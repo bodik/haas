@@ -1512,7 +1512,7 @@ def modify_client(**kwargs):
             for label in hostname.split("."))
 
     def isValidNSID(nsid):
-        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_]*\\.)*[a-zA-Z_][a-zA-Z0-9_]*$")
+        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_\-]*\\.)*[a-zA-Z_][a-zA-Z0-9_\-]*$")
         return allowed.match(nsid)
 
     def isValidEmail(mail):
@@ -1549,7 +1549,7 @@ def modify_client(**kwargs):
     for c in server.handler.db.get_clients():
         if kwargs["name"] is not None and kwargs["name"].lower()==c.name:
             print >>sys.stderr, "Clash with existing name: %s" % str(c)
-            return 254
+            return 101
         if kwargs["secret"] is not None and kwargs["secret"]==c.secret:
             print >>sys.stderr, "Clash with existing secret: %s" % str(c)
             return 254
