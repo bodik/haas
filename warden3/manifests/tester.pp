@@ -65,10 +65,4 @@ class warden3::tester (
 		owner => "root", group => "root", mode => "0750",
 		require => File["${install_dir}"],
 	}
-	file { "${install_dir}/bootstrap_server.py":
-		source => "puppet:///modules/${module_name}/opt/warden_tester/bootstrap_server.py",
-		owner => "root", group => "root", mode => "0750",
-		require => File["${install_dir}"],
-	}
-
 }
