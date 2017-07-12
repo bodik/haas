@@ -56,10 +56,10 @@ class warden3::server (
                 } else {
                         if ( file_exists("${install_dir}/warden_server.cfg") == 1 ) {
                                 $mysql_password_real = warden_config_dbpassword("${install_dir}/warden_server.cfg")
-                                notice("INFO: mysql ${mysql_db}@localhost secret preserved")
+                                notice("INFO: mysql ${mysql_db}@localhost password preserved")
                         } else {
-                                $mysql_password_real = generate_secret()
-                                notice("INFO: mysql ${mysql_db}@localhost secret generated")
+                                $mysql_password_real = generate_password()
+                                notice("INFO: mysql ${mysql_db}@localhost password generated")
                         }
                 }
                         

@@ -43,10 +43,10 @@ class hpcowrie (
                 } else {
                         if ( file_exists("${install_dir}/cowrie.cfg") == 1 ) {
                                 $mysql_password_real = myexec("/bin/grep '^password =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'=' '{print \$2}' | sed -e 's/^\s//'")
-                                notice("INFO: mysql ${mysql_db}@localhost secret preserved")
+                                notice("INFO: mysql ${mysql_db}@localhost password preserved")
                         } else {
-                                $mysql_password_real = generate_secret()
-                                notice("INFO: mysql ${mysql_db}@localhost secret generated")
+                                $mysql_password_real = generate_password()
+                                notice("INFO: mysql ${mysql_db}@localhost password generated")
                         }
                 }
                         
@@ -113,7 +113,7 @@ class hpcowrie (
         	if ( file_exists("${install_dir}/cowrie.cfg") == 1 ) {
 			$cowrie_ssh_version_string_real = myexec("/bin/grep '^version =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'= ' '{print \$2}' | sed -e 's/^\s//'")
                 } else {
-			$cowrie_ssh_version_string_real = $cowrie_ssh_version_strings[ fqdn_rand(size($cowrie_ssh_version_strings), generate_secret()) ]
+			$cowrie_ssh_version_string_real = $cowrie_ssh_version_strings[ fqdn_rand(size($cowrie_ssh_version_strings), generate_password()) ]
 			notice("INFO: cowrie ssh version string generated as '$cowrie_ssh_version_string_real'")
                 }
         }
