@@ -27,6 +27,10 @@ class metalib::base() {
 		ensure => installed,
 		require => [File["/etc/apt/sources.list"], Exec["apt-get update"]],
 	}
+	package { "puppet-strings":
+		ensure => installed,
+		provider => gem,
+	}
 
 
 	file { "/etc/apt/sources.list":
@@ -127,15 +131,13 @@ class metalib::base() {
 
 
 	file { "/usr/local/bin/dmesgp":
-		ensure => link,
-		target => "/puppet/metalib/bin/dmesgp",
+		ensure => link, target => "/puppet/metalib/bin/dmesgp",
 	}
 
 
 
 	file { "/usr/local/bin/pa.sh":
-		ensure => link,
-		target => "/puppet/metalib/bin/pa.sh",
+		ensure => link, target => "/puppet/metalib/bin/pa.sh",
 	}
 	service { "puppet":
 		ensure => stopped,
@@ -143,8 +145,7 @@ class metalib::base() {
 	}
 
 	file_line { "global vimrc syntax on":
-		path => "/etc/vim/vimrc",
-		line => "syntax on",
+		path => "/etc/vim/vimrc", line => "syntax on",
 	}
 	file { "/root/.vimrc":
 		ensure => file,
