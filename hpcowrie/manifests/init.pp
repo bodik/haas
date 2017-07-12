@@ -7,6 +7,7 @@
 # @param cowrie_port Service listen port
 # @param cowrie_user User to run service as
 # @param cowrie_ssh_version_string SSH version announcement
+# @param log_history The number of days the data is stored on
 #
 # @param mysql_host MySQL server with Cowrie database to connect
 # @param mysql_port Port of MySQL server to connect
@@ -15,13 +16,13 @@
 #
 # @param warden_server warden server hostname
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param log_history The number of days the data is stored on
 class hpcowrie (
 	$install_dir = "/opt/cowrie",
 	
 	$cowrie_port = 45356,
 	$cowrie_user = "cowrie",
 	$cowrie_ssh_version_string = undef,
+	$log_history = 14,
 
 	$mysql_host = "localhost",
 	$mysql_port = 3306,
@@ -30,8 +31,6 @@ class hpcowrie (
 	
 	$warden_server = undef,
 	$warden_server_service = "_warden-server._tcp",
-
-	$log_history = 14,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -174,10 +173,6 @@ class hpcowrie (
 	}
 
 
-        file { "/etc/cron.d/cowrie":
-                content => template("${module_name}/cowrie.cron.erb"),
-                owner => "root", group => "root", mode => "0644",
-        }
         file { "/etc/logrotate.d/cowrie":
                 content => template("${module_name}/cowrie.logrotate.erb"),
                 owner => "root", group => "root", mode => "0644",

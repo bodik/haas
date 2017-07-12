@@ -213,15 +213,10 @@ def main():
     dtime = format_timestamp(row['timestamp'])
     events.append(gen_event_idea_dio(logger = wclient.logger, binaries_path = abinpath, report_binaries = areportbinaries, client_name = aclient_name, anonymised = aanonymised, target_net = aanonymised_net, detect_time = dtime, win_start_time = stime, win_end_time = etime, aggr_win = awin, data = row))
       
-  print "=== Sending ==="
   start = time()
-
   ret = wclient.sendEvents(events)
-  
   if 'saved' in ret:
-    wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
-  
-  print "Time: %f" % (time() - start)
+    wclient.logger.info("%d event(s) successfully delivered in %d seconds" % (ret['saved'], (time() - start)))
 
 
 if __name__ == "__main__":

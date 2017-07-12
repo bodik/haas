@@ -1,1 +1,1 @@
-*/5 * * * * <%= @service_user %> cd <%= @install_dir %>/bin; /usr/bin/python warden_sender_uchotcp.py 1>><%= @install_dir %>/log/warden_sender_uchotcp.log 2>&1
+*/5 * * * * <%= @service_user %> cd <%= @install_dir %>/bin && ./warden_sender_uchotcp.py 1>/dev/null 2>/dev/null

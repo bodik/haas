@@ -5,19 +5,18 @@
 #
 # @param install_dir Installation directory
 # @param dio_user User to run service as
+# @param log_history The number of days the data is stored on
 #
 # @param warden_server warden server hostname
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param log_history The number of days the data is stored on
 class hpdio (
 	$install_dir = "/opt/dionaea",
 
 	$dio_user = "dionaea",
+	$log_history = 14,
 	
 	$warden_server = undef,
 	$warden_server_service = "_warden-server._tcp",
-
-	$log_history = 14,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -100,10 +99,6 @@ class hpdio (
         }
 
 	
-	file { "/etc/cron.d/dionaea":
-                content => template("${module_name}/dionaea.cron.erb"),
-                owner => "root", group => "root", mode => "0644",
-        }
      	file { "/etc/logrotate.d/dionaea":
                 content => template("${module_name}/dionaea.logrotate.erb"),
                 owner => "root", group => "root", mode => "0644",

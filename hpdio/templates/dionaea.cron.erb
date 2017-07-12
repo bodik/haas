@@ -1,1 +1,0 @@
-0  1 * * * dionaea /usr/bin/find <%= @install_dir %>/var/dionaea/binaries/ <%= @install_dir %>/var/dionaea/bistreams/ -ctime +<%= @log_history %> -delete 1>/dev/null 2>&1
