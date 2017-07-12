@@ -57,7 +57,7 @@ class warden3::server (
                                 $mysql_password_real = warden_config_dbpassword("${install_dir}/warden_server.cfg")
                                 notice("INFO: mysql ${mysql_db}@localhost secret preserved")
                         } else {
-                                $mysql_password_real = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
+                                $mysql_password_real = generate_secret()
                                 notice("INFO: mysql ${mysql_db}@localhost secret generated")
                         }
                 }

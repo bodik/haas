@@ -44,7 +44,7 @@ class hpcowrie (
                                 $mysql_password_real = myexec("/bin/grep '^password =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'=' '{print \$2}' | sed -e 's/^\s//'")
                                 notice("INFO: mysql ${mysql_db}@localhost secret preserved")
                         } else {
-                                $mysql_password_real = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
+                                $mysql_password_real = generate_secret()
                                 notice("INFO: mysql ${mysql_db}@localhost secret generated")
                         }
                 }
@@ -110,11 +110,10 @@ class hpcowrie (
                 $corwie_ssh_version_string_real = $cowrie_ssh_version_string
         } else {
         	if ( file_exists("${install_dir}/cowrie.cfg") == 1 ) {
-                	$cowrie_ssh_version_string_real = myexec("/bin/grep '^version =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'= ' '{print \$2}' | sed -e 's/^\s//'")
+			$cowrie_ssh_version_string_real = myexec("/bin/grep '^version =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'= ' '{print \$2}' | sed -e 's/^\s//'")
                 } else {
-       			$seed = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
-	                $cowrie_ssh_version_string_real = $cowrie_ssh_version_strings[ fqdn_rand(size($cowrie_ssh_version_strings), $seed) ]
-       			notice("INFO: cowrie ssh version string generated as '$cowrie_ssh_version_string_real'")
+			$cowrie_ssh_version_string_real = $cowrie_ssh_version_strings[ fqdn_rand(size($cowrie_ssh_version_strings), generate_secret()) ]
+			notice("INFO: cowrie ssh version string generated as '$cowrie_ssh_version_string_real'")
                 }
         }
 
