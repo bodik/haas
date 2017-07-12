@@ -1,11 +1,28 @@
-#!/usr/bin/puppet apply
-
+# Installs Cowrie honeypot
+#
+# @example Declaring the class
+#   class { "hpcowrie": }
+#
+# @param install_dir Installation directory
+# @param cowrie_port Service listen port
+# @param cowrie_user User to run service as
+# @param cowrie_ssh_version_string SSH version announcement
+# @param log_history The number of days the data is stored on
+#
+# @param mysql_host MySQL server with Cowrie database to connect
+# @param mysql_port Port of MySQL server to connect
+# @param mysql_db Database to store Cowrie data
+# @param mysql_password Password to MySQL server authtentication
+#
+# @param warden_server warden server hostname
+# @param warden_server_service avahi name of warden server service for autodiscovery
 class hpcowrie (
 	$install_dir = "/opt/cowrie",
 	
 	$cowrie_port = 45356,
-	$cowrie_ssh_version_string = undef,
 	$cowrie_user = "cowrie",
+	$cowrie_ssh_version_string = undef,
+	$log_history = 14,
 
 	$mysql_host = "localhost",
 	$mysql_port = 3306,
@@ -13,20 +30,17 @@ class hpcowrie (
 	$mysql_password = undef,
 	
 	$warden_server = undef,
-	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
-
-	$log_history = 14,
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server
-        } elsif ( $warden_server_auto == true ) {
+        } else {
                 include metalib::avahi
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
 
-	
 	#mysql server
 	#Replaced by gmysql component 
 	class { "gmysql::server": }
@@ -42,10 +56,10 @@ class hpcowrie (
                 } else {
                         if ( file_exists("${install_dir}/cowrie.cfg") == 1 ) {
                                 $mysql_password_real = myexec("/bin/grep '^password =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'=' '{print \$2}' | sed -e 's/^\s//'")
-                                notice("INFO: mysql ${mysql_db}@localhost secret preserved")
+                                notice("INFO: mysql ${mysql_db}@localhost password preserved")
                         } else {
-                                $mysql_password_real = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
-                                notice("INFO: mysql ${mysql_db}@localhost secret generated")
+                                $mysql_password_real = generate_password()
+                                notice("INFO: mysql ${mysql_db}@localhost password generated")
                         }
                 }
                         
@@ -110,11 +124,10 @@ class hpcowrie (
                 $corwie_ssh_version_string_real = $cowrie_ssh_version_string
         } else {
         	if ( file_exists("${install_dir}/cowrie.cfg") == 1 ) {
-                	$cowrie_ssh_version_string_real = myexec("/bin/grep '^version =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'= ' '{print \$2}' | sed -e 's/^\s//'")
+			$cowrie_ssh_version_string_real = myexec("/bin/grep '^version =' ${install_dir}/cowrie.cfg | /usr/bin/awk -F'= ' '{print \$2}' | sed -e 's/^\s//'")
                 } else {
-       			$seed = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
-	                $cowrie_ssh_version_string_real = $cowrie_ssh_version_strings[ fqdn_rand(size($cowrie_ssh_version_strings), $seed) ]
-       			notice("INFO: cowrie ssh version string generated as '$cowrie_ssh_version_string_real'")
+			$cowrie_ssh_version_string_real = $cowrie_ssh_version_strings[ fqdn_rand(size($cowrie_ssh_version_strings), generate_password()) ]
+			notice("INFO: cowrie ssh version string generated as '$cowrie_ssh_version_string_real'")
                 }
         }
 
@@ -160,10 +173,6 @@ class hpcowrie (
 	}
 
 
-        file { "/etc/cron.d/cowrie":
-                content => template("${module_name}/cowrie.cron.erb"),
-                owner => "root", group => "root", mode => "0644",
-        }
         file { "/etc/logrotate.d/cowrie":
                 content => template("${module_name}/cowrie.logrotate.erb"),
                 owner => "root", group => "root", mode => "0644",
@@ -237,7 +246,7 @@ class hpcowrie (
 		warden_server => $warden_server_real,
 	}
 	exec { "register cowrie sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.cowrie -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.cowrie -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => Exec["clone cowrie"],
 	}

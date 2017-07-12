@@ -3,8 +3,9 @@
 DESTDIR="/opt/hostcert"
 FQDN=$(facter fqdn)
 
+rreturn() { echo "$2"; exit $1; }
 usage() { echo "Usage: $0 -w <WARDEN_SERVER> -d <DESTDIR>" 1>&2; exit 1; }
-while getopts "s:d:" o; do
+while getopts "w:d:" o; do
 	case "${o}" in
         	w) WARDEN_SERVER=${OPTARG} ;;
 		d) DESTDIR=${OPTARG} ;;
@@ -12,6 +13,8 @@ while getopts "s:d:" o; do
 	esac
 done
 shift "$(($OPTIND-1))"
+test -n "$WARDEN_SERVER" || rreturn 1 "ERROR: missing WARDEN_SERVER"
+test -n "$DESTDIR" || rreturn 1 "ERROR: missing DESTDIR"
 CA_SERVICE="http://${WARDEN_SERVER}:45444"
 
 
@@ -56,4 +59,3 @@ curl --insecure --output "ca.crl" "${CA_SERVICE}/get_crl" 2>/dev/null
 find . -type f -exec chmod 644 {} \;
 
 echo "INFO: done generating certificate from warden_ca"
-

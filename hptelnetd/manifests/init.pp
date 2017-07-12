@@ -1,4 +1,15 @@
-#!/usr/bin/puppet apply
+# Installs telnetd honeypot
+#
+# @example Declaring the class
+#   class { "hptelnetd": }
+#
+# @param install_dir Installation directory
+# @param service_user User to run service as
+# @param telnetd_port Service listen port
+# @param real_telnetd_port Service listen port before redirect
+#
+# @param warden_server warden server hostname
+# @param warden_server_service avahi name of warden server service for autodiscovery
 
 class hptelnetd (
 	$install_dir = "/opt/telnetd",
@@ -7,13 +18,13 @@ class hptelnetd (
 	$real_telnetd_port = 23,
 	
 	$warden_server = undef,
-	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
 ) {
-
+        notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
+	
 	if ($warden_server) {
                 $warden_server_real = $warden_server
-        } elsif ( $warden_server_auto == true ) {
+        } else {
                 include metalib::avahi
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
@@ -124,7 +135,7 @@ class hptelnetd (
 		warden_server => $warden_server_real,
 	}
 	exec { "register telnetd sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.telnetd -d ${install_dir}/bin",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.telnetd -d ${install_dir}/bin",
 		creates => "${install_dir}/bin/registered-at-warden-server",
 		require => File["${install_dir}/bin"],
 	}

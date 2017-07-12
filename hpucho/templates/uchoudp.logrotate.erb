@@ -6,7 +6,7 @@
 	compress
 	sharedscripts
 	prerotate
-		su -c 'cd <%= @install_dir %>/bin; /usr/bin/python warden_sender_uchoudp.py 1>><%= @install_dir %>/log/warden_sender_uchoudp.log 2>&1' <%= @service_user %>
+		su -c 'cd <%= @install_dir %>/bin && ./warden_sender_uchoudp.py 1>/dev/null 2>/dev/null' <%= @service_user %>
 		rm -f <%= @install_dir %>/log/uchoudp.log.offset
 	endscript
 	postrotate

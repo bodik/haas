@@ -1,10 +1,10 @@
 #!/bin/sh
 
-BENCHDIR=/scratch/sysbench-fileio-benchmark.$$
+BENCHDIR="/scratch/sysbench-fileio-benchmark.$$"
 TESTSIZE="50G"
 
-mkdir -p $BENCHDIR
-cd $BENCHDIR || exit 1
+mkdir -p "${BENCHDIR}"
+cd "${BENCHDIR}" || exit 1
 
 for testtype in rndrd rndwr rndrw; do
 	echo "INFO: sysbench ${testtype} ${TESTSIZE}"
@@ -14,5 +14,5 @@ for testtype in rndrd rndwr rndrw; do
 		sysbench --num-threads=8 --test=fileio --file-total-size=${TESTSIZE} --file-test-mode=${testtype} cleanup 1>/dev/null
 	done
 done
-rm -rf $BENCHDIR
+rm -rf "${BENCHDIR}"
 

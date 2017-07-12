@@ -41,7 +41,7 @@ def render_examples(data):
 def render_other(data):
 	if not data: return
 
-	print json.dumps(tmp)
+	print json.dumps(data)
 
 
 

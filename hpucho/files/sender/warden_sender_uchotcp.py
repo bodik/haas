@@ -70,19 +70,15 @@ try:
 			smart	    = data['smart'],
 			data        = data['data'],	
 		)
-		#print json.dumps(a)
+		#wclient.logger.debug(json.dumps(events))
 		events.append(a)
 except:
 	pass
 
-#print json.dumps(events, indent=3)
+wclient.logger.debug(json.dumps(events, indent=3))
 
-print "=== Sending ==="
 start = time()
 ret = wclient.sendEvents(events)
-
 if 'saved' in ret:
-	wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
-
-print "Time: %f" % (time() - start)
+	wclient.logger.info("%d event(s) successfully delivered in %d seconds" % (ret['saved'], (time() - start)))
 

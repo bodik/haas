@@ -37,6 +37,7 @@ class warden3::tologstash (
 	$logstash_server = "localhost",
 	$logstash_server_warden_port = 45994,
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server
@@ -71,7 +72,7 @@ class warden3::tologstash (
 	}
 	ensure_resource('warden3::hostcert', "hostcert", { "warden_server" => $warden_server_real,} )
 	exec { "register warden_tologstash sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.tologstash -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.tologstash -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}

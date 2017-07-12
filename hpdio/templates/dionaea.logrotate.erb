@@ -1,11 +1,12 @@
 <%= @install_dir %>/var/dionaea/dionaea*.log {
     daily
     missingok
-    rotate 14
+    rotate <%= @log_history %>
     compress
     sharedscripts
     postrotate
-	invoke-rc.d dionaea restart > /dev/null
+	invoke-rc.d dionaea restart >/dev/null
+        /usr/bin/find <%= @install_dir %>/var/dionaea/binaries/ <%= @install_dir %>/var/dionaea/bistreams/ -ctime +<%= @log_history %> -delete 1>/dev/null 2>/dev/null
     endscript
 }
 
@@ -14,15 +15,11 @@
     missingok
     rotate 12
     compress
+    prerotate
+        su -c 'cd <%= @install_dir %>/warden && ./warden_sender_dio.py 1>/dev/null 2>/dev/null' <%= @dio_user %>
+    endscript
     postrotate
-	invoke-rc.d dionaea restart > /dev/null
+	invoke-rc.d dionaea restart >/dev/null
     endscript
 }
 
-<%= @install_dir %>/warden/*log
-{
-        rotate 60
-        daily
-        missingok
-        compress
-}

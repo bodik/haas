@@ -1,10 +1,7 @@
-if [ -f /opt/uchoudp/uchoudp.py ]; then
-        echo "INFO: HPUCHOUDPCHECK ======================="
+#!/bin/sh
 
-        for all in hpucho::udp; do
-                echo "INFO: pa.sh -v --noop --show_diff -e \"include $all\""
-                pa.sh -v --noop --show_diff -e "include $all"
-        done
-
+if [ -f /opt/uchoudp/bin/uchoudp.py ]; then
+        echo "INFO: CHECK HPUCHOUDP ==== ============="
+        pa.sh -v --noop --show_diff -e "include hpucho::udp"
 fi
 

@@ -26,6 +26,7 @@ class warden3::tester (
 	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server
@@ -54,7 +55,7 @@ class warden3::tester (
 		warden_server => $warden_server_real,
 	}
 	exec { "register warden_tester sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.tester -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.tester -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}

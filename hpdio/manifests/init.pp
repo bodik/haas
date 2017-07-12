@@ -1,20 +1,28 @@
-#!/usr/bin/puppet apply
-
+# Installs Dionaea honeypot
+#
+# @example Declaring the class
+#   class { "hpdio": }
+#
+# @param install_dir Installation directory
+# @param dio_user User to run service as
+# @param log_history The number of days the data is stored on
+#
+# @param warden_server warden server hostname
+# @param warden_server_service avahi name of warden server service for autodiscovery
 class hpdio (
 	$install_dir = "/opt/dionaea",
 
 	$dio_user = "dionaea",
+	$log_history = 14,
 	
 	$warden_server = undef,
-	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
-
-	$log_history = 14,
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server
-        } elsif ( $warden_server_auto == true ) {
+        } else {
                 include metalib::avahi
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
@@ -91,10 +99,6 @@ class hpdio (
         }
 
 	
-	file { "/etc/cron.d/dionaea":
-                content => template("${module_name}/dionaea.cron.erb"),
-                owner => "root", group => "root", mode => "0644",
-        }
      	file { "/etc/logrotate.d/dionaea":
                 content => template("${module_name}/dionaea.logrotate.erb"),
                 owner => "root", group => "root", mode => "0644",
@@ -149,7 +153,7 @@ class hpdio (
 		warden_server => $warden_server_real,
 	}
 	exec { "register dio sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.dionaea -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.dionaea -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => Exec["build dio"],
 	}
