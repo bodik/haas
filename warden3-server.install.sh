@@ -4,7 +4,7 @@ pa.sh -e 'include warden3::server'
 pa.sh -e 'include warden3::tester'
 
 # exception to register sensor here, it's much easier to make it after wserver running, than requiring all components in manifest
-/bin/sh /puppet/warden3/bin/register_sensor.sh -s $(facter fqdn) -n "cz.cesnet.flab.$(facter hostname).puppet_test_client" -d /opt/warden_server
+/bin/sh /puppet/warden3/bin/register_sensor.sh -w $(facter fqdn) -n "cz.cesnet.flab.$(facter hostname).puppet_test_client" -d /opt/warden_server
 
 # I bet this solves caveat chicked-egg
 # have a clean server >> zero events in db, have a receiving client (tologstash) with not existing warden_client last_event_id file
