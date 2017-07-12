@@ -114,26 +114,40 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 			return (403, None)
 
 		qs = parse_qs(urlparse(self.path).query)
-		if 'client_name' not in qs:
+		if "client_name" not in qs:
 			logger.error("parameter client_name missing")
 			return (400, None)
 
 		hostname = self._resolve_client_address(self.client_address[0])
 	
 		try:
-			cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (qs['client_name'][0], hostname)
+			cmd = "/usr/bin/python /opt/warden_server/warden_server.py register --name %s --hostname %s --requestor bodik@cesnet.cz --read --write --notest" % (qs["client_name"][0], hostname)
+			if "secret" in qs: cmd += " --secret %s" % qs["secret"][0]
+
 			logger.debug(cmd)
 			data = subprocess.check_output(shlex.split(cmd))
 	
 		except subprocess.CalledProcessError as e:
 			if ( e.returncode == 101 ):
-				# client already register, but we accept the state for cloud testing
+				# client already register, we accept the state for cloud testing but have to enforce possibly new secret
 				logger.warn("client already registerd")
-				pass
+				try:
+					with open("/opt/warden_server/warden_server.cfg") as f:
+						tmp = json.loads(f.read())
+					cmd = "mysql -u{dbuser} -p{dbpassword} -NBe 'update clients set secret = \"{secret}\" where name=\"{client_name}\" and hostname=\"{hostname}\" and requestor=\"bodik@cesnet.cz\";' {dbname}".format(
+						dbuser=tmp["DB"]["user"], dbpassword=tmp["DB"]["password"], dbname=tmp["DB"]["dbname"],
+						secret=qs["secret"][0], client_name=qs["client_name"][0], hostname=hostname)
+					logger.debug(cmd)
+					subprocess.check_call(shlex.split(cmd))
+				except Exception as e:
+					raise e
+
 			else:
+				# client registration failed for other reason
 				raise e
 	
 		except Exception as e:
+			# generic exception during registration process
 			raise e
 	
 		return (200, None)
