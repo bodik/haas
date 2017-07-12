@@ -1,2 +1,3 @@
-pa.sh -e 'include hpucho::tcp'
+#!/bin/sh
 
+pa.sh -e "include hpucho::tcp"
