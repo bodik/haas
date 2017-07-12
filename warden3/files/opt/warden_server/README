@@ -123,7 +123,8 @@ particular implementation object of the aspect, for example type of logger
 
 		Log: FileLogger, SysLogger
 		DB: MySQL
-		Auth: X509Authenticator, PlainAuthenticator
+		Auth: X509Authenticator, X509NameAuthenticator,
+              X509MixMatchAuthenticator,PlainAuthenticator
 		Validator: JSONSchemaValidator, NoValidator
 		Handler: WardenHandler
 
@@ -144,7 +145,17 @@ object from particular section list is used ("FileLogger" for example).
 
    X509Authenticator: authenticate based on certificate chain validation,
        hostname corresponding with certificate CN or SubjectAltName and
-       optionally shared secret
+       optionally shared secret (note that more clients on one machine
+       will have to have the certificate with the same hostname, clients
+       than can be differentiated by separate secrets).
+       This method is OBSOLETE.
+
+    X509NameAuthenticator: authenticate based on certificate chain validation,
+        certificate CN must correspond with client _name_, NOT hostname.
+
+    X509MixMatchAuthenticator: automatically choose X509Authenticator or
+        X509NameAuthenticator based on existence of 'secret' in query. Allows
+        for seamless transition of clients between two authentication methods.
 
    PlainAuthenticator: authenticate based on client name or shared secret, usable
       over plain HTTP connection or HTTPS without client certificate - note that

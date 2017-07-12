@@ -1,6 +1,6 @@
 SSLEngine on
 
-SSLVerifyClient require
+SSLVerifyClient optional
 SSLVerifyDepth 4
 SSLOptions +StdEnvVars +ExportCertData
 
