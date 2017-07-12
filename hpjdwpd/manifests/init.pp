@@ -11,7 +11,6 @@
 # @param jdwpd_port Service listen port
 # @param warden_server warden server hostname
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param secret warden client secret
 class hpjdwpd (
 	$install_dir = "/opt/jdwpd",
 	$service_user = "jdwpd",
@@ -19,7 +18,6 @@ class hpjdwpd (
 	
 	$warden_server = undef,
 	$warden_server_service = "_warden-server._tcp",
-	$secret = undef,
 ) {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -122,7 +120,7 @@ class hpjdwpd (
 		warden_server => $warden_server_real,
 	}
 	exec { "register jdwpd sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.jdwpd -d ${install_dir}/bin",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.jdwpd -d ${install_dir}/bin",
 		creates => "${install_dir}/bin/registered-at-warden-server",
 		require => File["${install_dir}/bin"],
 	}

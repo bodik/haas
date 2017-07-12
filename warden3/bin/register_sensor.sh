@@ -2,10 +2,10 @@
 # will register sensor at warden server
 
 rreturn() { echo "$2"; exit $1; }
-usage() { echo "Usage: $0 -w <WARDEN_SERVER> -n <CLIENT_NAME> -d <DESTDIR>" 1>&2; exit 1; }
-while getopts "s:n:d:" o; do
+usage() { echo "Usage: $0 -w WARDEN_SERVER -n CLIENT_NAME -d DESTDIR" 1>&2; exit 1; }
+while getopts "w:n:d:" o; do
 	case "${o}" in
-        	s) WARDEN_SERVER=${OPTARG} ;;
+        	w) WARDEN_SERVER=${OPTARG} ;;
 	        n) CLIENT_NAME=${OPTARG} ;;
 		d) DESTDIR=${OPTARG} ;;
 		*) usage ;;
