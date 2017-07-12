@@ -1,10 +1,7 @@
-if [ -f /opt/telnetd/telnetd.py ]; then
-        echo "INFO: HPTELNETDCHECK ======================="
+#!/bin/sh
 
-        for all in hptelnetd; do
-                echo "INFO: pa.sh -v --noop --show_diff -e \"include $all\""
-                pa.sh -v --noop --show_diff -e "include $all"
-        done
-
+if [ -f /opt/telnetd/bin/telnetd.py ]; then
+        echo "INFO: CHECK HPTELNETD =================="
+        pa.sh -v --noop --show_diff -e "include hptelnetd"
 fi
 

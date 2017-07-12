@@ -1,14 +1,10 @@
-if [ -d /var/lib/mysql ]; then
-        echo "INFO: MYSQLCHECK ======================="
+#!/bin/sh
 
-        for all in gmysql::server; do
-                echo "INFO: pa.sh --noop --show_diff -e \"include $all\""
-		pa.sh -v --noop --show_diff -e "include $all"
-        done
+if [ -d /var/lib/mysql ]; then
+        echo "INFO: CHECK MYSQL ======================"
+	pa.sh -v --noop --show_diff -e "include gmysql::server"
 
         echo "INFO: sh /puppet/gmysql/bin/nopass.sh -noop"
         sh /puppet/gmysql/bin/nopass.sh -noop
 fi
-
-
 

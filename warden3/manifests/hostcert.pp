@@ -24,6 +24,7 @@ define warden3::hostcert (
         $warden_server = undef,
         $warden_server_service = "_warden-server._tcp",
 ) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 	#notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
 
         if ($warden_server) {

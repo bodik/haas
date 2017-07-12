@@ -1,10 +1,7 @@
-if [ -f /opt/uchotcp/uchotcp.py ]; then
-        echo "INFO: HPUCHOTCPCHECK ======================="
+#!/bin/sh
 
-        for all in hpucho::tcp; do
-                echo "INFO: pa.sh -v --noop --show_diff -e \"include $all\""
-                pa.sh -v --noop --show_diff -e "include $all"
-        done
-
+if [ -f /opt/uchotcp/bin/uchotcp.py ]; then
+        echo "INFO: CHECK HPUCHOTCP =================="
+        pa.sh -v --noop --show_diff -e "include hpucho::tcp"
 fi
 
