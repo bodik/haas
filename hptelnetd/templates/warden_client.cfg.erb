@@ -1,19 +1,14 @@
 {
-    "url": "https://<%= @warden_server_real %>:45443/warden3",
+	"url": "https://<%= @warden_server_real %>:45443/warden3",
+	//"name": "org.example.warden_client",
+	"idstore": "warden_client.id",
+	"timeout": 60,
+	"get_events_limit": 1000,
 
-    "certfile": "/opt/hostcert/<%= @fqdn %>.crt",
-    "keyfile": "/opt/hostcert/<%= @fqdn %>.key",
-    "cafile": "/opt/hostcert/cachain.pem",
+	"certfile": "/opt/hostcert/<%= @fqdn %>.crt",
+	"keyfile": "/opt/hostcert/<%= @fqdn %>.key",
+	"cafile": "/opt/hostcert/cachain.pem",
 
-    "timeout": 60,
-    "get_events_limit": 1000,
-
-    "errlog": {"level": "debug"},
-    //"filelog": {"file": "warden_client.log", "level": "warning"},
-    "syslog": {"socket": "/dev/log", "facility": "local7", "level": "warning"},
-
-    //"name": "org.example.warden_client",
-    //"secret": "",
-
-    "idstore": "warden_client.id"
+	"errlog": {"level": "debug"},
+	"syslog": {"socket": "/dev/log", "facility": "local7", "level": "warning"}
 }

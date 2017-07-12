@@ -10,29 +10,25 @@
 # @param port_skip list of ports to skip
 #
 # @param warden_server warden server hostname
-# @param warden_server_auto warden server autodiscovery enable flag
 # @param warden_server_service avahi name of warden server service for autodiscovery
 class hpucho::tcp (
-	String $install_dir = "/opt/uchotcp",
-	String $service_user = "uchotcp",
-	Integer $port_start = 1,
-	Integer $port_end = 9999,
-	Array $port_skip = "[22,1433,65535]",
+	$install_dir = "/opt/uchotcp",
+	$service_user = "uchotcp",
+	$port_start = 1,
+	$port_end = 9999,
+	$port_skip = "[22,1433,65535]",
 
-	String $warden_server = undef,
-	Boolean $warden_server_auto = true,
-	String $warden_server_service = "_warden-server._tcp",
+	$warden_server = undef,
+	$warden_server_service = "_warden-server._tcp",
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server
-        } elsif ( $warden_server_auto == true ) {
+        } else {
                 include metalib::avahi
                 $warden_server_real = avahi_findservice($warden_server_service)
-        }
-
-
+	}
 
 	# application
 
@@ -131,7 +127,7 @@ class hpucho::tcp (
 		warden_server => $warden_server_real,
 	}
 	exec { "register uchotcp sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.uchotcp -d ${install_dir}/bin",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.uchotcp -d ${install_dir}/bin",
 		creates => "${install_dir}/bin/registered-at-warden-server",
 		require => File["${install_dir}/bin"],
 	}

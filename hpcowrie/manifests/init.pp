@@ -1,11 +1,27 @@
-#!/usr/bin/puppet apply
-
+# Installs Cowrie honeypot
+#
+# @example Declaring the class
+#   class { "hpcowrie": }
+#
+# @param install_dir Installation directory
+# @param cowrie_port Service listen port
+# @param cowrie_user User to run service as
+# @param cowrie_ssh_version_string SSH version announcement
+#
+# @param mysql_host MySQL server with Cowrie database to connect
+# @param mysql_port Port of MySQL server to connect
+# @param mysql_db Database to store Cowrie data
+# @param mysql_password Password to MySQL server authtentication
+#
+# @param warden_server warden server hostname
+# @param warden_server_service avahi name of warden server service for autodiscovery
+# @param log_history The number of days the data is stored on
 class hpcowrie (
 	$install_dir = "/opt/cowrie",
 	
 	$cowrie_port = 45356,
-	$cowrie_ssh_version_string = undef,
 	$cowrie_user = "cowrie",
+	$cowrie_ssh_version_string = undef,
 
 	$mysql_host = "localhost",
 	$mysql_port = 3306,
@@ -13,7 +29,6 @@ class hpcowrie (
 	$mysql_password = undef,
 	
 	$warden_server = undef,
-	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
 
 	$log_history = 14,
@@ -22,12 +37,11 @@ class hpcowrie (
 
 	if ($warden_server) {
                 $warden_server_real = $warden_server
-        } elsif ( $warden_server_auto == true ) {
+        } else {
                 include metalib::avahi
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
 
-	
 	#mysql server
 	#Replaced by gmysql component 
 	class { "gmysql::server": }
@@ -237,7 +251,7 @@ class hpcowrie (
 		warden_server => $warden_server_real,
 	}
 	exec { "register cowrie sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.cowrie -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.cowrie -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => Exec["clone cowrie"],
 	}
