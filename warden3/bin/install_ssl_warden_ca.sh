@@ -31,7 +31,7 @@ fi
 
 
 echo "INFO: generating ${DESTDIR}/${NAME}.key"
-openssl req -newkey rsa:4096 -nodes -keyout "${FQDN}.key" -out "${NAME}.csr" -subj "/CN=${NAME}/"
+openssl req -newkey rsa:4096 -nodes -keyout "${NAME}.key" -out "${NAME}.csr" -subj "/CN=${NAME}/"
 
 echo "INFO: signing ${NAME}.csr"
 #TODO: (in)secure
