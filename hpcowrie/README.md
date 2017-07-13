@@ -8,7 +8,7 @@ Installs Cowrie honeypot
 
 **cowrie_port** -- Service listen port
 
-**cowrie_user** -- User to run service as
+**service_user** -- User to run service as
 
 **cowrie_ssh_version_string** -- SSH version announcement
 
