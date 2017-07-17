@@ -3,7 +3,7 @@
 
 rreturn() { echo "$2"; exit $1; }
 usage() { echo "Usage: $0 -c WARDEN_CA_URL -n CLIENT_NAME -d DESTDIR" 1>&2; exit 1; }
-while getopts "w:n:d:" o; do
+while getopts "c:n:d:" o; do
 	case "${o}" in
         	c) WARDEN_CA_URL=${OPTARG} ;;
 	        n) CLIENT_NAME=${OPTARG} ;;
@@ -21,6 +21,7 @@ test -n "$DESTDIR" || rreturn 1 "ERROR: missing DESTDIR"
 if [ -f "${DESTDIR}/registered-at-warden-server" ]; then exit 0; fi
 
 URL="${WARDEN_CA_URL}/register_sensor?client_name=${CLIENT_NAME}"
+echo $URL
 curl --silent --write-out '%{http_code}' "${URL}" | grep 200 1>/dev/null 2>/dev/null
 if [ $? -eq 0 ]; then
 	echo "$URL" > ${DESTDIR}/registered-at-warden-server

@@ -12,6 +12,7 @@ define warden3::hostcert (
 
         $warden_ca_url = undef,
         $warden_ca_service = "_warden-server-ca._tcp",
+	$client_name = undef,
 ) {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -26,7 +27,7 @@ define warden3::hostcert (
 	ensure_resource( 'file', "$destdir", { "ensure" => directory, "owner" => "root", "group" => "root", "mode" => "0755",} )
 
 	exec { "gen cert ${name}":
-		command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca.sh -c ${warden_ca_url_real} -d ${destdir}",
+		command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca.sh -c ${warden_ca_url_real} -n ${client_name} -d ${destdir}",
 		creates => "${destdir}/${fqdn}.crt",
 		require => [File["$destdir"], Package["curl"]],
 	}

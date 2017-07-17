@@ -131,7 +131,7 @@ class warden3::server (
         ensure_resource( 'lamp::apache2::a2dismod', "cgid", {} )
 	ensure_resource( 'lamp::apache2::a2enmod', "ssl", {} )
 
-	ensure_resource('warden3::hostcert', "hostcert", { "warden_ca_url" => "https://${fqdn}:${service_ca_port}/", "require" => File["/etc/avahi/services/warden-server.service"],} )
+	ensure_resource('warden3::hostcert', "hostcert", { "warden_ca_url" => "http://${fqdn}:${service_ca_port}", "client_name" => "${fqdn}", "require" => File["/etc/avahi/services/warden-server.service"],} )
 	file { "/etc/apache2/sites-enabled/00warden3.conf":
 		content => template("${module_name}/warden_server-virtualhost.conf.erb"),
 		owner => "root", group => "root", mode => "0644",
