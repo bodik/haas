@@ -14,8 +14,10 @@
 # @param mysql_db Database to store Cowrie data
 # @param mysql_password Password to MySQL server authtentication
 #
-# @param warden_server warden server hostname
+# @param warden_server_url warden server url to connect
+# @param warden_ca_url warden ca url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
+# @param warden_ca_service avahi name of warden ca service for autodiscovery
 class hpcowrie (
 	$install_dir = "/opt/cowrie",
 	
@@ -29,16 +31,25 @@ class hpcowrie (
 	$mysql_db = "cowrie",
 	$mysql_password = undef,
 	
-	$warden_server = undef,
+	$warden_server_url = undef,
+	$warden_ca_url = undef,
 	$warden_server_service = "_warden-server._tcp",
+	$warden_ca_service = "_warden-server-ca._tcp",
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($warden_server) {
-                $warden_server_real = $warden_server
+	if ($warden_server_url) {
+                $warden_server_url_real = $warden_server_url
         } else {
                 include metalib::avahi
-                $warden_server_real = avahi_findservice($warden_server_service)
+                $warden_server_url_real = avahi_findservice($warden_server_service)
+        }
+
+	if ($warden_ca_url) {
+                $warden_ca_url_real = $warden_server_url
+        } else {
+                include metalib::avahi
+                $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
 	#mysql server
@@ -243,10 +254,10 @@ class hpcowrie (
 	}
 	
 	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
+		warden_ca_url => $warden_ca_url_real,
 	}
 	exec { "register cowrie sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.cowrie -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.cowrie -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => Exec["clone cowrie"],
 	}

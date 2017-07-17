@@ -1,38 +1,34 @@
-# == Class: warden3::tester
-#
 # Class will ensure installation of example warden3 testing client. Tester will generate ammount of idea messages and sends them to w3 server.
 # Used for testing.
 #
-# TODO: warden server port selection missing
+# @param install_dir directory to install w3 server
 #
-# === Parameters
-#
-# [*install_dir*]
-#   directory to install w3 server
-#
-# [*warden_server*]
-#   name or ip of warden server, overrides autodiscovery
-#
-# [*warden_server_auto*]
-#   enables warden server autodiscovery
-#
-# [*warden_server_service*]
-#   service name to be discovered
-#
+# @param warden_server_url warden server url to connect
+# @param warden_ca_url warden ca url to connect
+# @param warden_server_service avahi name of warden server service for autodiscovery
+# @param warden_ca_service avahi name of warden ca service for autodiscovery
 class warden3::tester (
 	$install_dir = "/opt/warden_tester",
 	
-	$warden_server = undef,
-	$warden_server_auto = true,
-	$warden_server_service = "_warden-server._tcp",
+        $warden_server_url = undef,
+        $warden_ca_url = undef,
+        $warden_server_service = "_warden-server._tcp",
+        $warden_ca_service = "_warden-server-ca._tcp",
 ) {
-	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
+        notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($warden_server) {
-                $warden_server_real = $warden_server
-        } elsif ( $warden_server_auto == true ) {
+        if ($warden_server_url) {
+                $warden_server_url_real = $warden_server_url
+        } else {
                 include metalib::avahi
-                $warden_server_real = avahi_findservice($warden_server_service)
+                $warden_server_url_real = avahi_findservice($warden_server_service)
+        }
+
+        if ($warden_ca_url) {
+                $warden_ca_url_real = $warden_server_url
+        } else {
+                include metalib::avahi
+                $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
 	# warden_client pro tester
@@ -52,10 +48,10 @@ class warden3::tester (
 		require => File["${install_dir}"],
 	}
 	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
+		warden_ca_url => $warden_ca_url_real,
 	}
 	exec { "register warden_tester sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.tester -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.tester -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}

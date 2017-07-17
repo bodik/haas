@@ -8,8 +8,10 @@
 # @param telnetd_port Service listen port
 # @param real_telnetd_port Service listen port before redirect
 #
-# @param warden_server warden server hostname
+# @param warden_server_url warden server url to connect
+# @param warden_ca_url warden ca url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
+# @param warden_ca_service avahi name of warden ca service for autodiscovery
 
 class hptelnetd (
 	$install_dir = "/opt/telnetd",
@@ -17,16 +19,25 @@ class hptelnetd (
 	$telnetd_port = 63023,
 	$real_telnetd_port = 23,
 	
-	$warden_server = undef,
-	$warden_server_service = "_warden-server._tcp",
+        $warden_server_url = undef,
+        $warden_ca_url = undef,
+        $warden_server_service = "_warden-server._tcp",
+        $warden_ca_service = "_warden-server-ca._tcp",
 ) {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
-	
-	if ($warden_server) {
-                $warden_server_real = $warden_server
+
+        if ($warden_server_url) {
+                $warden_server_url_real = $warden_server_url
         } else {
                 include metalib::avahi
-                $warden_server_real = avahi_findservice($warden_server_service)
+                $warden_server_url_real = avahi_findservice($warden_server_service)
+        }
+
+        if ($warden_ca_url) {
+                $warden_ca_url_real = $warden_server_url
+        } else {
+                include metalib::avahi
+                $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
 	# application
@@ -132,10 +143,10 @@ class hptelnetd (
 	}
 
 	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
+		warden_ca_url => $warden_ca_url_real,
 	}
 	exec { "register telnetd sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.telnetd -d ${install_dir}/bin",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.telnetd -d ${install_dir}/bin",
 		creates => "${install_dir}/bin/registered-at-warden-server",
 		require => File["${install_dir}/bin"],
 	}
