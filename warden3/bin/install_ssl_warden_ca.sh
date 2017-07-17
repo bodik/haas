@@ -35,7 +35,7 @@ openssl req -newkey rsa:4096 -nodes -keyout "${NAME}.key" -out "${NAME}.csr" -su
 
 echo "INFO: signing ${NAME}.csr"
 #TODO: (in)secure
-curl --insecure --fail --data-urlencode @"${NAME}.csr" "${CA_SERVICE}/put_csr"
+curl --insecure --fail --data-urlencode @"${NAME}.csr" "${CA_SERVICE}/put_csr?client_name=${NAME}"
 if [ $? -ne 0 ]; then
 	echo "ERROR: cannot contact warden_ca"
 	exit 1
@@ -43,7 +43,7 @@ fi
 
 SIGNED=0
 while [ ${SIGNED} -eq 0 ]; do
-	curl --insecure --output "${NAME}.crt" "${CA_SERVICE}/get_crt" 2>/dev/null
+	curl --insecure --output "${NAME}.crt" "${CA_SERVICE}/get_crt?client_name=${NAME}" 2>/dev/null
 	openssl x509 -in "${NAME}.crt" 1>/dev/null 2>/dev/null
 	if [ $? -eq 0 ]; then
 		SIGNED=1
