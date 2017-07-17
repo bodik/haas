@@ -5,9 +5,9 @@ FQDN=$(facter fqdn)
 
 rreturn() { echo "$2"; exit $1; }
 usage() { echo "Usage: $0 -c <WARDEN_CA_URL> -d <DESTDIR>" 1>&2; exit 1; }
-while getopts "w:d:" o; do
+while getopts "c:d:" o; do
 	case "${o}" in
-        	w) WARDEN_CA_URL=${OPTARG} ;;
+        	c) WARDEN_CA_URL=${OPTARG} ;;
 		d) DESTDIR=${OPTARG} ;;
 		*) usage ;;
 	esac
