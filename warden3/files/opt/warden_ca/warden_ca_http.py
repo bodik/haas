@@ -20,6 +20,18 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s '+os.path.basena
 local_ip_addresses = [netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr'] for iface in netifaces.interfaces() if netifaces.AF_INET in netifaces.ifaddresses(iface)]
 
 
+def is_valid_hostname(hostname):
+        if (len(hostname) < 1) or (len(hostname) > 253):
+                raise ValueError("ERROR: lenght")
+
+        if hostname[-1] == ".":
+                hostname = hostname[:-1] # strip exactly one dot from the right, if present
+        allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+        if all(allowed.match(x) for x in hostname.split(".")):
+                return True
+        else:
+                raise ValueError("ERROR: invalid characters")
+
 
 
 class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
@@ -73,25 +85,26 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 
 	def get_crt(self):
-		#TODO: validate in case attacker has very nasty PTR
-		hostname = self._resolve_client_address(self.client_address[0])
-		cmd = "/bin/sh warden_ca.sh get_crt %s" % hostname 
+		client_name = self._parse_client_name()
+
+		cmd = "/bin/sh warden_ca.sh get_crt %s" % client_name
                 data = subprocess.check_output(shlex.split(cmd))
 		return (200, data)
 
 
 
 	def put_csr(self):
-		hostname = self._resolve_client_address(self.client_address[0])
-		filename = "ssl/ca/requests/%s.pem" % hostname
+		client_name = self._parse_client_name()
+
+		filename = "ssl/ca/requests/%s.pem" % client_name
 		length = int(self.headers['Content-Length'])
 	        post_data = urllib.unquote(self.rfile.read(length).decode('utf-8'))
 
 		#subseqent calls if we want to reissue certificate for same DN, cloud testing and such...
 		try:
-			cmd = "/bin/sh warden_ca.sh revoke %s" % hostname 
+			cmd = "/bin/sh warden_ca.sh revoke %s" % client_name
 	               	data = subprocess.check_output(shlex.split(cmd))
-			cmd = "/bin/sh warden_ca.sh clean %s" % hostname 
+			cmd = "/bin/sh warden_ca.sh clean %s" % client_name
 			data = subprocess.check_output(shlex.split(cmd))
 		except Exception as e:
 			pass
@@ -101,7 +114,7 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		csr_file.close()
 
 		if config["autosign"]:
-			self._sign(hostname)
+			self._sign(client_name)
 
 		return (200, None)
 		
@@ -113,15 +126,11 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 		if not config["autosign"]:
 			return (403, None)
 
-		qs = parse_qs(urlparse(self.path).query)
-		if "client_name" not in qs:
-			logger.error("parameter client_name missing")
-			return (400, None)
-
+		client_name = self._parse_client_name()
 		hostname = self._resolve_client_address(self.client_address[0])
 	
 		try:
-			cmd = "/usr/bin/python /opt/warden_server/warden_server.py register --name {client_name} --hostname {hostname} --requestor bodik@cesnet.cz --read --write --notest".format(client_name=qs["client_name"][0], hostname=hostname)
+			cmd = "/usr/bin/python /opt/warden_server/warden_server.py register --name {client_name} --hostname {hostname} --requestor bodik@cesnet.cz --read --write --notest".format(client_name=client_name, hostname=hostname)
 			logger.debug(cmd)
 			data = subprocess.check_output(shlex.split(cmd))
 	
@@ -139,6 +148,15 @@ class ca_handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 	
 		return (200, None)
 
+
+	def _parse_client_name(self):
+		qs = parse_qs(urlparse(self.path).query)
+
+		if "client_name" not in qs:
+			raise ValueError("parameter client_name missing")
+		is_valid_hostname(qs["client_name"][0])
+
+		return qs["client_name"][0]
 
 	def _resolve_client_address(self, ip):
 		try:
