@@ -5,6 +5,6 @@ parse_args $@
 
 if [ -f /opt/jdwpd/bin/jdwpd.py ]; then
 	echo "$WARDEN_SERVER" > /opt/jdwpd/bin/registered-at-warden-server
-	pa.sh -e "class { 'hpjdpwd': warden_server => '$WARDEN_SERVER' }"
+	pa.sh -e "class { 'hpjdpwd': warden_server_url => '$WARDEN_SERVER_URL', warden_ca_url => '$WARDEN_CA_URL' }"
 fi
 

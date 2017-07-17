@@ -6,5 +6,5 @@ parse_args $@
 
 # warden_apply get certificate to /opt/hostcert
 
-find /puppet -name "vm_finalize.sh" -exec /bin/sh {} -w "$WARDEN_SERVER" \;
+find /puppet -name "vm_finalize.sh" -exec /bin/sh {} -w "$WARDEN_SERVER_URL" -c "$WARDEN_CA_URL" \;
 
