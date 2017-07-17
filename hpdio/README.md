@@ -6,7 +6,7 @@ Installs Dionaea honeypot
 
 **install_dir** -- Installation directory
 
-**dio_user** -- User to run service as
+**service_user** -- User to run service as
 
 **log_history** -- The number of days the data is stored on
 

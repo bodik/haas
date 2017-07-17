@@ -4,7 +4,7 @@
 #   class { "hpdio": }
 #
 # @param install_dir Installation directory
-# @param dio_user User to run service as
+# @param service_user User to run service as
 # @param log_history The number of days the data is stored on
 #
 # @param warden_server warden server hostname
@@ -12,7 +12,7 @@
 class hpdio (
 	$install_dir = "/opt/dionaea",
 
-	$dio_user = "dionaea",
+	$service_user = "dionaea",
 	$log_history = 14,
 	
 	$warden_server = undef,
@@ -28,7 +28,7 @@ class hpdio (
         }
 
 	# application
-	user { "$dio_user": 	
+	user { "$service_user":
 		ensure => present, 
 		managehome => false,
 		shell => "/bin/bash",
@@ -37,8 +37,8 @@ class hpdio (
 
 	file { "${install_dir}":
 		ensure => directory,
-		owner => "$dio_user", group => "$dio_user", mode => "0755",
-		require => User["$dio_user"],
+		owner => "$service_user", group => "$service_user", mode => "0755",
+		require => User["$service_user"],
 	}
 
 	$packages = ["autoconf", "automake", "build-essential", "check", "cython3", "libcurl4-openssl-dev", "libemu-dev", "libev-dev", "libglib2.0-dev", "libloudmouth1-dev" ,"libnetfilter-queue-dev", "libnl-3-dev", "libpcap-dev", "libssl-dev", "libtool" ,"libudns-dev", "python3", "python3-dev", "python3-yaml", "sqlite3"]
@@ -78,7 +78,7 @@ class hpdio (
 
 	
 	file { "${install_dir}/var":
-		owner => "$dio_user", group => "$dio_user", #nomode
+		owner => "$service_user", group => "$service_user", #nomode
 		recurse => true,
 		require => Exec["build dio"],
 	}
@@ -112,41 +112,41 @@ class hpdio (
 	# warden_client pro kippo (basic w3 client, reporter stuff, run/persistence/daemon)
 	file { "${install_dir}/warden":
 		ensure => directory,
-		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 	}
 	file { "${install_dir}/warden/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
 	$w3c_name = "cz.cesnet.flab.${hostname}"	
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "${dio_user}", group => "${dio_user}", mode => "0640",
+		owner => "${service_user}", group => "${service_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
 
 	#reporting
 	file { "${install_dir}/warden/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+                owner => "${service_user}", group => "${service_user}", mode => "0755",
         }
 	file { "${install_dir}/warden/warden_sender_dio.py":
 		source => "puppet:///modules/${module_name}/sender/warden_sender_dio.py",
-		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
 	$anonymised = "yes"
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
 	file { "${install_dir}/warden/warden_client_dio.cfg":
 		content => template("${module_name}/warden_client_dio.cfg.erb"),
-		owner => "${dio_user}", group => "${dio_user}", mode => "0640",
+		owner => "${service_user}", group => "${service_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
 	file { "/etc/cron.d/warden_dio":
 		content => template("${module_name}/warden_dio.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => User["$dio_user"],
+		require => User["$service_user"],
 	}
 
 	warden3::hostcert { "hostcert":

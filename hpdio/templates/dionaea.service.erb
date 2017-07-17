@@ -5,5 +5,5 @@ Wants=ntpd.service
 After=network.target ntpd.service
 
 [Service]
-ExecStart=<%= @install_dir %>/bin/dionaea -u <%= @dio_user %> -g <%= @dio_user %> -w <%= @install_dir %> -p <%= @install_dir %>/var/dionaea.pid
+ExecStart=<%= @install_dir %>/bin/dionaea -u <%= @service_user %> -g <%= @service_user %> -w <%= @install_dir %> -p <%= @install_dir %>/var/dionaea.pid
 

@@ -16,7 +16,7 @@
     rotate 12
     compress
     prerotate
-        su -c 'cd <%= @install_dir %>/warden && ./warden_sender_dio.py 1>/dev/null 2>/dev/null' <%= @dio_user %>
+        su -c 'cd <%= @install_dir %>/warden && ./warden_sender_dio.py 1>/dev/null 2>/dev/null' <%= @service_user %>
     endscript
     postrotate
 	invoke-rc.d dionaea restart >/dev/null
