@@ -16,7 +16,7 @@ define warden3::hostcert (
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
         if ($warden_ca_url) {
-                $warden_ca_url_real = $warden_server_url
+                $warden_ca_url_real = $warden_ca_url
         } else {
                 include metalib::avahi
                 $warden_ca_url_real = avahi_findservice($warden_ca_service)
