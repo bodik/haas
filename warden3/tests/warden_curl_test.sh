@@ -12,7 +12,7 @@
 . /puppet/metalib/bin/lib.sh
 tmpfile=/tmp/warden-server.selftest
 
-url="$(/puppet/metalib/bin/avahi_findservice.sh _warden-server-ca._tcp)"
+url="$(/puppet/metalib/bin/avahi_findservice.sh _warden-server._tcp)"
 client="cz.cesnet.flab.$(facter hostname).puppet-test-client"
 secret=""
 keyfile="/opt/hostcert/$(facter fqdn).key"
