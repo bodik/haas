@@ -255,6 +255,7 @@ class hpcowrie (
 	
 	warden3::hostcert { "hostcert":
 		warden_ca_url => $warden_ca_url_real,
+		client_name => "${fqdn}",
 	}
 	exec { "register cowrie sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.cowrie -d ${install_dir}",

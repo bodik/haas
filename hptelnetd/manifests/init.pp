@@ -143,8 +143,9 @@ class hptelnetd (
 	}
 
 	warden3::hostcert { "hostcert":
-		warden_ca_url => $warden_ca_url_real,
-	}
+                warden_ca_url => $warden_ca_url_real,
+                client_name => "${fqdn}",
+        }
 	exec { "register telnetd sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.telnetd -d ${install_dir}/bin",
 		creates => "${install_dir}/bin/registered-at-warden-server",

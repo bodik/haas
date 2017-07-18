@@ -161,8 +161,10 @@ class hpdio (
 	}
 
 	warden3::hostcert { "hostcert":
-		warden_ca_url => $warden_ca_url_real,
-	}
+                warden_ca_url => $warden_ca_url_real,
+                client_name => "${fqdn}",
+        }
+
 	exec { "register dio sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.dionaea -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
