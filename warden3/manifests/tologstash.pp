@@ -2,6 +2,8 @@
 #
 # @param install_dir directory to install the component
 # @param tologstash_user user to run the service
+# @param logstash_server_warden_server logstash server host
+# @param logstash_server_warden_port port for warden stream input
 #
 # @param warden_server_url warden server url to connect
 # @param warden_ca_url warden ca url to connect
@@ -11,6 +13,8 @@ class warden3::tologstash (
 	$install_dir = "/opt/warden_tologstash",
 
 	$tologstash_user = "tologstash",
+	$logstash_server = "localhost",
+	$logstash_server_warden_port = 45994,
 	
         $warden_server_url = undef,
         $warden_ca_url = undef,
