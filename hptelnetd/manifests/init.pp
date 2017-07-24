@@ -144,6 +144,6 @@ class hptelnetd (
 	
 	warden3::racert { "${w3c_name}":
                 destdir => "${install_dir}/racert",
-                require => File["${install_dir}/bin"],
+                require => File["${install_dir}"],
         }
 }
