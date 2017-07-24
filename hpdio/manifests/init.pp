@@ -130,7 +130,7 @@ class hpdio (
 		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}"	
+	$w3c_name = "cz.cesnet.flab.${hostname}.dionaea"	
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "${service_user}", group => "${service_user}", mode => "0640",
@@ -160,14 +160,8 @@ class hpdio (
 		require => User["$service_user"],
 	}
 
-	warden3::hostcert { "hostcert":
-                warden_ca_url => $warden_ca_url_real,
-                client_name => "${fqdn}",
+	warden3::racert { "${w3c_name}":
+		destdir => "${install_dir}/racert",
+		Exec["build dio"],
         }
-
-	exec { "register dio sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.dionaea -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => Exec["build dio"],
-	}
 }
