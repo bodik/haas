@@ -19,7 +19,6 @@
 class warden3::server (
 	$install_dir = "/opt/warden_server",
 	$service_port = 45443,
-	$service_ca_port = 45444,
 
 	$mysql_host = "localhost",
 	$mysql_port = 3306,

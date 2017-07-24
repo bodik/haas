@@ -27,6 +27,7 @@ class warden3::ca (
 	$install_dir = "/opt/warden_ca",
 	$ca_user = "wardenca",
 	$ca_name = "warden3ca",
+	$service_port = 45444,
 
 	$avahi_enable = true,
 ) {
