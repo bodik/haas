@@ -105,7 +105,7 @@ class hpucho::tcp (
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/bin"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}"
+	$w3c_name = "cz.cesnet.flab.${hostname}.uchotcp"
 	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "root", group => "root", mode => "0644",
@@ -134,13 +134,8 @@ class hpucho::tcp (
                 owner => "root", group => "root", mode => "0644",
 	}
 
-	warden3::hostcert { "hostcert":
-                warden_ca_url => $warden_ca_url_real,
-                client_name => "${fqdn}",
+        warden3::racert { "${w3c_name}":
+                destdir => "${install_dir}/racert",
+                require => File["${install_dir}/bin"],
         }
-	exec { "register uchotcp sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.uchotcp -d ${install_dir}/bin",
-		creates => "${install_dir}/bin/registered-at-warden-server",
-		require => File["${install_dir}/bin"],
-	}
 }
