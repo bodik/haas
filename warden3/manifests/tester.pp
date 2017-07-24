@@ -41,21 +41,17 @@ class warden3::tester (
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}"
+	$w3c_name = "cz.cesnet.flab.${hostname}.tester"
 	file { "${install_dir}/warden_client_tester.cfg":
 		content => template("${module_name}/warden_client_tester.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	warden3::hostcert { "hostcert":
-		warden_ca_url => $warden_ca_url_real,
-		client_name => "${fqdn}",
-	}
-	exec { "register warden_tester sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.tester -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => File["${install_dir}"],
-	}
+
+	warden3::racert { "${w3c_name}":
+                destdir => "${install_dir}/racert",
+                require => File["${install_dir}"],
+        }
 
 	file { "${install_dir}/tester.py":
 		source => "puppet:///modules/${module_name}/opt/warden_tester/tester.py",
