@@ -129,6 +129,7 @@ class hpjdwpd (
 	}
 
 	warden3::racert { "${w3c_name}":
-		destdir => "${install_dir}/racert"
+		destdir => "${install_dir}/racert",
+		require => File["${install_dir}"],
 	}
 }

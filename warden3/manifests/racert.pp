@@ -35,9 +35,9 @@ define warden3::racert (
 	}
 
 	exec { "register ${name} sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${name} -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => File["${install_dir}/bin"],
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${name} -d ${destdir}",
+		creates => "${destdir}/registered-at-warden-server",
+		require => File["$destdir"],
 	}
 
 }
