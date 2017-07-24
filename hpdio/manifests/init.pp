@@ -162,6 +162,6 @@ class hpdio (
 
 	warden3::racert { "${w3c_name}":
 		destdir => "${install_dir}/racert",
-		Exec["build dio"],
+		require => Exec["build dio"],
         }
 }
