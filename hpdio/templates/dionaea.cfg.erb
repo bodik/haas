@@ -1,5 +1,5 @@
 [dionaea]
-download.dir=/opt/dionaea/var/dionaea/binaries/
+download.dir=<%= @install_dir %>/var/dionaea/binaries/
 modules=curl,python,nfq,emu,pcap
 processors=filter_streamdumper,filter_emu
 
@@ -17,11 +17,11 @@ listen.mode=getifaddrs
 # ssl.default.ou=
 
 [logging]
-default.filename=/opt/dionaea/var/dionaea/dionaea.log
+default.filename=<%= @install_dir %>/var/dionaea/dionaea.log
 default.levels=all,-debug,-warning
 default.domains=*
 
-errors.filename=/opt/dionaea/var/dionaea/dionaea-errors.log
+errors.filename=<%= @install_dir %>/var/dionaea/dionaea-errors.log
 errors.levels=warning,error
 errors.domains=*
 
@@ -40,7 +40,7 @@ next=streamdumper
 
 [processor.streamdumper]
 name=streamdumper
-config.path=/opt/dionaea/var/dionaea/bistreams/%Y-%m-%d/
+config.path=<%= @install_dir %>/var/dionaea/bistreams/%Y-%m-%d/
 
 [processor.emu]
 name=emu
@@ -65,8 +65,8 @@ lookup_ethernet_addr=no
 [module.python]
 imports=dionaea.log,dionaea.services,dionaea.ihandlers
 sys_paths=default
-service_configs=/opt/dionaea/etc/dionaea/services-enabled/*.yaml
-ihandler_configs=/opt/dionaea/etc/dionaea/ihandlers-enabled/*.yaml
+service_configs=<%= @install_dir %>/etc/dionaea/services-enabled/*.yaml
+ihandler_configs=<%= @install_dir %>/etc/dionaea/ihandlers-enabled/*.yaml
 
 [module.pcap]
 any.interface=any
