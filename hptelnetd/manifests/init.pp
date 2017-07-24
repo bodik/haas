@@ -22,7 +22,7 @@ class hptelnetd (
         $warden_server_url = undef,
         $warden_ca_url = undef,
         $warden_server_service = "_warden-server._tcp",
-        $warden_ca_service = "_warden-server-ca._tcp",
+        $warden_ca_service = "_warden-ca._tcp",
 ) {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 

@@ -8,8 +8,8 @@
   <name replace-wildcards="yes">%h</name>
 
   <service>
-    <type>_warden-server._tcp</type>
-    <txt-record>url=https://<%= @fqdn %>:<%= @service_port %>/warden3</txt-record>
+    <type>_warden-ca._tcp</type>
+    <txt-record>url=http://<%= @fqdn %>:<%= @service_ca_port %>/</txt-record>
   </service>
 
 </service-group>

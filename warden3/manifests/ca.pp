@@ -27,8 +27,21 @@ class warden3::ca (
 	$install_dir = "/opt/warden_ca",
 	$ca_user = "wardenca",
 	$ca_name = "warden3ca",
+
+	$avahi_enable = true,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
+
+	if ($avahi_enable) {
+		include metalib::avahi
+	        file { "/etc/avahi/services/warden-ca.service":
+	                content => template("${module_name}/warden_ca.avahi-service.erb"),
+	                owner => "root", group => "root", mode => "0644",
+	                require => Package["avahi-daemon"],
+	                notify => Service["avahi-daemon"],
+	        }
+	}
+
 
 	# deps
 	package { "python-netifaces": ensure => installed, }	
