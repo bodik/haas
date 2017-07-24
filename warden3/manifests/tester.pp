@@ -42,8 +42,8 @@ class warden3::tester (
 		require => File["${install_dir}"],
 	}
 	$w3c_name = "cz.cesnet.flab.${hostname}.tester"
-	file { "${install_dir}/warden_client_tester.cfg":
-		content => template("${module_name}/warden_client_tester.cfg.erb"),
+	file { "${install_dir}/warden_tester.cfg":
+		content => template("${module_name}/warden_tester.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
