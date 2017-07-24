@@ -222,7 +222,7 @@ class hpcowrie (
 		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}"
+	$w3c_name = "cz.cesnet.flab.${hostname}.cowrie"
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "${service_user}", group => "${service_user}", mode => "0640",
@@ -252,14 +252,9 @@ class hpcowrie (
 		owner => "root", group => "root", mode => "0644",
 		require => User["$service_user"],
 	}
-	
-	warden3::hostcert { "hostcert":
-		warden_ca_url => $warden_ca_url_real,
-		client_name => "${fqdn}",
-	}
-	exec { "register cowrie sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -c ${warden_ca_url_real} -n ${w3c_name}.cowrie -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => Exec["clone cowrie"],
+   
+	warden3::racert { "${w3c_name}":
+                destdir => "${install_dir}/racert",
+                require => Exec["clone cowrie"],
 	}
 }
