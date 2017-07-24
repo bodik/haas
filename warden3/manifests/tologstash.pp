@@ -70,7 +70,7 @@ class warden3::tologstash (
 	file { "${install_dir}/warden_tologstash.py":
 		source => "puppet:///modules/${module_name}/opt/warden_tologstash/warden_tologstash.py",
 		owner => "${tologstash_user}", group => "${tologstash_user}", mode => "0750",
-		require => File["${install_dir}"],
+		require => File["${install_dir}/warden_client.cfg", "${install_dir}/warden_tologstash.cfg", "${install_dir}/warden_client.py"],
 		notify => Service["warden_tologstash"],
 	}
 	file { "${install_dir}/warden_tologstash.cfg":
@@ -84,13 +84,7 @@ class warden3::tologstash (
 	file { "/etc/systemd/system/warden_tologstash.service":
 		content => template("${module_name}/warden_tologstash.service.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => [
-				File[
-					"${install_dir}/warden_client.cfg",
-					"${install_dir}/warden_tologstash.cfg",
-					"${install_dir}/warden_client.py",
-					"${install_dir}/warden_tologstash.py"
-				], Exec["register warden_tologstash sensor"]],
+		require => [ File["${install_dir}/warden_tologstash.py"], Warden3::Racert["${w3c_name}"] ],
 	}
 	service { "warden_tologstash":
 		enable => true,

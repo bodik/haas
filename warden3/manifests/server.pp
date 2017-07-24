@@ -131,15 +131,18 @@ class warden3::server (
         ensure_resource( 'lamp::apache2::a2dismod', "cgid", {} )
 	ensure_resource( 'lamp::apache2::a2enmod', "ssl", {} )
 
-	ensure_resource('warden3::hostcert', "hostcert", { "warden_ca_url" => "http://${fqdn}:${service_ca_port}", "client_name" => "${fqdn}", "require" => File["/etc/avahi/services/warden-server.service"],} )
+	warden3::racert { "${fqdn}":
+                destdir => "${install_dir}/racert",
+                require => File["${install_dir}"],
+        }
+
 	file { "/etc/apache2/sites-enabled/00warden3.conf":
 		content => template("${module_name}/warden_server-virtualhost.conf.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => [
 			Package["apache2", "libapache2-mod-wsgi"], 
-			Warden3::Hostcert["hostcert"],
-			Lamp::Apache2::A2enmod["ssl"],
-			##Exec["a2enmod ssl"],
+			Warden3::Racert["${fqdn}"],
+			Lamp::Apache2::A2enmod["ssl"]
 			],
 		notify => Service["apache2"],
 	}

@@ -10,13 +10,13 @@ Listen *:<%= @service_port %>
 
 	#warden3
 	SSLEngine on
-	SSLVerifyClient require
+	SSLVerifyClient optional
 	SSLVerifyDepth 4
 	SSLOptions +StdEnvVars +ExportCertData
 	#SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
-	SSLCertificateFile      /opt/hostcert/<%= @fqdn %>.crt
-	SSLCertificateKeyFile   /opt/hostcert/<%= @fqdn %>.key
-	SSLCACertificateFile    /opt/hostcert/cachain.pem
+	SSLCertificateFile <%= @install_dir %>/racert/<%= @fqdn %>.crt
+	SSLCertificateKeyFile <%= @install_dir %>/racert/<%= @fqdn %>.key
+	SSLCACertificateFile <%= @install_dir %>/racert/cachain.pem
 
 	WSGIScriptAlias /warden3 <%= @install_dir %>/warden_server.wsgi
 	<DirectoryMatch "<%= @install_dir %>/warden_server.wsgi">

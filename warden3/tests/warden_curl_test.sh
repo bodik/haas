@@ -15,9 +15,9 @@ tmpfile=/tmp/warden-server.selftest
 url="$(/puppet/metalib/bin/avahi_findservice.sh _warden-server._tcp)"
 client="cz.cesnet.flab.$(facter hostname).puppet-test-client"
 secret=""
-keyfile="/opt/hostcert/$(facter fqdn).key"
-certfile="/opt/hostcert/$(facter fqdn).crt"
-cafile="/opt/hostcert/cachain.pem"
+keyfile="/opt/warden_server/racert/$(facter fqdn).key"
+certfile="/opt/warden_server/racert/$(facter fqdn).crt"
+cafile="/opt/warden_server/racert/cachain.pem"
 
 
 echo "Test  404"
