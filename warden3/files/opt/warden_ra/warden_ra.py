@@ -353,6 +353,26 @@ class CertHandler(ObjectBase):
         return [("Content-Type", "application/x-pem-file")], newcert.as_pem()
 
 
+    @expose(read=1, debug=1)
+    def getToken(self, csr_data=None, name=None, password=None):
+        if not (name):
+            raise self.req.error(message="Wrong or missing arguments", error=400, name=name)
+
+       try:
+               register_client(self.registry, name[0], admins="bodik@cesnet.cz")
+       except:
+               pass
+       applicant(self.registry, name[0], password=password[0])
+        return [("Content-Type", "text/plain")], ""
+
+    @expose(read=1, debug=1)
+    def getCacert(self, csr_data=None, password=None):
+       with open("/opt/warden_server/ca/certs/ca.cert.pem", "r") as f:
+               data = f.read()
+        return [("Content-Type", "text/plain")], data
+
+
+
 # Order in which the base objects must get initialized
 section_order = ("log", "auth", "registry", "handler", "server")
 
