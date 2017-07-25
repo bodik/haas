@@ -14,8 +14,8 @@ Listen *:<%= @service_port %>
 	SSLVerifyDepth 4
 	SSLOptions +StdEnvVars +ExportCertData
 	#SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
-	SSLCertificateFile <%= @install_dir %>/racert/<%= @fqdn %>.crt
-	SSLCertificateKeyFile <%= @install_dir %>/racert/<%= @fqdn %>.key
+	SSLCertificateFile <%= @install_dir %>/racert/cert.pem
+	SSLCertificateKeyFile <%= @install_dir %>/racert/key.pem
 	SSLCACertificateFile <%= @install_dir %>/racert/cachain.pem
 
 	WSGIScriptAlias /warden3 <%= @install_dir %>/warden_server.wsgi

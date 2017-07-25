@@ -20,12 +20,12 @@ test -n "$DESTDIR" || rreturn 1 "ERROR: missing DESTDIR"
 #if file exist, sensor is already registred
 if [ -f "${DESTDIR}/registered-at-warden-server" ]; then exit 0; fi
 
-URL="${WARDEN_CA_URL}/register_sensor?client_name=${CLIENT_NAME}"
+URL="${WARDEN_CA_URL}/registerSensor?name=${CLIENT_NAME}&password=DUMMY"
 curl --silent --write-out '%{http_code}' "${URL}" | grep 200 1>/dev/null 2>/dev/null
 if [ $? -eq 0 ]; then
 	echo "$URL" > ${DESTDIR}/registered-at-warden-server
 	exit 0
 else
-	echo "ERROR: cannt register at warden server"
+	echo "ERROR: cannt register at warden ra"
 	exit 1
 fi

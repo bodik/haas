@@ -135,7 +135,7 @@ class warden3::server (
                 require => File["${install_dir}"],
         }
 
-	file { "/etc/apache2/sites-enabled/00warden3.conf":
+	file { "/etc/apache2/sites-enabled/20warden3.conf":
 		content => template("${module_name}/warden_server-virtualhost.conf.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => [
