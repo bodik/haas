@@ -1,0 +1,33 @@
+commit cee30d4a30b6ae50bc3fef7d76e45284f11819ed
+Author: root <root@dhcp-flab2-52.cesnet.cz>
+Date:   Tue Jul 25 17:39:36 2017 +0200
+
+    warden_ra warden_apply url as parameter
+
+diff --git a/warden3/files/opt/warden_ra/warden_apply.sh b/warden3/files/opt/warden_ra/warden_apply.sh
+old mode 100644
+new mode 100755
+index 5d5f971..77f3a93
+--- a/warden3/files/opt/warden_ra/warden_apply.sh
++++ b/warden3/files/opt/warden_ra/warden_apply.sh
+@@ -1,15 +1,15 @@
+ #!/bin/bash
+ 
+-url='https://warden-hub.cesnet.cz/warden-ra/getCert'
++url="$1"
+ key=key.pem
+ csr=csr.pem
+ cert=cert.pem
+ result=${TMPDIR:-${TMP:-/tmp}}/cert.$$.$RANDOM
+ config=${TMPDIR:-${TMP:-/tmp}}/conf.$$.$RANDOM
+-client="$1"
+-password="$2"
+-incert="$2"
+-inkey="$3"
++client="$2"
++password="$3"
++incert="$3"
++inkey="$4"
+ 
+ trap 'rm -f "$config $result"' INT TERM HUP EXIT
+ 
