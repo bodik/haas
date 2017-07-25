@@ -392,7 +392,7 @@ class CertHandler(ObjectBase):
 
         hostname = self._resolve_client_address(self.req.env["REMOTE_ADDR"])
         try:
-            cmd = "/usr/bin/python /opt/warden_server/warden_server.py register --name {client_name} --hostname {hostname} --requestor bodik@cesnet.cz --read --write --notest".format(client_name=name, hostname=hostname)
+            cmd = "/usr/bin/python /opt/warden_server/warden_server.py register --name {client_name} --hostname {hostname} --requestor bodik@cesnet.cz --read --write --notest".format(client_name=name[0], hostname=hostname)
             self.log.debug(cmd)
             data = subprocess.check_output(shlex.split(cmd))
         except subprocess.CalledProcessError as e:
