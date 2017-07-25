@@ -35,7 +35,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-curl --insecure --output "cachain.pem" "${WARDEN_RA_URL}/getCacert?password=${TOKEN}" 2>/dev/null
+curl --insecure --output "cachain.pem" "${WARDEN_RA_URL}/getCacert?password=DUMMY" 2>/dev/null
 
 find . -type f -exec chmod 644 {} \;
 
