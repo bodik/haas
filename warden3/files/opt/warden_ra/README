@@ -1,0 +1,233 @@
+Warden Registration Authority for Warden 3.X
+============================================
+
+Introduction
+------------
+
+Warden RA is a certificate registration authority for Warden_ server.
+It is meant to support the client registration process and simplification
+of the credential transport.
+
+As Warden clients are authenticated by X509 certificate, the usual certificate
+generation process can be used - local key and certificate request gets
+generated, the request is submitted to registration authority, and after
+review, certificate is issued and delivered back.
+
+However in centralised Warden setup, it is useful to be able to preallow
+certificate for particular client during negotiation phase (thus removing
+another round-trip).
+
+This is done by issuing 'token' by Warden registration officer during client
+registration, which is just a oneshot password, allowing sending the request
+and getting new certificate in one step through web API.
+
+Password is meant only for completely new clients or unusual situations,
+however RA also allows prolongation - generating new certificate by using
+old certificate (which must be still valid, of course) instead of password.
+
+The application script, which can be distributed to newly registered clients,
+is also included.
+
+Dependencies
+------------
+
+ 1. Platform
+
+    Python 2.7+
+    Apache 2.2+
+    mod_wsgi 3.3+
+    EJBCA_ 3.9+
+
+
+Registration process
+--------------------
+
+New client credentials
+``````````````````````
+
+After succesful negotiation of new Warden client parameters, the registration
+officer enables new certificate generation by issuing (on the server side):
+
+    warden_ra.py applicant --name org.example.warden.client
+
+The tool generates and sets one time password on the registration authority
+side, and this password can be sent (preferably through the secured channel)
+to the new client administrator along with other setup information.
+
+The client administrator runs the application script with application
+password:
+
+    warden_apply.sh org.example.warden.client P4SSW0RD
+
+The script creates new X509 key, CSR certificate request and makes call to
+the Warden RA web service, where it obtains the new complete certificate.
+
+
+Prolonging existing client credentials
+``````````````````````````````````````
+
+The client administrator runs the application script with his existing valid
+Warden credentials, which he needs to prolong:
+
+    warden_apply.sh org.example.warden.client cert.pem key.pem
+
+The script creates new X509 key, CSR certificate request and makes call to
+the Warden RA web service, where it obtains the new complete certificate.
+
+
+Installation
+------------
+
+As for now, correctly configured and running EJBCA_ PKI is necessary. PKI part
+of the RA is however pluggable, so simple openssl backend is also planned.
+
+
+This depends heavily on your distribution and Apache configuration.
+Basically you need to create and include apache.conf:
+
+  Include /opt/warden_ra/apache22.conf
+
+or paste the contents into whichever Directory, Location or VirtualHost
+you dedicate for Warden RA. Note that you have to use different host than
+the one for Warden server, as Warden RA needs different Apache options
+for SSL authentication.
+
+You may need to change paths to certificate/key/ca material, path to
+warden_server.wsgi and web path alias.
+
+Note that warden_ra itself is NOT thread safe, so included configuration
+expects Apache with mpm-prefork worker, or you will have to configure
+mod_wsgi as separate process with threads=1.
+
+Also, for warden_server.wsgi, you can use warden_server.wsgi.dist as
+a template. You will possibly need to change at least configuration
+file path.
+
+ * Configure Warden RA (see next chapter)
+
+ * Reload Apache
+
+
+Configuration
+-------------
+
+   Configuration is JSON object in file (warden_server.cfg by default),
+however, lines starting with "#" or "//" are allowed and will be ignored as
+comments. File must contain valid JSON object, containing configuration. See
+also warden_server.cfg.dist as example.
+
+   Top level JSON object contains subsections, which configure particular
+aspect of the server. Each subsection can contain "type" key, which chooses
+particular implementation object of the aspect, for example type of logger
+(file, syslog), such as:
+
+   {
+      "Log": {
+         "type": "SysLogger",
+         ...
+      },
+      "DB": { ... }
+   }
+
+Sections and their "type" objects can be:
+
+    Log: FileLogger, SysLogger
+    Auth: OptionalAuthenticator
+    Registry: EjbcaRegistry
+    Handler: CertHandler
+
+"type" keyword is not mandatory, if not specified, first implementation
+object from particular section list is used ("FileLogger" for example).
+
+Object function and configuration keys are as follows:
+
+   FileLogger: logging into file on the filesystem
+      filename: name of the file, defaults to "warden_ra.log" at
+                installation directory
+      level: least log level (CRITICAL, ERROR, WARNING, INFO, DEBUG)
+
+   SysLogger: logging into unix syslog
+      socket: path to syslog socket, defaults to "/dev/log"
+      facility: syslog facility, defaults to "daemon"
+      level: least log level (CRITICAL, ERROR, WARNING, INFO, DEBUG)
+
+    OptionalAuthenticator: authenticate based on X509 certificate, or
+        signal the password auth for the registry
+
+    CertHandler: the main certificate requestor implementation
+
+    EjbcaRegistry: EJBCA connector configuration
+        url: EJBCA API URL, for example "https://ejbca.example.org/ejbca/ejbcaws/ejbcaws?wsdl"
+        cert: certificate for authentication to EJBCA, defaults to "warden_ra.cert.pem"
+        key: key for authentication to EJBCA, defaults to "warden_ra.key.pem"
+        ca_name: name of the CA, dedicated for Warden, defaults to "Example CA"
+        certificate_profile_name: name of the EJBCA certificate profile, defaults to "Example"
+        end_entity_profile_name: name of the EJBCA entity profile, defaults to "Example EE"
+        subject_dn_template: template for the DN generation, defaults to "DC=cz,DC=example-ca,DC=warden,CN=%s"
+        username_suffix: suffix, which will be added to EJBCA entities, defaults to "@warden"
+
+
+Command line
+------------
+
+Whe run from the command line, RA allows for client and request management.
+
+
+    warden_ra.py [--help] [-c CONFIG] [-v]
+                        {list,register,applicant,request,gencert} ...
+
+    Warden server certificate registry
+    
+    arguments:
+      --help                show this help message and exit
+      -c CONFIG, --config CONFIG
+                            path to configuration file
+      -v, --verbose         be more chatty
+    
+    commands:
+      {list,register,applicant,request,gencert}
+        list                list clients
+        register            register client
+        applicant           allow for certificate application
+        request             generate CSR
+        gencert             get new certificate
+
+
+    warden_ra.py list [--help] [--name NAME]
+    
+    List registered clients.
+    
+    arguments:
+      --help       show this help message and exit
+      --name NAME  client name
+
+
+    warden_ra.py register [--help] --name NAME --admins
+                                 [ADMINS [ADMINS ...]]
+    
+    Add client registration entry.
+    
+    arguments:
+      --help                show this help message and exit
+      --name NAME           client name
+      --admins [ADMINS [ADMINS ...]]
+                            administrator list
+
+
+    warden_ra.py applicant [--help] --name NAME [--password PASSWORD]
+    
+    Set client into certificate application mode and set its password
+    
+    optional arguments:
+      --help               show this help message and exit
+      --name NAME          client name
+      --password PASSWORD  password for application (will be autogenerated if not
+                           set)
+
+    
+.. _Warden: https://warden.cesnet.cz/
+.. _EJBCA: https://www.ejbca.org/
+
+------------------------------------------------------------------------------
+
+Copyright (C) 2017 Cesnet z.s.p.o
