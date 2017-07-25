@@ -1,15 +1,15 @@
 #!/bin/bash
 
-url='https://warden-hub.cesnet.cz/warden-ra/getCert'
+url="$1"
 key=key.pem
 csr=csr.pem
 cert=cert.pem
 result=${TMPDIR:-${TMP:-/tmp}}/cert.$$.$RANDOM
 config=${TMPDIR:-${TMP:-/tmp}}/conf.$$.$RANDOM
-client="$1"
-password="$2"
-incert="$2"
-inkey="$3"
+client="$2"
+password="$3"
+incert="$3"
+inkey="$4"
 
 trap 'rm -f "$config $result"' INT TERM HUP EXIT
 
