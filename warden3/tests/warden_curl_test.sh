@@ -15,8 +15,8 @@ tmpfile=/tmp/warden-server.selftest
 url="$(/puppet/metalib/bin/avahi_findservice.sh _warden-server._tcp)"
 client="cz.cesnet.flab.$(facter hostname).puppet-test-client"
 secret=""
-keyfile="/opt/warden_server/puppet-test-client/${client}.key"
-certfile="/opt/warden_server/puppet-test-client/${client}.crt"
+keyfile="/opt/warden_server/puppet-test-client/key.pem"
+certfile="/opt/warden_server/puppet-test-client/cert.pem"
 cafile="/opt/warden_server/puppet-test-client/cachain.pem"
 
 
