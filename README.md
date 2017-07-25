@@ -48,17 +48,14 @@ information exchange server.
 
    4. finish base VM contextualization
      ```
-     sh /puppet/warden3/bin/haas_vm_prepare.sh
-     cd /puppet
-     sh phase2.install.sh
-     reboot
+     sh /puppet/jenkins/bin/haas_vm_prepare.sh
      ```
 
-2. register client on warden server, obtain secret (needed by warden client config) and token (needed for obtaining certificate). Follow [Warden participation](https://warden.cesnet.cz/en/participation#registration)
+2. register client on warden server, receive a token (needed for obtaining certificate). Follow [Warden participation](https://warden.cesnet.cz/en/participation#registration)
 
 3. finalize VM configuration
 ```
-sh /puppet/warden3/bin/haas_vm_finalize.sh -w warden-hub.cesnet.cz -s <secret> -t <token>
+sh /puppet/jenkins/bin/haas_vm_finalize.sh -w warden-hub.cesnet.cz -t <token>
 ```
 
 6. reboot VM
