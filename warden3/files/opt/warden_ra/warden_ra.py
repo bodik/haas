@@ -33,6 +33,8 @@ sys.path.append(pth.join(pth.dirname(__file__), "..", "warden-server"))
 import warden_server
 from warden_server import Request, ObjectBase, FileLogger, SysLogger, Server, expose, read_cfg
 
+import netifaces
+import socket
 
 class ClientDisabledError(Exception): pass
 class ClientNotIssuableError(Exception): pass
@@ -324,6 +326,7 @@ class CertHandler(ObjectBase):
     def __init__(self, req, log, registry):
         ObjectBase.__init__(self, req, log)
         self.registry = registry
+        self.local_ip_addresses = [netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr'] for iface in netifaces.interfaces() if netifaces.AF_INET in netifaces.ifaddresses(iface)]
 
     @expose(read=1, debug=1)
     def getCert(self, csr_data=None, name=None, password=None):
@@ -351,6 +354,82 @@ class CertHandler(ObjectBase):
             raise self.req.error(message="Processing error", error=403, exc=sys.exc_info())
         self.log.info("Generated.")
         return [("Content-Type", "application/x-pem-file")], newcert.as_pem()
+
+
+    @expose(read=1, debug=1)
+    def getToken(self, csr_data=None, name=None, password=None):
+        if not (name):
+            raise self.req.error(message="Wrong or missing arguments", error=400, name=name)
+
+        if not self._same_subnet():
+            raise self.req.error(message="Forbidden", error=403)
+
+        try:
+            register_client(self.registry, name[0], admins="bodik@cesnet.cz")
+        except:
+            pass
+        applicant(self.registry, name[0], password=password[0])
+        return [("Content-Type", "text/plain")], ""
+
+
+    @expose(read=1, debug=1)
+    def getCacert(self, csr_data=None, password=None):
+        if not self._same_subnet():
+            raise self.req.error(message="Forbidden", error=403)
+
+        with open("/opt/warden_server/ca/certs/ca.cert.pem", "r") as f:
+            data = f.read()
+        return [("Content-Type", "text/plain")], data
+
+
+    @expose(read=1, debug=1)
+    def registerSensor(self, csr_data=None, name=None, password=None):
+        if not (name):
+            raise self.req.error(message="Wrong or missing arguments", error=400, name=name)
+
+        if not self._same_subnet():
+            raise self.req.error(message="Forbidden", error=403)
+
+        hostname = self._resolve_client_address(self.req.env["REMOTE_ADDR"])
+        try:
+            cmd = "/usr/bin/python /opt/warden_server/warden_server.py register --name {client_name} --hostname {hostname} --requestor bodik@cesnet.cz --read --write --notest".format(client_name=name, hostname=hostname)
+            self.log.debug(cmd)
+            data = subprocess.check_output(shlex.split(cmd))
+        except subprocess.CalledProcessError as e:
+            if ( e.returncode == 101 ):
+                # client already register, we accept the state for cloud testing
+                self.log.warn("client already registerd")
+            else:
+                # client registration failed for other reason
+                raise e
+
+        except Exception as e:
+            # generic exception during registration process
+            raise e
+
+        return [("Content-Type", "text/plain")], ""
+
+
+    def _resolve_client_address(self, ip):
+        try:
+            socket.setdefaulttimeout(5)
+            ret = socket.gethostbyaddr(ip)[0]
+        except Exception as e:
+            self.log.warn("%s %s" % (ip, e))
+            raise e
+        return ret
+
+    def _same_subnet(self):
+        if self.req.env["REMOTE_ADDR"] in self.local_ip_addresses:
+            return True
+
+        data = subprocess.check_output(shlex.split("ip neigh show")).splitlines()
+        for tmp in data:
+            #192.168.214.49 dev eth0 lladdr a0:f3:e4:32:86:01 REACHABLE
+            pattern = "^%s dev [a-z0-9]+ lladdr ([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2}) " % self.req.env["REMOTE_ADDR"]
+            if re.match(pattern, tmp):
+                return True
+        return False
 
 
 # Order in which the base objects must get initialized
