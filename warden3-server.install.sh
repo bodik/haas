@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pa.sh -e "include warden3::ca"
+pa.sh -e "include warden3::ra"
 pa.sh -e "include warden3::server"
 
 # exception to register sensor here, it's much easier to make it after wserver running, than requiring all components in manifest
