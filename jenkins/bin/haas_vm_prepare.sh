@@ -5,9 +5,8 @@ rm -f /etc/ssh/*_key*
 dpkg-reconfigure openssh-server
 
 
-
-
-
+# update basic node sessintgs (mainly hostname/fqdn)
+cd /puppet && sh phase2.install.sh
 
 
 # Delayled reboot
