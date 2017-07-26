@@ -7,4 +7,6 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 warden_tologstash.py check_procs"
 fi
 
+/puppet/warden3/bin/verify_ssl_warden_ra.sh /opt/warden_tologstash
+
 rreturn 0 "$0"

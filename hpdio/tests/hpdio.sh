@@ -37,7 +37,10 @@ if [ $? -ne 0 ]; then
         rreturn 1 "$0 dionaea ftp pot not working"
 fi
 
-	
+/puppet/warden3/bin/verify_ssl_warden_ra.sh /opt/dionaea
+if [ $? -ne 0 ]; then
+        rreturn 1 "$0 racert failed"
+fi
+
+
 rreturn 0 "$0"
-
-

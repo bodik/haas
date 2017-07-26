@@ -17,4 +17,10 @@ for all in $(cat $INSTALL_DIR/data/userdb.txt | grep -v "^#" ); do
 	fi
 done
 
+/puppet/warden3/bin/verify_ssl_warden_ra.sh /opt/cowrie
+if [ $? -ne 0 ]; then
+        rreturn 1 "$0 racert failed"
+fi
+
+
 rreturn 0 "$0"
