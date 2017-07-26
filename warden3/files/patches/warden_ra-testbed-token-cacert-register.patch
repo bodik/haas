@@ -1,17 +1,18 @@
 diff --git a/warden3/files/opt/warden_ra/warden_ra.py b/warden3/files/opt/warden_ra/warden_ra.py
-index b7400c3..6255aee 100755
+index b7400c3..20eece4 100755
 --- a/warden3/files/opt/warden_ra/warden_ra.py
 +++ b/warden3/files/opt/warden_ra/warden_ra.py
-@@ -33,6 +33,8 @@ sys.path.append(pth.join(pth.dirname(__file__), "..", "warden-server"))
+@@ -33,6 +33,9 @@ sys.path.append(pth.join(pth.dirname(__file__), "..", "warden-server"))
  import warden_server
  from warden_server import Request, ObjectBase, FileLogger, SysLogger, Server, expose, read_cfg
  
 +import netifaces
 +import socket
++import re
  
  class ClientDisabledError(Exception): pass
  class ClientNotIssuableError(Exception): pass
-@@ -324,6 +326,7 @@ class CertHandler(ObjectBase):
+@@ -324,6 +327,7 @@ class CertHandler(ObjectBase):
      def __init__(self, req, log, registry):
          ObjectBase.__init__(self, req, log)
          self.registry = registry
@@ -19,7 +20,7 @@ index b7400c3..6255aee 100755
  
      @expose(read=1, debug=1)
      def getCert(self, csr_data=None, name=None, password=None):
-@@ -353,6 +356,82 @@ class CertHandler(ObjectBase):
+@@ -353,6 +357,82 @@ class CertHandler(ObjectBase):
          return [("Content-Type", "application/x-pem-file")], newcert.as_pem()
  
  
