@@ -37,6 +37,8 @@ class warden3::tologstash (
                 $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
+	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.tologstash", "-", "") 
+
 	# application
 	user { "$tologstash_user": 	
 		ensure => present, 
@@ -55,7 +57,6 @@ class warden3::tologstash (
 		owner => "${tologstash_user}", group => "${tologstash_user}", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}.tologstash"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "${tologstash_user}", group => "${tologstash_user}", mode => "0640",

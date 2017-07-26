@@ -40,6 +40,9 @@ class hpjdwpd (
                 $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
+	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.jdwpd", "-", "")
+
+
 	# application
 
 	package { ["python-twisted"]: ensure => installed, }	
@@ -99,7 +102,6 @@ class hpjdwpd (
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/bin"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}.jdwpd"
 	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "root", group => "root", mode => "0644",
