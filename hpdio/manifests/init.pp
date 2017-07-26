@@ -33,7 +33,7 @@ class hpdio (
         if ($warden_client_name) {
                 $warden_client_name_real = $warden_client_name
         } else {
-                $warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.dionaea", "-", "")
+                $warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.dionaea", "-", "", 'G')
         }
 
 

@@ -35,7 +35,7 @@ class hpjdwpd (
         if ($warden_client_name) {
                 $warden_client_name_real = $warden_client_name
         } else {
-		$warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.jdwpd", "-", "")
+		$warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.jdwpd", "-", "", 'G')
         }
 
 
