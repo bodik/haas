@@ -1,7 +1,6 @@
 #!/bin/sh
 
 INSTALL_DIR="/opt/jdwpd"
-echo "INFO: $0"
 
 systemctl stop jdwpd
 

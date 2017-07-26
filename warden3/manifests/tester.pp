@@ -9,11 +9,10 @@
 # @param warden_ca_service avahi name of warden ca service for autodiscovery
 class warden3::tester (
 	$install_dir = "/opt/warden_tester",
-	
+
+	$warden_client_name = undef,	
         $warden_server_url = undef,
-        $warden_ca_url = undef,
         $warden_server_service = "_warden-server._tcp",
-        $warden_ca_service = "_warden-ca._tcp",
 ) {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -24,14 +23,12 @@ class warden3::tester (
                 $warden_server_url_real = avahi_findservice($warden_server_service)
         }
 
-        if ($warden_ca_url) {
-                $warden_ca_url_real = $warden_ca_url
+        if ($warden_client_name) {
+                $warden_client_name_real = $warden_client_name
         } else {
-                include metalib::avahi
-                $warden_ca_url_real = avahi_findservice($warden_ca_service)
+		$warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.tester", "-", "")
         }
 
-	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.tester", "-", "")
 
 
 	# warden_client pro tester
@@ -55,7 +52,7 @@ class warden3::tester (
 		require => File["${install_dir}"],
 	}
 
-	warden3::racert { "${w3c_name}":
+	warden3::racert { "${warden_client_name_real}":
                 destdir => "${install_dir}/racert",
                 require => File["${install_dir}"],
         }
