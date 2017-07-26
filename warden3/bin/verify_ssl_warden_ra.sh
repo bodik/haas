@@ -14,3 +14,5 @@ test -f $INSTALL_DIR/racert/cert.pem || rreturn 1 "missing cert.pem"
 test -f $INSTALL_DIR/racert/cachain.pem || rreturn 1 "missing cachain.pem"
 test -f $INSTALL_DIR/racert/registered-at-warden-server || rreturn 1 "missing warden server registration flag"
 
+
+rreturn 0 "$0"
