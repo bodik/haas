@@ -1,14 +1,22 @@
 #!/bin/sh
 
+
 . /puppet/jenkins/bin/haas_vm_finalize_lib.sh
 parse_args $@
 
-if [ -f /opt/uchotcp/bin/uchotcp.py ]; then
-	echo "$WARDEN_SERVER" > /opt/uchotcp/bin/registered-at-warden-server
-	pa.sh -e "class { 'hpucho::tcp': warden_server_url => '$WARDEN_SERVER_URL', warden_ca_url => '$WARDEN_CA_URL' }"
+INSTALL_DIR=/opt/uchotcp
+if [ -f ${INSTALL_DIR}/bin/uchotcp.py ]; then
+	if [ -z "${AUTOTEST}" ]; then
+		/puppet/jenkins/bin/haas_finalize_racert.sh -i $INSTALL_DIR -w $WARDEN_SERVER_URL -n "${CLIENT_NAME}.uchotcp"
+	fi
+	pa.sh -e "class { 'hpucho::tcp': warden_server_url => '${WARDEN_SERVER_URL}', warden_client_name => '${CLIENT_NAME}.uchotcp' }"
 fi
 
-if [ -f /opt/uchoudp/bin/uchodup.py ]; then
-	echo "$WARDEN_SERVER" > /opt/uchoudp/bin/registered-at-warden-server
-	pa.sh -e "class { 'hpucho::udp': warden_server_url => '$WARDEN_SERVER_URL', warden_ca_url => '$WARDEN_CA_URL' }"
+INSTALL_DIR=/opt/uchoudp
+if [ -f ${INSTALL_DIR}/bin/uchoudp.py ]; then
+	if [ -z "${AUTOTEST}" ]; then
+		/puppet/jenkins/bin/haas_finalize_racert.sh -i $INSTALL_DIR -w $WARDEN_SERVER_URL -n "${CLIENT_NAME}.uchoudp"
+	fi
+	pa.sh -e "class { 'hpucho::tcp': warden_server_url => '${WARDEN_SERVER_URL}', warden_client_name => '${CLIENT_NAME}.uchoudp' }"
 fi
+

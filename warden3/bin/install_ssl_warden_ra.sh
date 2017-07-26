@@ -23,7 +23,7 @@ cd ${DESTDIR} || exit 1
 rm -f key.pem csr.pem cert.pem cachain.pem
 
 TOKEN=$(/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print $1}')
-curl "$WARDEN_RA_URL/getToken?name=${CLIENT_NAME}&password=${TOKEN}" 1>/dev/null 2>/dev/null
+curl "${WARDEN_RA_URL}/getToken?name=${CLIENT_NAME}&password=${TOKEN}" 1>/dev/null 2>/dev/null
 if [ $? -ne 0 ]; then
 	echo "ERROR: cannot contact warden_ra"
 	exit 1

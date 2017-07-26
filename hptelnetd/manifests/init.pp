@@ -19,10 +19,9 @@ class hptelnetd (
 	$telnetd_port = 63023,
 	$real_telnetd_port = 23,
 	
+	$warden_client_name = undef,
         $warden_server_url = undef,
-        $warden_ca_url = undef,
         $warden_server_service = "_warden-server._tcp",
-        $warden_ca_service = "_warden-ca._tcp",
 ) {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -33,14 +32,11 @@ class hptelnetd (
                 $warden_server_url_real = avahi_findservice($warden_server_service)
         }
 
-        if ($warden_ca_url) {
-                $warden_ca_url_real = $warden_ca_url
+        if ($warden_client_name) {
+                $warden_client_name_real = $warden_client_name
         } else {
-                include metalib::avahi
-                $warden_ca_url_real = avahi_findservice($warden_ca_service)
+		$warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.telnetd", "-", "")
         }
-
-	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.telnetd", "-", "")
 
 
 	# application
@@ -144,7 +140,7 @@ class hptelnetd (
                 owner => "root", group => "root", mode => "0644",
 	}
 	
-	warden3::racert { "${w3c_name}":
+	warden3::racert { "${warden_client_name_real}":
                 destdir => "${install_dir}/racert",
                 require => File["${install_dir}"],
         }
