@@ -35,6 +35,7 @@ from warden_server import Request, ObjectBase, FileLogger, SysLogger, Server, ex
 
 import netifaces
 import socket
+import re
 
 class ClientDisabledError(Exception): pass
 class ClientNotIssuableError(Exception): pass
