@@ -82,7 +82,7 @@ class warden3::tologstash (
 	file { "/etc/systemd/system/warden_tologstash.service":
 		content => template("${module_name}/warden_tologstash.service.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => [ File["${install_dir}/warden_tologstash.py"], Warden3::Racert["${w3c_name}"] ],
+		require => [ File["${install_dir}/warden_tologstash.py"], Warden3::Racert["${warden_client_name_real}"] ],
 	}
 	service { "warden_tologstash":
 		enable => true,
