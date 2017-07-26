@@ -40,6 +40,9 @@ class hptelnetd (
                 $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
+	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.telnetd", "-", "")
+
+
 	# application
 	package { ["python-twisted", "sudo"]: ensure => installed, }
 	user { "$service_user": 
@@ -113,7 +116,6 @@ class hptelnetd (
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/bin"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}.telnetd"
 	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "root", group => "root", mode => "0644",

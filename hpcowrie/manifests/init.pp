@@ -52,6 +52,9 @@ class hpcowrie (
                 $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
+	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.cowrie", "-", "")
+
+
 	#mysql server
 	#Replaced by gmysql component 
 	class { "gmysql::server": }
@@ -222,7 +225,6 @@ class hpcowrie (
 		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}.cowrie"
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "${service_user}", group => "${service_user}", mode => "0640",

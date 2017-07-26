@@ -38,6 +38,9 @@ class hpdio (
                 $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
+	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.dionaea", "-", "")
+
+
 	# application
 	user { "$service_user":
 		ensure => present, 
@@ -142,7 +145,6 @@ class hpdio (
 		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}.dionaea"	
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "${service_user}", group => "${service_user}", mode => "0640",

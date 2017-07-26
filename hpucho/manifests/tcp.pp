@@ -41,6 +41,9 @@ class hpucho::tcp (
                 $warden_ca_url_real = avahi_findservice($warden_ca_service)
         }
 
+	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.uchotcp", "-", "")
+
+
 	# application
 
 	package { ["python", "python-twisted", "libcap2-bin"]: ensure => installed, }
@@ -105,7 +108,6 @@ class hpucho::tcp (
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/bin"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}.uchotcp"
 	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "root", group => "root", mode => "0644",
