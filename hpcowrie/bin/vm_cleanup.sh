@@ -1,7 +1,6 @@
 #!/bin/sh
 
 INSTALL_DIR="/opt/cowrie"
-echo "INFO: $0"
 
 systemctl stop cowrie
 

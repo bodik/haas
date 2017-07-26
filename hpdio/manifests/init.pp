@@ -17,10 +17,9 @@ class hpdio (
 	$service_user = "dionaea",
 	$log_history = 14,
 	
+	$warden_client_name = undef,
         $warden_server_url = undef,
-        $warden_ca_url = undef,
         $warden_server_service = "_warden-server._tcp",
-        $warden_ca_service = "_warden-ca._tcp",
 ) {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -31,14 +30,11 @@ class hpdio (
                 $warden_server_url_real = avahi_findservice($warden_server_service)
         }
 
-        if ($warden_ca_url) {
-                $warden_ca_url_real = $warden_ca_url
+        if ($warden_client_namel) {
+                $warden_client_name_real = $warden_client_name
         } else {
-                include metalib::avahi
-                $warden_ca_url_real = avahi_findservice($warden_ca_service)
+                $warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.dionaea", "-", "")
         }
-
-	$w3c_name = regsubst("cz.cesnet.flab.${hostname}.dionaea", "-", "")
 
 
 	# application
@@ -174,7 +170,7 @@ class hpdio (
 		require => User["$service_user"],
 	}
 
-	warden3::racert { "${w3c_name}":
+	warden3::racert { "${warden_client_name_real}":
 		destdir => "${install_dir}/racert",
 		require => Exec["build dio"],
         }
