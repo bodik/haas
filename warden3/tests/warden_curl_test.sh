@@ -135,7 +135,7 @@ curl \
     --request POST \
     --data '{#$%^' \
     "$url/getEvents?client=$client&secret=$secret" \
-    --silent --show-error \
+    --silent --show-error
 echo
 
 echo "Test  Called with unknown category"
