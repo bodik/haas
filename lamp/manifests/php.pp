@@ -1,6 +1,4 @@
-# == Class: lamp::php
-#
-# TODO documentation
+# Internal. Installs php module for apache2 webserver, installs basic test scripts and dashboard
 #
 class lamp::php() {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")

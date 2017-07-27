@@ -1,4 +1,4 @@
-# Installs Cowrie honeypot
+# Installs Cowrie honeypot and warden reporting client
 #
 # @example Declaring the class
 #   class { "hpcowrie": }
@@ -14,10 +14,9 @@
 # @param mysql_db Database to store Cowrie data
 # @param mysql_password Password to MySQL server authtentication
 #
+# @param warden_client_name reporting script warden client name
 # @param warden_server_url warden server url to connect
-# @param warden_ca_url warden ca url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param warden_ca_service avahi name of warden ca service for autodiscovery
 class hpcowrie (
 	$install_dir = "/opt/cowrie",
 	

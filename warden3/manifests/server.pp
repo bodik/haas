@@ -1,21 +1,11 @@
-# == Class: warden3::server
-#
 # Class will ensure installation of warden3 server: apache2, wsgi, server, mysqldb, configuration
 #
-# === Parameters
+# @exampel Usage
+#   include warden3::server
 #
-# [*install_dir*]
-#   directory to install w3 server
-#
-# [*port*]
-#   port number to listen with apache vhost
-#
-# [*mysql_... *]
-#   parameters for mysql database for w3 server
-#
-# [*avahi_enable*]
-#   enable service announcement, enabled by default. for testing and debugging purposes
-#
+# @param install_dir directory to install w3 server
+# @param port port to listen with apache vhost
+# @param mysql_* parameters for mysql database for w3 server
 class warden3::server (
 	$install_dir = "/opt/warden_server",
 	$service_port = 45443,
@@ -24,19 +14,15 @@ class warden3::server (
 	$mysql_port = 3306,
         $mysql_db = "warden3",
         $mysql_password = false,
-
-	$avahi_enable = true,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($avahi_enable) {
-		include metalib::avahi
-	        file { "/etc/avahi/services/warden-server.service":
-	                content => template("${module_name}/warden_server.avahi-service.erb"),
-	                owner => "root", group => "root", mode => "0644",
-	                require => Package["avahi-daemon"],
-	                notify => Service["avahi-daemon"],
-	        }
+	include metalib::avahi
+	file { "/etc/avahi/services/warden-server.service":
+		content => template("${module_name}/warden_server.avahi-service.erb"),
+		owner => "root", group => "root", mode => "0644",
+		require => Package["avahi-daemon"],
+		notify => Service["avahi-daemon"],
 	}
 
 	#mysql server

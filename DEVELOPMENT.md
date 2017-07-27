@@ -118,7 +118,7 @@ documentation.
   * [warden3-tologstash](warden3/)
   * [hpcowrie](hpcowrie/)
   * [hpdio](hpcowrie/)
+  * [hpjdwpd](hpjdwpd/)
   * [hptelnetd](hptelnetd/)
   * [hpucho](hpucho/)
-  * [hpjdwpd](hpjdwpd/)
 

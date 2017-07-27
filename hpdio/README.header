@@ -1,6 +1,8 @@
-# hpjdwpd -- HaaS module for jdwpd
+# hpcowrie -- HaaS module for dioanea honeypot
 
 ## Scripts
+
+**bin/build.sh** -- manifest helper
 
 **bin/vm_cleanup.sh** -- haas helper
 

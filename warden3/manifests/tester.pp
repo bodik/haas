@@ -1,12 +1,11 @@
-# Class will ensure installation of example warden3 testing client. Tester will generate ammount of idea messages and sends them to w3 server.
-# Used for testing.
+# Class will ensure installation of example warden3 testing client. Tester will
+# generate ammount of idea messages and sends them to w3 server.
 #
 # @param install_dir directory to install w3 server
 #
+# @param warden_client_name reporting script warden client name
 # @param warden_server_url warden server url to connect
-# @param warden_ca_url warden ca url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param warden_ca_service avahi name of warden ca service for autodiscovery
 class warden3::tester (
 	$install_dir = "/opt/warden_tester",
 

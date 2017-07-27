@@ -1,10 +1,7 @@
-# == Class: metalib::avahi
-#
 # Class for installling avahi utils and resolving daemon. This class is used
 # during dynamic cloud autodiscovery by other classes.
 #
-# === Examples
-#
+# @example Usage
 #  include metalib::avahi
 #
 class metalib::avahi() {

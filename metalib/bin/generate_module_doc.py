@@ -25,6 +25,13 @@ def render_parameters(data):
 	for tmp in data:
 		print "**%s** -- %s\n" % (tmp["name"], tmp.get("text", "N/A"))
 
+def render_return(data):
+	if not data: return
+
+	print "### Return\n"
+	for tmp in data:
+		print "%s\n" % tmp["text"]
+
 
 
 def render_examples(data):
@@ -59,7 +66,9 @@ def render_item(chapter, item):
 		if "param" in tags: tags.remove("param")
 		render_examples(get_tags(item["docstring"]["tags"], "example"))
 		if "example" in tags: tags.remove("example")
-		
+		render_return(get_tags(item["docstring"]["tags"], "return"))
+		if "return" in tags: tags.remove("return")
+	
 		for tag in tags:
 			render_other(get_tags(item["docstring"]["tags"], tag))
 

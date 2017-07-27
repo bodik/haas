@@ -1,4 +1,4 @@
-# Installs Dionaea honeypot
+# Installs Dionaea honeypot and reporting warden client
 #
 # @example Declaring the class
 #   class { "hpdio": }
@@ -7,10 +7,9 @@
 # @param service_user User to run service as
 # @param log_history The number of days the data is stored on
 #
+# @param warden_client_name reporting script warden client name
 # @param warden_server_url warden server url to connect
-# @param warden_ca_url warden ca url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param warden_ca_service avahi name of warden ca service for autodiscovery
 class hpdio (
 	$install_dir = "/opt/dionaea",
 

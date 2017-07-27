@@ -93,3 +93,18 @@ VMNAME=ABC vbox.init ssh '/bin/true'
 **bin/vbox.init -- jenkins virtualization frontend
 
 **bin/vboxlocal.init -- jenkins virtualization fontend helper
+
+## puppet_classes: jenkins
+
+Class provides Jenkins installation from vendor repository packages and
+configures basic set of jobs for building host with specified roles as well
+as running autotests at the ends of the scenarios.
+
+### Examples
+
+Usage
+
+```
+class { jenkins: }
+```
+
