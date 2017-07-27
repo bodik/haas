@@ -112,11 +112,9 @@ Class will ensure installation of warden3 client which receives new events from 
 
 ## puppet_functions: warden_config_dbpassword
 
-gets db password from warden config file
-
 ### Parameters
 
-**arg0** -- confifile path
+**path** -- confifile path
 
 ### Return
 

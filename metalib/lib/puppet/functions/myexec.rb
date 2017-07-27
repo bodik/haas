@@ -1,11 +1,10 @@
-require "puppet"
-module Puppet::Parser::Functions
+Puppet::Functions.create_function(:myexec) do
 	# simple wrapper for custom execs
 	# 
 	# @return returns command output
-	# @param arg0 line to execute using shell
-        newfunction(:myexec, :type => :rvalue) do |args|
-                out = Facter::Util::Resolution.exec(args[0])
+	# @param cmd line to execute using shell
+        def myexec(cmd)
+                out = Facter::Util::Resolution.exec(cmd)
                 if out.nil?
                         return :undef
                 else
