@@ -113,7 +113,7 @@ documentation.
 * [jenkins](jenkins/)
 * [lamp](lamp/)
 * [gmysql](gmysql/)
-* [glog2](glog2/)
+* [glog](glog/)
 * [warden3-server](warden3/)
   * [warden3-tologstash](warden3/)
   * [hpcowrie](hpcowrie/)

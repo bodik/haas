@@ -1,4 +1,4 @@
-# glog2 -- Analytics ELK module
+# glog -- Analytics ELK module
 
 Module provides basic installation and management of ELK stack for various data
 analytics. Includes installation of v5.x version of the stack.

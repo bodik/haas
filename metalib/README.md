@@ -142,7 +142,7 @@ http://www.xenuser.org/downloads/puppet/xenuser_org-010-check_if_file_exists.pp
 
 ### Return
 
-1 when file exist, otherwise returns zero
+1 when file exist, otherwise returns 0
 
 
 ## puppet_functions: generate_password
@@ -164,7 +164,7 @@ simple wrapper for custom execs
 
 ### Parameters
 
-**command** -- line to execute using shell
+**arg0** -- line to execute using shell
 
 ### Return
 

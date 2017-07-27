@@ -76,23 +76,23 @@ VMNAME=ABC vbox.init ssh '/bin/true'
 
 **bin/haas_vm_cleanup.sh** -- haas build helper, executes all modules cleanups
 
-**bin/haas_vm_finalize_lib.sh -- haas build helper, shell functions library
+**bin/haas_vm_finalize_lib.sh** -- haas build helper, shell functions library
 
-**bin/haas_vm_finalize_racert.sh -- haas build helper, invokes warden_apply.sh to obtain racert certificate
+**bin/haas_vm_finalize_racert.sh** -- haas build helper, invokes warden_apply.sh to obtain racert certificate
 
-**bin/haas_vm_finalize.sh -- haas helper, invokens racerts and configuration scripts for all modules
+**bin/haas_vm_finalize.sh** -- haas helper, invokens racerts and configuration scripts for all modules
 
-**bin/haas_vm_prepare.sh -- haas helper, manages node basic configuration for clean VM import
+**bin/haas_vm_prepare.sh** -- haas helper, manages node basic configuration for clean VM import
 
-**bin/metacloud.init -- jenkins virtualization frontend
+**bin/metacloud.init** -- jenkins virtualization frontend
 
-**bin/popjobs.sh -- dev script, pops current jenkins jobs setting to git repo
+**bin/popjobs.sh** -- dev script, pops current jenkins jobs setting to git repo
 
-**bin/run_jobs.sh -- jekins helper, run set of jekins jobs based od name regexp
+**bin/run_jobs.sh** -- jekins helper, run set of jekins jobs based od name regexp
 
-**bin/vbox.init -- jenkins virtualization frontend
+**bin/vbox.init** -- jenkins virtualization frontend
 
-**bin/vboxlocal.init -- jenkins virtualization fontend helper
+**bin/vboxlocal.init** -- jenkins virtualization fontend helper
 
 ## puppet_classes: jenkins
 
