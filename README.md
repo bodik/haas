@@ -55,7 +55,7 @@ information exchange server.
 
 3. finalize VM configuration
 ```
-sh /puppet/jenkins/bin/haas_vm_finalize.sh -w warden-hub.cesnet.cz -t <token>
+sh /puppet/jenkins/bin/haas_vm_finalize.sh -w warden-hub.cesnet.cz -n com.example.department.honeypot -t <token> 
 ```
 
 6. reboot VM
