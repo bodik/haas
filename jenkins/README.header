@@ -74,6 +74,8 @@ VMNAME=ABC vbox.init ssh '/bin/true'
 
 ### Scripts
 
+**bin/haas_vm_generate_w3cname.sh** -- haas jenkins finalizer helper
+
 **bin/haas_vm_cleanup.sh** -- haas build helper, executes all modules cleanups
 
 **bin/haas_vm_finalize_lib.sh** -- haas build helper, shell functions library
