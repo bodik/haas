@@ -1,0 +1,14 @@
+{
+	"url": "<%= @warden_server_url_real %>",
+	"name": "<%= @warden_client_name_real %>",
+	"idstore": "warden_client.id",
+	"timeout": 60,
+	"get_events_limit": 1000,
+
+        "keyfile": "<%= @install_dir %>/racert/key.pem",
+        "certfile": "<%= @install_dir %>/racert/cert.pem",
+        "cafile": "<%= @install_dir %>/racert/cachain.pem",
+
+	"errlog": {"level": "debug"},
+	"syslog": {"socket": "/dev/log", "facility": "local7", "level": "info"}
+}

@@ -28,5 +28,11 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 failed to open port_end"
 fi
 
+/puppet/warden3/bin/verify_ssl_warden_ra.sh /opt/uchotcp
+if [ $? -ne 0 ]; then
+        rreturn 1 "$0 racert failed"
+fi
+
+
 rreturn 0 "$0"
 

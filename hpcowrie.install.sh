@@ -1,2 +1,3 @@
-pa.sh -e 'include hpcowrie'
+#!/bin/sh
 
+pa.sh -e "include hpcowrie"

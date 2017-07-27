@@ -1,16 +1,18 @@
-# == Class: glog::glog2
+# Class will ensure installation of ELK stack. ESD installed as data node bind
+# on localhost, logstash with basic set of inputs,filters and output to ESD
+# over http, kibana with basic settings and apache proxy configurations. haas
+# lamp module is expected to be present prior to glog2 installation
 #
-# Class will ensure installation of ELK stack
-#
-# === Examples
-#
+# @example Basic usage
 #   class { "glog::glog2": }
 #
+# @param cluster_name elk cluster name
+# @param esd_heap_size esd node heap size
+# @param esd_network_host esd node bind address
 class glog::glog2(
 	$cluster_name = "glog2",
 	$esd_heap_size = "1024M",
 	$esd_network_host = "127.0.0.1",
-	#$lsl_workers_real = 1,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -207,6 +209,19 @@ class glog::glog2(
 
 
 	# defined resources
+
+	# Internal. Ensures elasticsearch config line
+	# 
+	# @example Usage
+	#   glog::glog2::esd_config { "-Xms":
+	#     path => "/etc/elasticsearch/jvm.options",
+	#     match => "^-Xms",
+	#     line => "-Xms${esd_heap_size}",
+	#   }
+	# 
+	# @param path edited file path
+	# @param match line to replace
+	# @param line replacement
 	define esd_config($path, $match, $line) { file_line { "esd config $name":
 	                ensure => present,
 			path => "${path}",
@@ -215,6 +230,19 @@ class glog::glog2(
                 	require => Package["elasticsearch"],
 	                notify => Service["elasticsearch"],
 	} }
+
+	# Internal. Ensures kibana config line
+	# 
+	# @example Usage
+	#   glog::glog2::kibana_config { "server.port":
+	#     path => "/etc/kibana/kibana.yml",
+	#     match => "^server.port",
+	#     line => "server.port: 5601",
+	#   }
+	# 
+	# @param path edited file path
+	# @param match line to replace
+	# @param line replacement
 	define kibana_config($path, $match, $line) { file_line { "kibana config $name":
 	                ensure => present,
 			path => "${path}",
@@ -223,6 +251,14 @@ class glog::glog2(
                 	require => Package["kibana"],
 	                notify => Service["kibana"],
 	} }
+
+
+
+	# Internal. Ensures logstash single config.d file
+	# 
+	# @example Usage
+	#   glog::glog2::logstash_config_file { "/etc/logstash/conf.d/10-input-udp.conf": }
+	#
 	define logstash_config_file() {
 		file {  "${name}":
 			content => template("${module_name}${name}.erb"),

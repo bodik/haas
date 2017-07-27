@@ -1,6 +1,9 @@
-# generate password
 require "puppet"
 module Puppet::Parser::Functions
+	# generates password
+	#
+	# @return generated password
+	# @param arg0 optional, length of the password to generate
         newfunction(:generate_password, :type => :rvalue) do |args|
 		outlen = args[0]
 

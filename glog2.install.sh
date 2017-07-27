@@ -1,1 +1,3 @@
-pa.sh -v -e 'include glog::glog2'
+#!/bin/sh
+
+pa.sh -v -e "include glog::glog2"

@@ -1,6 +1,8 @@
-# == Class: metalib::base
+# Class manages basic set of setting and packages which should/should not be
+# present on every/new node. 
 #
-# TODO documentation
+# @example Usage
+#   include metalib::base
 #
 class metalib::base() {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
@@ -127,11 +129,6 @@ class metalib::base() {
 			command => "/usr/sbin/update-grub",
 			refreshonly => true,
 		}
-	}
-
-
-	file { "/usr/local/bin/dmesgp":
-		ensure => link, target => "/puppet/metalib/bin/dmesgp",
 	}
 
 

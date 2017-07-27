@@ -1,21 +1,15 @@
-# == Class: iptables
+# Class will ensure installation of old-school iptables and ip6tables scripts
+# with systemd support. Installs selected rulesets or sets default based on
+# manifest logic, fqdns or default. Supports PRIVATE_ files which are not part
+# of the module, for more information reat the manifest itself.
 #
-# Class will ensure installation of iptables and iptables-persistent
-#
-# === Parameters
-#
-# [*rules_v4*]
-#   iptables config file
-#
-# [*rules_v6*]
-#   ip6tables config file
-#
-# === Examples
-#
+# @example Usage
 #   class { "iptables": 
-#      irules_v4 => "puppet:///modules/${module_name}/somefile",
+#      rules_v4 => "puppet:///modules/${module_name}/somefile",
 #   }
 #
+# @param rules_v4 file with ipv4 ruleset
+# @param rules_v6 file with ipv6 ruleset
 class iptables (
 	$rules_v4 = "puppet:///modules/${module_name}/nonexistent",
 	$rules_v6 = "puppet:///modules/${module_name}/nonexistent",

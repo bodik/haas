@@ -10,17 +10,16 @@ if [ $? -ne 0 ]; then
 	puppet apply --modulepath=/puppet:/puppet/3rdparty -e 'include metalib::avahi' 1>/dev/null 2>/dev/null
 fi
 
-#avahi-browse -t $1 --resolve -p | grep "=;.*;IPv4;" | awk -F";" '{print $8}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -1 | xargs host -t A | rev | awk '{print $1}' | rev | sed 's/\.$//'
-IP=$(avahi-browse -t $1 --resolve -p | grep "=;.*;IPv4;" | awk -F";" '{print $8}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -1)
-
-if [ -z $IP ]; then
-	exit 0
-else
-	HNAME=$(host -t A $IP)
-	if [ $? -ne 0 ]; then
-		echo $IP
-	else
-		echo $HNAME | rev | awk '{print $1}' | rev | sed 's/\.$//'
-	fi
-	exit 0
+QUERY=$(avahi-browse -t $1 --resolve -p | grep "=;.*;IPv4;")
+if [ -n "${QUERY}" ]; then
+	IP=$(echo ${QUERY} | awk -F";" '{print $8}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -1)
+	URL=$(echo ${QUERY} | grep ${IP} | awk -F";" '{print $10}' | sed 's/\"//g' | awk -F"=" '{print $2}')
 fi
+
+if [ -z $URL ]; then
+        exit 0
+else
+	echo $URL
+        exit 0
+fi
+

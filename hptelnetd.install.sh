@@ -1,2 +1,3 @@
-pa.sh -e 'include hptelnetd'
+#!/bin/sh
 
+pa.sh -e 'include hptelnetd'

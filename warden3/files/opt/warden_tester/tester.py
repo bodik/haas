@@ -135,7 +135,7 @@ def main():
     if args.count:
 	count = int(args.count)
 
-    wclient = Client(**read_cfg("warden_client_tester.cfg"))
+    wclient = Client(**read_cfg("warden_tester.cfg"))
     # Also inline arguments are possible:
     # wclient = Client(
     #     url  = 'https://warden.example.com/warden3',

@@ -1,6 +1,14 @@
+# hpucho -- HaaS module for ucho
+
+## Scripts
+
+**bin/vm_cleanup.sh** -- haas helper
+
+**bin/vm_finalize.sh** -- haas helper
+
 ## puppet_classes: hpucho::tcp
 
-Installs ucho tcp service
+Installs ucho tcp service and warden reporting client
 
 ### Parameters
 
@@ -14,7 +22,9 @@ Installs ucho tcp service
 
 **port_skip** -- list of ports to skip
 
-**warden_server** -- warden server hostname
+**warden_client_name** -- reporting script warden client name
+
+**warden_server_url** -- warden server url to connect
 
 **warden_server_service** -- avahi name of warden server service for autodiscovery
 
@@ -28,7 +38,7 @@ class { "hpucho::tcp": }
 
 ## puppet_classes: hpucho::udp
 
-Installs ucho udp service
+Installs ucho udp service and warden reporting client
 
 ### Parameters
 
@@ -42,7 +52,9 @@ Installs ucho udp service
 
 **port_skip** -- list of ports to skip
 
-**warden_server** -- warden server hostname
+**warden_client_name** -- reporting script warden client name
+
+**warden_server_url** -- warden server url to connect
 
 **warden_server_service** -- avahi name of warden server service for autodiscovery
 

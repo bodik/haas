@@ -7,4 +7,3 @@ if [ -d /var/lib/mysql ]; then
         echo "INFO: sh /puppet/gmysql/bin/nopass.sh -noop"
         sh /puppet/gmysql/bin/nopass.sh -noop
 fi
-

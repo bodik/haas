@@ -1,42 +1,28 @@
-# == Class: warden3::server
-#
 # Class will ensure installation of warden3 server: apache2, wsgi, server, mysqldb, configuration
 #
-# === Parameters
+# @exampel Usage
+#   include warden3::server
 #
-# [*install_dir*]
-#   directory to install w3 server
-#
-# [*port*]
-#   port number to listen with apache vhost
-#
-# [*mysql_... *]
-#   parameters for mysql database for w3 server
-#
-# [*avahi_enable*]
-#   enable service announcement, enabled by default. for testing and debugging purposes
-#
+# @param install_dir directory to install w3 server
+# @param port port to listen with apache vhost
+# @param mysql_* parameters for mysql database for w3 server
 class warden3::server (
 	$install_dir = "/opt/warden_server",
-	$port = 45443,
+	$service_port = 45443,
 
 	$mysql_host = "localhost",
 	$mysql_port = 3306,
         $mysql_db = "warden3",
         $mysql_password = false,
-
-	$avahi_enable = true,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($avahi_enable) {
-		include metalib::avahi
-	        file { "/etc/avahi/services/warden-server.service":
-	                content => template("${module_name}/warden_server.avahi-service.erb"),
-	                owner => "root", group => "root", mode => "0644",
-	                require => Package["avahi-daemon"],
-	                notify => Service["avahi-daemon"],
-	        }
+	include metalib::avahi
+	file { "/etc/avahi/services/warden-server.service":
+		content => template("${module_name}/warden_server.avahi-service.erb"),
+		owner => "root", group => "root", mode => "0644",
+		require => Package["avahi-daemon"],
+		notify => Service["avahi-daemon"],
 	}
 
 	#mysql server
@@ -130,15 +116,18 @@ class warden3::server (
         ensure_resource( 'lamp::apache2::a2dismod', "cgid", {} )
 	ensure_resource( 'lamp::apache2::a2enmod', "ssl", {} )
 
-	ensure_resource('warden3::hostcert', "hostcert", { "warden_server" => $fqdn, "require" => File["/etc/avahi/services/warden-server.service"],} )
-	file { "/etc/apache2/sites-enabled/00warden3.conf":
+	warden3::racert { "${fqdn}":
+                destdir => "${install_dir}/racert",
+                require => File["${install_dir}"],
+        }
+
+	file { "/etc/apache2/sites-enabled/20warden3.conf":
 		content => template("${module_name}/warden_server-virtualhost.conf.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => [
 			Package["apache2", "libapache2-mod-wsgi"], 
-			Warden3::Hostcert["hostcert"],
-			Lamp::Apache2::A2enmod["ssl"],
-			##Exec["a2enmod ssl"],
+			Warden3::Racert["${fqdn}"],
+			Lamp::Apache2::A2enmod["ssl"]
 			],
 		notify => Service["apache2"],
 	}

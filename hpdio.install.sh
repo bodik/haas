@@ -1,2 +1,3 @@
-pa.sh -e 'include hpdio'
+#!/bin/sh
 
+pa.sh -e "include hpdio"

@@ -1,11 +1,11 @@
-# Installs Cowrie honeypot
+# Installs Cowrie honeypot and warden reporting client
 #
 # @example Declaring the class
 #   class { "hpcowrie": }
 #
 # @param install_dir Installation directory
 # @param cowrie_port Service listen port
-# @param cowrie_user User to run service as
+# @param service_user User to run service as
 # @param cowrie_ssh_version_string SSH version announcement
 # @param log_history The number of days the data is stored on
 #
@@ -14,13 +14,14 @@
 # @param mysql_db Database to store Cowrie data
 # @param mysql_password Password to MySQL server authtentication
 #
-# @param warden_server warden server hostname
+# @param warden_client_name reporting script warden client name
+# @param warden_server_url warden server url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
 class hpcowrie (
 	$install_dir = "/opt/cowrie",
 	
 	$cowrie_port = 45356,
-	$cowrie_user = "cowrie",
+	$service_user = "cowrie",
 	$cowrie_ssh_version_string = undef,
 	$log_history = 14,
 
@@ -29,17 +30,25 @@ class hpcowrie (
 	$mysql_db = "cowrie",
 	$mysql_password = undef,
 	
-	$warden_server = undef,
+	$warden_client_name = undef,
+	$warden_server_url = undef,
 	$warden_server_service = "_warden-server._tcp",
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($warden_server) {
-                $warden_server_real = $warden_server
+	if ($warden_server_url) {
+                $warden_server_url_real = $warden_server_url
         } else {
                 include metalib::avahi
-                $warden_server_real = avahi_findservice($warden_server_service)
+                $warden_server_url_real = avahi_findservice($warden_server_service)
         }
+
+	if ($warden_client_name) {
+                $warden_client_name_real = $warden_client_name
+        } else {
+		$warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.cowrie", "-", "", 'G')
+        }
+
 
 	#mysql server
 	#Replaced by gmysql component 
@@ -97,7 +106,7 @@ class hpcowrie (
 		command => "/usr/bin/pip install -r ${install_dir}/requirements.txt",
 		require => Package["python-pip"],
 	} 
-	user { "$cowrie_user": 	
+	user { "$service_user": 	
 		ensure => present, 
 		managehome => false,
 		shell => "/bin/false",
@@ -105,8 +114,8 @@ class hpcowrie (
 		require => [Exec["clone cowrie"]],
 	}
 	file { ["${install_dir}/dl", "${install_dir}/dl/tty", "${install_dir}/data", "${install_dir}/log", "${install_dir}/log/tty", "${install_dir}/var/run", "${install_dir}/etc/", "/opt/cowrie/twisted/plugins/"]:
-		owner => "$cowrie_user", group => "$cowrie_user", mode => "0755",
-		require => [Exec["clone cowrie"], Exec["pip install requirements"], User["$cowrie_user"]],
+		owner => "$service_user", group => "$service_user", mode => "0755",
+		require => [Exec["clone cowrie"], Exec["pip install requirements"], User["$service_user"]],
 	}
 
 	$cowrie_ssh_version_strings = [
@@ -133,7 +142,7 @@ class hpcowrie (
 
 	file { "${install_dir}/cowrie.cfg":
 		content => template("${module_name}/cowrie.cfg.erb"),
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
+		owner => "${service_user}", group => "${service_user}", mode => "0640",
 		require => [Exec["clone cowrie"], Exec["pip install requirements"], File["${install_dir}/dl", "${install_dir}/dl/tty", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
 		notify => Service["cowrie"],
 	}
@@ -161,14 +170,14 @@ class hpcowrie (
                 require => File["${install_dir}/cowrie.cfg"],
         }
         file { "/etc/sudoers.d/cowrie":
-                content => "${cowrie_user} ALL=(ALL) NOPASSWD: ${install_dir}/bin/iptables\n",
+                content => "${service_user} ALL=(ALL) NOPASSWD: ${install_dir}/bin/iptables\n",
                 owner => "root", group => "root", mode => "0755",
                 require => [Package["sudo"], File["${install_dir}/bin/iptables"]],
         }
 	
 	file { "${install_dir}/data/userdb.txt":
 		source => "puppet:///modules/${module_name}/userdb.txt",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
+		owner => "${service_user}", group => "${service_user}", mode => "0640",
 		require => File["${install_dir}/cowrie.cfg"],
 	}
 
@@ -204,17 +213,16 @@ class hpcowrie (
 	# warden_client pro kippo/cowrie (basic w3 client, reporter stuff, run/persistence/daemon)
 	file { "${install_dir}/warden":
 		ensure => directory,
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 	}
 	file { "${install_dir}/warden/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
+		owner => "${service_user}", group => "${service_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
 
@@ -222,32 +230,28 @@ class hpcowrie (
 
 	file { "${install_dir}/warden/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "${$cowrie_user}", group => "${$cowrie_user}", mode => "0755",
+                owner => "${$service_user}", group => "${$service_user}", mode => "0755",
         }
 
 	file { "${install_dir}/warden/warden_sender_cowrie.py":
 		source => "puppet:///modules/${module_name}/sender/warden_sender_cowrie.py",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
 	file { "${install_dir}/warden/warden_client_cowrie.cfg":
 		content => template("${module_name}/warden_client_cowrie.cfg.erb"),
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
+		owner => "${service_user}", group => "${service_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
 	file { "/etc/cron.d/warden_cowrie":
 		content => template("${module_name}/warden_cowrie.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => User["$cowrie_user"],
+		require => User["$service_user"],
 	}
-	
-	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
-	}
-	exec { "register cowrie sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.cowrie -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => Exec["clone cowrie"],
+   
+	warden3::racert { "${warden_client_name_real}":
+                destdir => "${install_dir}/racert",
+                require => Exec["clone cowrie"],
 	}
 }

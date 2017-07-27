@@ -1,3 +1,7 @@
-# hpjdwpd
+# hpjdwpd -- HaaS module for jdwpd
 
-Module installs a reporting warden client service and custom honeypot service
+## Scripts
+
+**bin/vm_cleanup.sh** -- haas helper
+
+**bin/vm_finalize.sh** -- haas helper

@@ -1,1 +1,3 @@
-pa.sh -v -e 'include gmysql::server'
+#!/bin/sh
+
+pa.sh -v -e "include gmysql::server"

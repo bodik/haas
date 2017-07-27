@@ -1,4 +1,4 @@
-# Installs ucho tcp service
+# Installs ucho tcp service and warden reporting client
 #
 # @example Install service with default warden-server autodiscovery
 #   class { "hpucho::tcp": }
@@ -9,7 +9,8 @@
 # @param port_end highest port to listen
 # @param port_skip list of ports to skip
 #
-# @param warden_server warden server hostname
+# @param warden_client_name reporting script warden client name
+# @param warden_server_url warden server url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
 class hpucho::tcp (
 	$install_dir = "/opt/uchotcp",
@@ -18,17 +19,25 @@ class hpucho::tcp (
 	$port_end = 9999,
 	$port_skip = "[22,1433,65535]",
 
-	$warden_server = undef,
-	$warden_server_service = "_warden-server._tcp",
+	$warden_client_name = undef,
+        $warden_server_url = undef,
+        $warden_server_service = "_warden-server._tcp",
 ) {
-	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
+        notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($warden_server) {
-                $warden_server_real = $warden_server
+        if ($warden_server_url) {
+                $warden_server_url_real = $warden_server_url
         } else {
                 include metalib::avahi
-                $warden_server_real = avahi_findservice($warden_server_service)
-	}
+                $warden_server_url_real = avahi_findservice($warden_server_service)
+        }
+
+        if ($warden_client_name) {
+                $warden_client_name_real = $warden_client_name
+        } else {
+		$warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.uchotcp", "-", "", 'G')
+        }
+
 
 	# application
 
@@ -94,7 +103,6 @@ class hpucho::tcp (
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/bin"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "root", group => "root", mode => "0644",
@@ -123,12 +131,8 @@ class hpucho::tcp (
                 owner => "root", group => "root", mode => "0644",
 	}
 
-	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
-	}
-	exec { "register uchotcp sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.uchotcp -d ${install_dir}/bin",
-		creates => "${install_dir}/bin/registered-at-warden-server",
-		require => File["${install_dir}/bin"],
-	}
+        warden3::racert { "${warden_client_name_real}":
+                destdir => "${install_dir}/racert",
+                require => File["${install_dir}"],
+        }
 }

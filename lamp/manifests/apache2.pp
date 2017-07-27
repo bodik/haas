@@ -1,6 +1,8 @@
-# == Class: lamp::apache2
+# Manages basic installation and config of apache2 webserver, configures
+# status, dir, default virtualhost, prefork config, ...
 #
-# TODO documentation
+# @example Usage
+#   include lamp::apache2
 #
 class lamp::apache2() {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
@@ -113,18 +115,26 @@ class lamp::apache2() {
 
 
 	# defined resources
+
+	# Internal. Enables apache2 module
 	define a2enmod() { exec { "a2enmod $name":
 			command => "/usr/sbin/a2enmod $name", unless => "/usr/sbin/a2query -m $name",
 			require => Package["apache2"], notify => Service["apache2"],
 	} }
+
+	# Internal. Disables apache2 module
 	define a2dismod() { exec { "a2dismod $name":
 	                command => "/usr/sbin/a2dismod $name", onlyif => "/usr/sbin/a2query -m $name",
 			require => Package["apache2"], notify => Service["apache2"],
 	} }
+
+	# Internal. Enables apache2 config
 	define a2enconf() { exec { "a2enconf $name":
 	                command => "/usr/sbin/a2enconf $name", unless => "/usr/sbin/a2query -c $name",
 			require => Package["apache2"], notify => Service["apache2"],
         } }
+
+	# Internal. Disables apache2 config
 	define a2disconf() { exec { "a2disconf $name":
 	                command => "/usr/sbin/a2disconf $name", onlyif => "/usr/sbin/a2query -c $name",
 			require => Package["apache2"], notify => Service["apache2"],

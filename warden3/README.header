@@ -1,0 +1,9 @@
+# warden3 -- Module for various warden3 ecosystem components
+
+## Scripts
+
+**bin/install_ssl_warden_ra.sh** -- installs x509 certificate from warden ra
+
+**bin/register_sensor.sh** -- registers sensor at warden ra
+
+**bin/verify_ssl_warden_ra.sh** -- verifies presence of certificate and registration flag 

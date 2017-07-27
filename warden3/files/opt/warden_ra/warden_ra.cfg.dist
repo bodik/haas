@@ -1,0 +1,17 @@
+{
+    "Log": {
+        "filename": "/var/log/warden_ra.log",
+        "level": "info"
+    },
+    "Registry": {
+        "type": "EjbcaRegistry",
+        "url": "https://ejbca.example.org/ejbca/ejbcaws/ejbcaws?wsdl",
+        "cert": "warden_ra.cert.pem",
+        "key": "warden_ra.key.pem",
+        "ca_name": "Example CA",
+        "certificate_profile_name": "Example",
+        "end_entity_profile_name": "Example EE",
+        "subject_dn_template": "DC=cz,DC=example-ca,DC=warden,CN=%s",
+        "username_suffix": "@warden"
+    }
+}

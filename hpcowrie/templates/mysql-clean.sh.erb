@@ -1,4 +1,4 @@
-/usr/bin/mysql -hlocalhost -uroot <%= @cowrie_user %> -e \
+/usr/bin/mysql -hlocalhost -uroot <%= @service_user %> -e \
 "DELETE FROM auth WHERE session IN (SELECT id FROM sessions WHERE starttime < (NOW() - INTERVAL <%= @log_history %> DAY));
 DELETE FROM downloads WHERE session IN (SELECT id FROM sessions WHERE starttime < (NOW() - INTERVAL <%= @log_history %> DAY));
 DELETE FROM input WHERE session IN (SELECT id FROM sessions WHERE starttime < (NOW() - INTERVAL <%= @log_history %> DAY));

@@ -1,0 +1,24 @@
+Listen *:<%= @service_port %>
+<Virtualhost *:<%= @service_port %>>
+	
+	#defaults
+	ServerAdmin flab@cesnet.cz
+	DocumentRoot /var/www/server/
+	ErrorLog ${APACHE_LOG_DIR}/warden3-ra-error.log
+	CustomLog ${APACHE_LOG_DIR}/warden3-ra-access.log combined
+
+	# warden_ra
+#	SSLEngine on
+#	SSLVerifyClient optional
+#	SSLOptions +StdEnvVars +ExportCertData
+
+#	SSLCertificateFile      /opt/warden_server_3/cert.pem
+#	SSLCertificateKeyFile   /opt/warden_server_3/key.pem
+#	SSLCACertificateFile    /opt/warden_server_3/chain_TERENA_SSL_CA_3.pem
+
+	WSGIScriptAlias /warden_ra /opt/warden_server/warden_ra.wsgi
+	<DirectoryMatch /opt/warden_server/warden_ra.wsgi>
+	    Require all granted
+	</DirectoryMatch>
+
+</Virtualhost>

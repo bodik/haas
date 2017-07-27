@@ -1,9 +1,7 @@
 #!/bin/sh
 
 if [ -f /opt/warden_server/warden_server.py ]; then
-        echo "INFO: CHECK WARDENSERVER================"
-        pa.sh -v --noop --show_diff -e "include warden3::ca"
+        echo "INFO: CHECK WARDENSERVER ================"
+        pa.sh -v --noop --show_diff -e "include warden3::ra"
         pa.sh -v --noop --show_diff -e "include warden3::server"
-        pa.sh -v --noop --show_diff -e "include warden3::tester"
 fi
-

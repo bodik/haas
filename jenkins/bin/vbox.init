@@ -40,7 +40,7 @@ vm_status() {
 vm_build() {
 	/puppet/jenkins/bin/vbox.init shutdown
 	/puppet/jenkins/bin/vbox.init destroy
-	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init build"
+	front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init build $1"
 	rreturn $? "$0 build"
 }
 
@@ -144,7 +144,7 @@ case "$1" in
 
 
 	build)
-		vm_build
+		vm_build "$2"
 	;;
 	start)
 		vm_start "$2"

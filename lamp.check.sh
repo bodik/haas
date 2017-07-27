@@ -5,4 +5,3 @@ if [ $? -eq 0 ]; then
         echo "INFO: CHECK LAMP ======================="
 	pa.sh -v --noop --show_diff -e "include lamp::apache2"
 fi
-

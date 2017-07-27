@@ -1,34 +1,43 @@
-# Installs Dionaea honeypot
+# Installs Dionaea honeypot and reporting warden client
 #
 # @example Declaring the class
 #   class { "hpdio": }
 #
 # @param install_dir Installation directory
-# @param dio_user User to run service as
+# @param service_user User to run service as
 # @param log_history The number of days the data is stored on
 #
-# @param warden_server warden server hostname
+# @param warden_client_name reporting script warden client name
+# @param warden_server_url warden server url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
 class hpdio (
 	$install_dir = "/opt/dionaea",
 
-	$dio_user = "dionaea",
+	$service_user = "dionaea",
 	$log_history = 14,
 	
-	$warden_server = undef,
-	$warden_server_service = "_warden-server._tcp",
+	$warden_client_name = undef,
+        $warden_server_url = undef,
+        $warden_server_service = "_warden-server._tcp",
 ) {
-	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
+        notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($warden_server) {
-                $warden_server_real = $warden_server
+        if ($warden_server_url) {
+                $warden_server_url_real = $warden_server_url
         } else {
                 include metalib::avahi
-                $warden_server_real = avahi_findservice($warden_server_service)
+                $warden_server_url_real = avahi_findservice($warden_server_service)
         }
 
+        if ($warden_client_name) {
+                $warden_client_name_real = $warden_client_name
+        } else {
+                $warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.dionaea", "-", "", 'G')
+        }
+
+
 	# application
-	user { "$dio_user": 	
+	user { "$service_user":
 		ensure => present, 
 		managehome => false,
 		shell => "/bin/bash",
@@ -37,8 +46,8 @@ class hpdio (
 
 	file { "${install_dir}":
 		ensure => directory,
-		owner => "$dio_user", group => "$dio_user", mode => "0755",
-		require => User["$dio_user"],
+		owner => "$service_user", group => "$service_user", mode => "0755",
+		require => User["$service_user"],
 	}
 
 	$packages = ["autoconf", "automake", "build-essential", "check", "cython3", "libcurl4-openssl-dev", "libemu-dev", "libev-dev", "libglib2.0-dev", "libloudmouth1-dev" ,"libnetfilter-queue-dev", "libnl-3-dev", "libpcap-dev", "libssl-dev", "libtool" ,"libudns-dev", "python3", "python3-dev", "python3-yaml", "sqlite3"]
@@ -57,28 +66,40 @@ class hpdio (
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
 	}
+	tidy { "Remove enabled modules":
+   		 path    => "${install_dir}/etc/dionaea/services-enabled/",
+		 recurse => true,
+		 matches => [ '*.yaml' ],
+		 rmdirs  => false,
+	}
 	file { "${install_dir}/etc/dionaea/services-enabled/epmap.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/epmap.yaml",
+		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/ftp.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/ftp.yaml",
+		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/mysql.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/mysql.yaml",
+		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/sip.yaml":
   		ensure => link, target => "${install_dir}/etc/dionaea/services-available/sip.yaml",
+		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/smb.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/smb.yaml",
+		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/tftp.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/tftp.yaml",
+		require => Tidy["Remove enabled modules"],
 	}
 
 	
 	file { "${install_dir}/var":
-		owner => "$dio_user", group => "$dio_user", #nomode
+		owner => "$service_user", group => "$service_user", #nomode
 		recurse => true,
 		require => Exec["build dio"],
 	}
@@ -112,49 +133,44 @@ class hpdio (
 	# warden_client pro kippo (basic w3 client, reporter stuff, run/persistence/daemon)
 	file { "${install_dir}/warden":
 		ensure => directory,
-		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 	}
 	file { "${install_dir}/warden/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}"	
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "${dio_user}", group => "${dio_user}", mode => "0640",
+		owner => "${service_user}", group => "${service_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
 
 	#reporting
 	file { "${install_dir}/warden/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+                owner => "${service_user}", group => "${service_user}", mode => "0755",
         }
 	file { "${install_dir}/warden/warden_sender_dio.py":
 		source => "puppet:///modules/${module_name}/sender/warden_sender_dio.py",
-		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+		owner => "${service_user}", group => "${service_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
 	$anonymised = "yes"
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
 	file { "${install_dir}/warden/warden_client_dio.cfg":
 		content => template("${module_name}/warden_client_dio.cfg.erb"),
-		owner => "${dio_user}", group => "${dio_user}", mode => "0640",
+		owner => "${service_user}", group => "${service_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
 	file { "/etc/cron.d/warden_dio":
 		content => template("${module_name}/warden_dio.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => User["$dio_user"],
+		require => User["$service_user"],
 	}
 
-	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
-	}
-	exec { "register dio sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -w ${warden_server_real} -n ${w3c_name}.dionaea -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
+	warden3::racert { "${warden_client_name_real}":
+		destdir => "${install_dir}/racert",
 		require => Exec["build dio"],
-	}
+        }
 }

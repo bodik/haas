@@ -12,12 +12,12 @@
 . /puppet/metalib/bin/lib.sh
 tmpfile=/tmp/warden-server.selftest
 
-url="https://$(facter fqdn):45443/warden3"
-client="cz.cesnet.flab.$(facter hostname).puppet_test_client"
+url="$(/puppet/metalib/bin/avahi_findservice.sh _warden-server._tcp)"
+client="cz.cesnet.flab.$(facter hostname).puppet-test-client"
 secret=""
-keyfile="/opt/hostcert/$(facter fqdn).key"
-certfile="/opt/hostcert/$(facter fqdn).crt"
-cafile="/opt/hostcert/cachain.pem"
+keyfile="/opt/warden_server/puppet-test-client/key.pem"
+certfile="/opt/warden_server/puppet-test-client/cert.pem"
+cafile="/opt/warden_server/puppet-test-client/cachain.pem"
 
 
 echo "Test  404"
@@ -135,7 +135,7 @@ curl \
     --request POST \
     --data '{#$%^' \
     "$url/getEvents?client=$client&secret=$secret" \
-    --silent --show-error \
+    --silent --show-error
 echo
 
 echo "Test  Called with unknown category"

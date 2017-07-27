@@ -1,0 +1,19 @@
+commit ef522e11a3e8e295788ae064c141d78609678e67
+Author: root <root@dhcp-flab2-52.cesnet.cz>
+Date:   Wed Jul 12 21:34:17 2017 +0200
+
+    on empty server, all receivers gets id=1 as lastEventId, so first message must be id=2, otherwise clients would not get the first message unles they force reset manually
+
+diff --git a/warden3/files/opt/warden_server/warden_3.0.sql b/warden3/files/opt/warden_server/warden_3.0.sql
+index 910e479..9553ec7 100644
+--- a/warden3/files/opt/warden_server/warden_3.0.sql
++++ b/warden3/files/opt/warden_server/warden_3.0.sql
+@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `events` (
+   PRIMARY KEY (`id`),
+   KEY `id` (`id`,`client_id`),
+   KEY `received` (`received`)
+-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
++  ) ENGINE=InnoDB DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_unicode_ci AUTO_INCREMENT=2 ;
+ 
+ -- --------------------------------------------------------
+ 
