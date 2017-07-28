@@ -1,7 +1,4 @@
-# == Class: metalib::postfix
-#
-# TODO documentation
-#
+# Internal. Installs postfix as local MTA
 class metalib::postfix() {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 

@@ -31,7 +31,9 @@ vm_list() {
 		NAME=$(echo $all | awk '{print $1}' | sed 's/"//g')
 		UID=$(echo $all | awk '{print $2}')
 		STATE=$(VBoxManage showvminfo $UID | grep "^State" | sed 's/State:\s*\(.*\)\s* (.*/\1/' | sed 's/ /_/g')
-		printf "%-25s %-40s %-10s\n" "${NAME}" "${UID}" "${STATE}"
+		CPUS=$(VBoxManage showvminfo $UID | grep "^Number of CPUs:" | rev | awk '{print $1}' | rev)
+		MEMORY=$(VBoxManage showvminfo $UID | grep "^Memory size:" | rev | awk '{print $1}' | rev)
+		printf "%-25s %-40s %-12s %s %s\n" "${NAME}" "${UID}" "${STATE}" "$CPUS" "$MEMORY"
 	done
 }
 
@@ -71,6 +73,7 @@ vm_ip() {
 
 
 vm_build() {
+	TEMPLATE="$1"
 	mkdir "${VBOXBASE}/vms/${VMNAME}"
 	if [ $? -ne 0 ]; then
 		rreturn 1 "vm already exists"
@@ -80,7 +83,15 @@ vm_build() {
 	if [ $? -ne 0 ]; then
 		rreturn 1 "$0 clone failed"
 	fi
+
 	VBoxManage registervm ${VBOXBASE}/vms/${VMNAME}/${VMNAME}.vbox
+
+	if [ "$TEMPLATE" = "small" ]; then
+		VBoxManage modifyvm ${VMNAME} --cpus 1 --memory 512
+		if [ $? -eq 0 ]; then
+			echo "INFO: template small applied"
+		fi
+	fi
 
 	sleep 5
 	rreturn $? "$0 build"
@@ -176,7 +187,7 @@ case "$1" in
 
 
 	build)
-		vm_build
+		vm_build "$2"
 	;;
 	start)
 		vm_start "$2"

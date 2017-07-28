@@ -1,4 +1,4 @@
-# Installs ucho udp service
+# Installs ucho udp service and warden reporting client
 #
 # @example Install service with default warden-server autodiscovery
 #   class { "hpucho::udp": }
@@ -9,10 +9,9 @@
 # @param port_end highest port to listen
 # @param port_skip list of ports to skip
 #
+# @param warden_client_name reporting script warden client name
 # @param warden_server_url warden server url to connect
-# @param warden_ca_url warden ca url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param warden_ca_service avahi name of warden ca service for autodiscovery
 class hpucho::udp (
 	$install_dir = "/opt/uchoudp",
 	$service_user = "uchoudp",

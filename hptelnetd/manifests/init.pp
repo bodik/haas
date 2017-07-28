@@ -1,4 +1,4 @@
-# Installs telnetd honeypot
+# Installs telnetd honeypot and reporting warden client
 #
 # @example Declaring the class
 #   class { "hptelnetd": }
@@ -8,11 +8,9 @@
 # @param telnetd_port Service listen port
 # @param real_telnetd_port Service listen port before redirect
 #
+# @param warden_client_name reporting script warden client name
 # @param warden_server_url warden server url to connect
-# @param warden_ca_url warden ca url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param warden_ca_service avahi name of warden ca service for autodiscovery
-
 class hptelnetd (
 	$install_dir = "/opt/telnetd",
 	$service_user = "telnetd",

@@ -1,6 +1,10 @@
-# == Class: gmysql::server
+# Class installs Mariadb server with basic configuration and basic set of
+# management scripts for detecting passwordless accounts and backup scripts
+# (typically suited for bacula or other backup sw). Most of the work is done by
+# 3rdparty module puppetlabs-mysql
 #
-# TODO documentation
+# @example Usage
+#  include gmysql::server
 #
 class gmysql::server() {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
@@ -17,11 +21,6 @@ class gmysql::server() {
 
 
 	# hardening
-#maria db authenticated by socket
-#	mysql_user { [ "root@$hostname", "root@127.0.0.1", "root@::1", "root@localhost", "root@localhost.localdomain"]:
-#	        ensure => 'absent',
-#	        require => File["/root/.my.cnf"],
-#	}
 	exec { "revoke proxy":
 		command => "/usr/bin/mysql -NBe 'TRUNCATE TABLE mysql.proxies_priv; FLUSH PRIVILEGES;'",
 		onlyif => "/usr/bin/mysql -NBe 'SHOW GRANTS FOR \"root\"@\"localhost\"' | /bin/grep PROXY",

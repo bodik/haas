@@ -1,7 +1,4 @@
-# == Class: metalib::fail2ban
-#
-# TODO documentation
-#
+# Internal. Installs fail2ban with basic config (sshd)
 class metalib::fail2ban() {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 

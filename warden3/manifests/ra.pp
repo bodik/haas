@@ -1,24 +1,24 @@
-# == Class: warden3::ra
+# Class will ensure installation of warden3 semi-automated registration and
+# certification authority for testing.
 #
-# Class will ensure installation of warden3 semi-automated ra for testing.
+# @example Usage
+#   include warden3::ra
 #
+# @param install_dir installation directory
+# @param service_port port for apache virtualhost
 class warden3::ra (
 	$install_dir = "/opt/warden_server",
 	$service_port = 45446,
-
-	$avahi_enable = true,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($avahi_enable) {
-		include metalib::avahi
-	        file { "/etc/avahi/services/warden-ra.service":
-	                content => template("${module_name}/warden_ra.avahi-service.erb"),
-	                owner => "root", group => "root", mode => "0644",
-	                require => Package["avahi-daemon"],
-	                notify => Service["avahi-daemon"],
-	        }
-	}
+	include metalib::avahi
+	file { "/etc/avahi/services/warden-ra.service":
+		content => template("${module_name}/warden_ra.avahi-service.erb"),
+		owner => "root", group => "root", mode => "0644",
+		require => Package["avahi-daemon"],
+		notify => Service["avahi-daemon"],
+        }
 
 	# deps
 	package { ["python-netifaces", "python-suds"]: ensure => installed }

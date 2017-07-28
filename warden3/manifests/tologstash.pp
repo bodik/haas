@@ -5,10 +5,9 @@
 # @param logstash_server_warden_server logstash server host
 # @param logstash_server_warden_port port for warden stream input
 #
+# @param warden_client_name reporting script warden client name
 # @param warden_server_url warden server url to connect
-# @param warden_ca_url warden ca url to connect
 # @param warden_server_service avahi name of warden server service for autodiscovery
-# @param warden_ca_service avahi name of warden ca service for autodiscovery
 class warden3::tologstash (
 	$install_dir = "/opt/warden_tologstash",
 

@@ -1,7 +1,4 @@
-# == Class: metalib::sysctl_hardnet
-#
-# Hardens networking on linux box. Used internally.
-#
+# Internal. Hardens networking on linux box.
 class metalib::sysctl_hardnet {
 	file { "/etc/sysctl.d/hardnet.conf":
 		content => template("${module_name}/etc/sysctl.d/hardnet.conf.erb"),

@@ -1,11 +1,8 @@
-# == Class: jenkins
-#
 # Class provides Jenkins installation from vendor repository packages and
 # configures basic set of jobs for building host with specified roles as well
 # as running autotests at the ends of the scenarios.
 #
-# === Examples
-#
+# @example Usage
 #  class { jenkins: }
 #
 class jenkins() {

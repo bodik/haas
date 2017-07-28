@@ -5,7 +5,7 @@ rreturn() { echo "$2"; exit $1; }
 
 usage() { echo "Usage: $0 -w <WARDEN_SERVER_URL> -n <CLIENT_NAME> -t <TOKEN>" 1>&2; exit 1; }
 parse_args() {
-	while getopts "w:c:t:i:a" o; do
+	while getopts "w:n:t:i:a" o; do
 		case "${o}" in
 	        	w) WARDEN_SERVER_URL=${OPTARG} ;;
 			n) CLIENT_NAME=${OPTARG} ;;
