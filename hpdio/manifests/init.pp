@@ -61,16 +61,11 @@ class hpdio (
 	exec { "build dio":
 		command => "/puppet/${module_name}/bin/build.sh ${install_dir}",
 		require => Exec["clone dio"],
+		creates => "${install_dir}/bin/dionaea",
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled":
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
-	}
-	tidy { "Remove enabled modules":
-   		 path    => "${install_dir}/etc/dionaea/services-enabled/",
-		 recurse => true,
-		 matches => [ '*.yaml' ],
-		 rmdirs  => false,
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/epmap.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/epmap.yaml",
