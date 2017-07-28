@@ -113,12 +113,20 @@ class hpdio (
                 owner => "root", group => "root", mode => "0644",
 		require => Exec["build dio"],
         }
+        service { "systemd-networkd":
+                enable => true,
+                ensure => running,
+        }
+        service { "systemd-networkd-wait-online":
+                enable => true,
+                ensure => running,
+		require => Service["systemd-networkd"],
+        }
         service { "dionaea":
                 enable => true,
                 ensure => running,
                 require => File["/etc/systemd/system/dionaea.service"],
         }
-
 	
      	file { "/etc/logrotate.d/dionaea":
                 content => template("${module_name}/dionaea.logrotate.erb"),
