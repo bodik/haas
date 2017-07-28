@@ -1,7 +1,5 @@
 #!/bin/sh
 
-echo "INFO: $0"
-
 if [ -f ${INSTALL_DIR}/bin/uchotcp.py ]; then
 
 	INSTALL_DIR=/opt/uchotcp
