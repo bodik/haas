@@ -14,7 +14,7 @@
   <builders>
     <hudson.tasks.Shell>
       <command>export VMNAME=&quot;HAAS-hpjdwpd&quot;
-/puppet/jenkins/bin/vbox.init build
+/puppet/jenkins/bin/vbox.init build small
 /puppet/jenkins/bin/vbox.init start
 /puppet/jenkins/bin/vbox.init fixup
 /puppet/jenkins/bin/vbox.init ssh &apos;wget http://esb.metacentrum.cz/haas.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
