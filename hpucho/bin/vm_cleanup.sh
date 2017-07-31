@@ -1,8 +1,8 @@
 #!/bin/sh
 
+INSTALL_DIR=/opt/uchotcp
 if [ -f ${INSTALL_DIR}/bin/uchotcp.py ]; then
 
-	INSTALL_DIR=/opt/uchotcp
 	systemctl stop uchotcp
 	find ${INSTALL_DIR}/racert -type f -exec shred --force --remove {} \;
 	truncate --size 0 ${INSTALL_DIR}/racert/registered-at-warden-server
@@ -10,9 +10,9 @@ if [ -f ${INSTALL_DIR}/bin/uchotcp.py ]; then
 	find ${INSTALL_DIR}/bin -type f -name '*cfg' -exec shred --force --remove {} \;
 fi
 
+INSTALL_DIR=/opt/uchoudp
 if [ -f ${INSTALL_DIR}/bin/uchoudp.py ]; then
 
-	INSTALL_DIR=/opt/uchoudp
 	systemctl stop uchoudp
 	find ${INSTALL_DIR}/racert -type f -exec shred --force --remove {} \;
 	truncate --size 0 ${INSTALL_DIR}/racert/registered-at-warden-server
