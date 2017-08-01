@@ -29,7 +29,7 @@ define warden3::racert (
 	ensure_resource( 'file', "$destdir", { "ensure" => directory, "owner" => "${owner}", "group" => "${group}", "mode" => "${mode}",} )
 
 	exec { "gen cert ${name}":
-		command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ra.sh -r ${warden_ra_url_real} -n ${name} -d ${destdir}",
+		command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_racert.sh -r ${warden_ra_url_real} -n ${name} -d ${destdir}",
 		creates => "${destdir}/cert.pem",
 		require => [File["$destdir"], Package["curl"]],
 	}
