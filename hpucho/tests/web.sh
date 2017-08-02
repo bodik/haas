@@ -22,7 +22,7 @@ if [ $? -ne 0 ]; then
 fi
 
 
-/puppet/warden3/bin/verify_ssl_warden_ra.sh /opt/uchotcp
+/puppet/warden3/bin/verify_ssl_warden_ra.sh /opt/uchoweb
 if [ $? -ne 0 ]; then
         rreturn 1 "$0 racert failed"
 fi
