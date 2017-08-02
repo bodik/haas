@@ -13,7 +13,7 @@ define warden3::cert (
 	$group = "root",
 	$mode = "0755",
 
-        $warden_ra_url = "https://warden-hub.cesnet.cz/warden-ra/getCert",
+        $warden_ra_url = "https://warden-hub.cesnet.cz/warden-ra",
 	$token,
 ) {
 	#notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
