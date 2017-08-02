@@ -69,11 +69,13 @@ sh /puppet/jenkins/bin/haas_vm_finalize.sh -w https://warden-hub.cesnet.cz/warde
 
 1. backup appropriate `/opt/<honeypot>/racert` directory
 
-2. prepare new VM from new image, see **Basic honeypot node installation 1**
+2. prepare new VM from new image, see *Basic honeypot node installation 1 prepare VM*
 
 3. restore appropriate `/opt/<honeypot>/racert` directory
 
-4. finalize configuration of the new VM, see **Basic honeypot node installation 3**
+4. finalize configuration of the new VM, see *Basic honeypot node installation 3 finalize VM configuration*
+
+5. reboot VM
 
 
 
