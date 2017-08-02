@@ -7,7 +7,7 @@ parse_args $@
 INSTALL_DIR=/opt/uchotcp
 if [ -f ${INSTALL_DIR}/bin/uchotcp.py ]; then
 	if [ ${AUTOTEST} -eq 0 ]; then
-		pa.sh -e "warden3::cert { '${CLIENT_NAME}.uchotcp':
+		pa.sh -e "warden3::cert { '${CLIENT_NAME}':
 			destdir => '${INSTALL_DIR}/racert',
 			token => '${TOKEN}',
 		}"
@@ -18,7 +18,7 @@ fi
 INSTALL_DIR=/opt/uchoudp
 if [ -f ${INSTALL_DIR}/bin/uchoudp.py ]; then
 	if [ ${AUTOTEST} -eq 0 ]; then
-		pa.sh -e "warden3::cert { '${CLIENT_NAME}.uchoudp':
+		pa.sh -e "warden3::cert { '${CLIENT_NAME}':
 			destdir => '${INSTALL_DIR}/racert',
 			token => '${TOKEN}',
 		}"
