@@ -66,3 +66,33 @@ Install service with default warden-server autodiscovery
 class { "hpucho::udp": }
 ```
 
+## puppet_classes: hpucho::web
+
+Installs ucho web service and warden reporting client
+
+### Parameters
+
+**install_dir** -- Installation directory
+
+**service_user** -- User to run service as
+
+**port** -- port to listen
+
+**personality** -- webserver identification
+
+**content** -- content file
+
+**warden_client_name** -- reporting script warden client name
+
+**warden_server_url** -- warden server url to connect
+
+**warden_server_service** -- avahi name of warden server service for autodiscovery
+
+### Examples
+
+Install service with default warden-server autodiscovery
+
+```
+class { "hpucho::web": }
+```
+

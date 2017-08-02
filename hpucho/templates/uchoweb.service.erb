@@ -1,0 +1,15 @@
+[Unit]
+Description=uchoweb
+
+[Service]
+ExecStart=/usr/bin/python <%= @install_dir %>/bin/uchoweb.py
+WorkingDirectory=<%= @install_dir %>/bin
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=uchoweb.py
+User=<%= @service_user %>
+Group=<%= @service_user %>
+
+[Install]
+WantedBy=multi-user.target
