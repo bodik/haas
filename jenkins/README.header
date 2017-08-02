@@ -74,15 +74,13 @@ VMNAME=ABC vbox.init ssh '/bin/true'
 
 ### Scripts
 
-**bin/haas_vm_generate_w3cname.sh** -- haas jenkins finalizer helper
-
 **bin/haas_vm_cleanup.sh** -- haas build helper, executes all modules cleanups
+
+**bin/haas_vm_finalize.sh** -- haas helper, invokens racerts and configuration scripts for all modules
 
 **bin/haas_vm_finalize_lib.sh** -- haas build helper, shell functions library
 
-**bin/haas_vm_finalize_racert.sh** -- haas build helper, invokes warden_apply.sh to obtain racert certificate
-
-**bin/haas_vm_finalize.sh** -- haas helper, invokens racerts and configuration scripts for all modules
+**bin/haas_vm_generate_w3cname.sh** -- haas jenkins finalizer helper
 
 **bin/haas_vm_prepare.sh** -- haas helper, manages node basic configuration for clean VM import
 

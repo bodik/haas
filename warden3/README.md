@@ -2,11 +2,36 @@
 
 ## Scripts
 
-**bin/install_ssl_warden_ra.sh** -- installs x509 certificate from warden ra
+**bin/install_ssl_warden_cert.sh** -- installs x509 certificate from warden_ra
+
+**bin/install_ssl_warden_racert.sh** -- installs x509 certificate from testbed warden_ra (with fake token)
 
 **bin/register_sensor.sh** -- registers sensor at warden ra
 
 **bin/verify_ssl_warden_ra.sh** -- verifies presence of certificate and registration flag 
+
+## defined_types: warden3::cert
+
+Resource will ensure provisioning of SSL certificate used by other w3 components.
+If certificate is not present in install_dir, module will generate new key and
+request signing it from warden ra/ca service located on warden server
+
+### Parameters
+
+**destdir** -- directory to generate certificate to
+
+**owner** -- destdir owner
+
+**group** -- destdir group
+
+**warden_ra_url** -- name or ip of warden server, overrides autodiscovery
+
+**warden_ra_service** -- service name to be discovered
+
+**mode** -- 
+
+**token** -- 
+
 
 ## defined_types: warden3::racert
 
