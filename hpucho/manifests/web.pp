@@ -1,11 +1,23 @@
-#!/usr/bin/puppet apply
-
+# Installs ucho web service and warden reporting client
+#
+# @example Install service with default warden-server autodiscovery
+#   class { "hpucho::web": }
+#
+# @param install_dir Installation directory
+# @param service_user User to run service as
+# @param port port to listen
+# @param personality webserver identification
+# @param content content file
+#
+# @param warden_client_name reporting script warden client name
+# @param warden_server_url warden server url to connect
+# @param warden_server_service avahi name of warden server service for autodiscovery
 class hpucho::web (
 	$install_dir = "/opt/uchoweb",
 	$service_user = "uchoweb",
 	$port = 8080,
 	$personality = "Apache Tomcat/7.0.56 (Debian)",
-	$content = "content-tomcat.tgz",
+	$content = "content.tgz",
 
 	$warden_client_name = undef,
         $warden_server_url = undef,
@@ -23,7 +35,7 @@ class hpucho::web (
         if ($warden_client_name) {
                 $warden_client_name_real = $warden_client_name
         } else {
-		$warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.uchotcp", "-", "", 'G')
+		$warden_client_name_real = regsubst("cz.cesnet.haas.${hostname}.uchoweb", "-", "", 'G')
         }
 
 	# application
@@ -60,40 +72,24 @@ class hpucho::web (
 		notify => Service["uchoweb"],
 	}
 	exec { "extract content":
-		command => "/bin/tar xzf /puppet/hpucho/files/uchoweb/content-tomcat.tgz",
+		command => "/bin/tar xzf /puppet/hpucho/files/uchoweb/${content}",
 		cwd => "${install_dir}/bin/",
 		creates => "${install_dir}/bin/content",
 	}
 
 
-	file { "/etc/systemd/system/uchotcp.service":
-		content => template("${module_name}/uchotcp.service.erb"),
+	file { "/etc/systemd/system/uchoweb.service":
+		content => template("${module_name}/uchoweb.service.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => File["${install_dir}/bin/uchotcp.py"],
-		notify => Service["uchotcp"]
-	}
-	service { "uchotcp": 
-		enable => true,
-		ensure => running,
-		require => File["/etc/systemd/system/uchotcp.service"],
-	}
-
-
-	file { "/etc/init.d/uchoweb":
-		content => template("${module_name}/uchoweb.init.erb"),
-		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}/uchoweb.py", "${install_dir}/uchoweb.cfg"], Exec["content"], Exec["python cap_net"]],
-		notify => [Service["uchoweb"], Exec["systemd_reload"]]
-	}
-	exec { "systemd_reload":
-		command     => '/bin/systemctl daemon-reload',
-		refreshonly => true,
+		require => File["${install_dir}/bin/uchoweb.py"],
+		notify => Service["uchoweb"]
 	}
 	service { "uchoweb": 
 		enable => true,
 		ensure => running,
-		require => [File["/etc/init.d/uchoweb"], Exec["systemd_reload"]]
+		require => File["/etc/systemd/system/uchoweb.service"],
 	}
+
 
 
 	#autotest
@@ -101,51 +97,42 @@ class hpucho::web (
 
 
 
-
 	# warden_client
-	file { "${install_dir}/warden_client.py":
+	file { "${install_dir}/bin/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
-		require => File["${install_dir}"],
+		owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}/bin"],
 	}
-	$w3c_name = "cz.cesnet.flab.${hostname}"
-	file { "${install_dir}/warden_client.cfg":
+	file { "${install_dir}/bin/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0640",
-		require => File["${install_dir}"],
+		owner => "root", group => "root", mode => "0644",
+		require => File["${install_dir}/bin"],
 	}
 
         # reporting
-
-        file { "${install_dir}/warden_sender_uchoweb.py":
+        file { "${install_dir}/bin/warden_sender_uchoweb.py":
                 source => "puppet:///modules/${module_name}/sender/warden_sender_uchoweb.py",
-                owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0755",
-                require => File["${install_dir}/warden_utils_flab.py"],
-        }
- 	file { "${install_dir}/${logfile}":
-                ensure  => 'present',
-                replace => 'no',
-                owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0644",
-                content => "",
+                owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}/bin"],
         }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-        file { "${install_dir}/warden_client_uchoweb.cfg":
+        file { "${install_dir}/bin/warden_client_uchoweb.cfg":
                 content => template("${module_name}/warden_client_uchoweb.cfg.erb"),
-                owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
-                require => File["${install_dir}/uchoweb.py","${install_dir}/warden_utils_flab.py","${install_dir}/warden_sender_uchoweb.py"],
+                owner => "root", group => "root", mode => "0644",
+		require => File["${install_dir}/bin"],
         }
         file { "/etc/cron.d/warden_uchoweb":
                 content => template("${module_name}/warden_uchoweb.cron.erb"),
                 owner => "root", group => "root", mode => "0644",
-                require => User["$uchoweb_user"],
+                require => User["${service_user}"],
         }
-	
-	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
+	file { "/etc/logrotate.d/uchoweb":
+		content => template("${module_name}/uchoweb.logrotate.erb"),
+                owner => "root", group => "root", mode => "0644",
 	}
-	exec { "register uchoweb sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.uchoweb -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => File["${install_dir}"],
-	}
+
+        warden3::racert { "${warden_client_name_real}":
+                destdir => "${install_dir}/racert",
+                require => File["${install_dir}"],
+        }
 }
