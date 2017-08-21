@@ -40,8 +40,5 @@ define warden3::racert (
 			creates => "${destdir}/registered-at-warden-server",
 			require => File["$destdir"],
 		}
-	} else {
-		warning("WARN: cannot resolve warden_ra service")
-	}
-
+	} 
 }
