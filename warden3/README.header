@@ -2,7 +2,9 @@
 
 ## Scripts
 
-**bin/install_ssl_warden_ra.sh** -- installs x509 certificate from warden ra
+**bin/install_ssl_warden_cert.sh** -- installs x509 certificate from warden_ra
+
+**bin/install_ssl_warden_racert.sh** -- installs x509 certificate from testbed warden_ra (with fake token)
 
 **bin/register_sensor.sh** -- registers sensor at warden ra
 

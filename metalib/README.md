@@ -144,7 +144,7 @@ string or hostname representing discovered service
 
 ### Parameters
 
-**outlen** -- optional, length of the password to generate
+***outlen** -- optional, length of the password to generate
 
 ### Return
 
@@ -155,9 +155,7 @@ generated password
 
 ### Parameters
 
-**arg0** -- line to execute using shell
-
-**cmd** -- 
+**cmd** -- line to execute using shell
 
 ### Return
 

@@ -10,7 +10,7 @@ if [ -f ${INSTALL_DIR}/bin/cowrie ]; then
 
 	if [ ${AUTOTEST} -eq 0 ]; then
 		pa.sh -e "warden3::cert { '${CLIENT_NAME}':
-			destdir => '${INSTALL_DIR}',
+			destdir => '${INSTALL_DIR}/racert',
 			token => '${TOKEN}',
 		}"
 	fi
