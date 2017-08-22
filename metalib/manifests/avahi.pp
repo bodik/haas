@@ -1,4 +1,4 @@
-# Class for installling avahi utils and resolving daemon. This class is used
+# Class for installing avahi utils and resolving daemon. This class is used
 # during dynamic cloud autodiscovery by other classes.
 #
 # @example Usage
