@@ -1,7 +1,7 @@
 # haas.cesnet.cz
 
-[Development](DEVELOPMENT.md)
-[Downloads](downloads/)
+[Development](development.md)
+[Downloads](downloads.md)
 
 [gimmick:ForkMeOnGitHub](http://www.github.com/bodik/haas)
 
