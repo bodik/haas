@@ -120,11 +120,9 @@ Class for installling wget, and defines download resource.
 
 ## puppet_functions: avahi_findservice
 
-simple wrapper for avahi-browse
-
 ### Parameters
 
-**arg0** -- name of the service to discover
+**name** -- name of the service to discover
 
 ### Return
 
@@ -133,12 +131,9 @@ string or hostname representing discovered service
 
 ## puppet_functions: file_exists
 
-checks for existence of file by path
-http://www.xenuser.org/downloads/puppet/xenuser_org-010-check_if_file_exists.pp
-
 ### Parameters
 
-**arg0** -- path to check
+**path** -- path to check
 
 ### Return
 
@@ -147,11 +142,9 @@ http://www.xenuser.org/downloads/puppet/xenuser_org-010-check_if_file_exists.pp
 
 ## puppet_functions: generate_password
 
-generates password
-
 ### Parameters
 
-**arg0** -- optional, length of the password to generate
+***outlen** -- optional, length of the password to generate
 
 ### Return
 
@@ -160,11 +153,9 @@ generated password
 
 ## puppet_functions: myexec
 
-simple wrapper for custom execs
-
 ### Parameters
 
-**arg0** -- line to execute using shell
+**cmd** -- line to execute using shell
 
 ### Return
 

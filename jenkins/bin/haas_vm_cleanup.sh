@@ -28,5 +28,5 @@ find /root -type f ! -name authorized_keys ! -name .bashrc ! -name .profile ! -n
 
 
 # call all others cleanups from modules
-find /puppet -type f -name "vm_cleanup.sh" -exec sh {} \;
+find /puppet/ -type f -name "vm_cleanup.sh" -exec sh {} \;
 

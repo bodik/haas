@@ -36,7 +36,7 @@ information exchange server.
 
 1. prepare VM
 
-   1. download VM ova image from [TODO:repository](TODO)
+   1. download VM ova image from [HaaS VM repository](https://haas.cesnet.cz/downloads)
 
    2. import VM into virtualization platform
 
@@ -44,21 +44,38 @@ information exchange server.
 
       - register MAC address of imported VM in DHCP and run the VM
 
-      - boot the VM, login with default credentials `root:debian`, set proper IP address (`/etc/network/interfaces`) and fqdn (`/etc/hostname`), reboot VM
+      - boot the VM, login with default credentials `root:debian`, set proper
+        IP address (`/etc/network/interfaces`) and fqdn (`/etc/hostname`),
+        reboot VM
 
    4. finish base VM contextualization
      ```
      sh /puppet/jenkins/bin/haas_vm_prepare.sh
      ```
 
-2. register client on warden server, receive a token (needed for obtaining certificate). Follow [Warden participation](https://warden.cesnet.cz/en/participation#registration)
+2. register client on warden server, receive a token (needed for obtaining
+certificate). Follow [Warden participation](https://warden.cesnet.cz/en/participation#registration)
 
 3. finalize VM configuration
 ```
-sh /puppet/jenkins/bin/haas_vm_finalize.sh -w warden-hub.cesnet.cz -n com.example.department.honeypot -t <token> 
+sh /puppet/jenkins/bin/haas_vm_finalize.sh -w https://warden-hub.cesnet.cz/warden3 -n com.example.department.honeypot -t <token> 
 ```
 
-6. reboot VM
+4. reboot VM
+
+
+
+## Honeypot node upgrade
+
+1. backup appropriate `/opt/<honeypot>/racert` directory
+
+2. prepare new VM from new image, see *Basic honeypot node installation 1 prepare VM*
+
+3. restore appropriate `/opt/<honeypot>/racert` directory
+
+4. finalize configuration of the new VM, see *Basic honeypot node installation 3 finalize VM configuration*
+
+5. reboot VM
 
 
 

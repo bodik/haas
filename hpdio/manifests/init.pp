@@ -61,40 +61,29 @@ class hpdio (
 	exec { "build dio":
 		command => "/puppet/${module_name}/bin/build.sh ${install_dir}",
 		require => Exec["clone dio"],
+		creates => "${install_dir}/bin/dionaea",
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled":
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
 	}
-	tidy { "Remove enabled modules":
-   		 path    => "${install_dir}/etc/dionaea/services-enabled/",
-		 recurse => true,
-		 matches => [ '*.yaml' ],
-		 rmdirs  => false,
-	}
 	file { "${install_dir}/etc/dionaea/services-enabled/epmap.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/epmap.yaml",
-		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/ftp.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/ftp.yaml",
-		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/mysql.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/mysql.yaml",
-		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/sip.yaml":
   		ensure => link, target => "${install_dir}/etc/dionaea/services-available/sip.yaml",
-		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/smb.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/smb.yaml",
-		require => Tidy["Remove enabled modules"],
 	}
 	file { "${install_dir}/etc/dionaea/services-enabled/tftp.yaml":
   		ensure => link,	target => "${install_dir}/etc/dionaea/services-available/tftp.yaml",
-		require => Tidy["Remove enabled modules"],
 	}
 
 	
@@ -113,12 +102,20 @@ class hpdio (
                 owner => "root", group => "root", mode => "0644",
 		require => Exec["build dio"],
         }
+        service { "systemd-networkd":
+                enable => true,
+                ensure => running,
+        }
+        service { "systemd-networkd-wait-online":
+                enable => true,
+                ensure => running,
+		require => Service["systemd-networkd"],
+        }
         service { "dionaea":
                 enable => true,
                 ensure => running,
                 require => File["/etc/systemd/system/dionaea.service"],
         }
-
 	
      	file { "/etc/logrotate.d/dionaea":
                 content => template("${module_name}/dionaea.logrotate.erb"),
