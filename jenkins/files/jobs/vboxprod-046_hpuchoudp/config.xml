@@ -13,7 +13,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;HAAS-hpucho&quot;
+      <command>export VMNAME=&quot;HAAS-hpuchoudp&quot;
 /puppet/jenkins/bin/vbox.init build small
 /puppet/jenkins/bin/vbox.init start
 /puppet/jenkins/bin/vbox.init fixup
@@ -23,8 +23,6 @@
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh metalib/tests/phase2.sh&apos;
 
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-tcp.install.sh&apos;
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/tcp.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-udp.install.sh&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/udp.sh&apos;
 </command>
