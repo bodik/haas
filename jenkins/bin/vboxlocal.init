@@ -102,7 +102,14 @@ vm_start() {
 	if [ $? -eq 0 ]; then
 		rreturn $? "vbox vm already running"
 	fi
-	VBoxHeadless -s ${VMNAME} --vrdeproperty "TCP/Ports=$(perl -e "print int(50000+rand(1000));")" --vrdeproperty="TCP/Address=127.0.0.1" --vrdeproperty VNCPassword="$(/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print $1}' | sed 's/^.\{50\}//')" &
+
+	VBoxHeadless --version | tail -1 | grep '^4\.'
+	if [ $? -eq 0 ]; then
+		VBOXOPTS="--vrdeproperty TCP/Ports=$(perl -e 'print int(50000+rand(1000));') --vrdeproperty TCP/Address=127.0.0.1 --vrdeproperty VNCPassword=$(/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print $1}' | sed 's/^.\{50\}//')"
+	else
+		VBOXOPTS="--vrdeproperty TCP/Ports=$(perl -e 'print int(50000+rand(1000));') --vrdeproperty TCP/Address=127.0.0.1"
+	fi
+	VBoxHeadless -s ${VMNAME} $VBOXOPTS &
 	rreturn $? "$0 start"
 }
 
@@ -123,7 +130,14 @@ vm_ssh() {
 }
 
 vbox_console() {
-	CMD=$(ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | grep -v grep | sed 's/.* TCP\/Ports=\(.*\) .*=TCP\/Address=\(.*\) .* VNCPassword=\(.*\)$/echo -n "\3" | xvncviewer -autopass \2:\1/')
+	VBoxHeadless --version | tail -1 | grep '^4\.'
+	if [ $? -eq 0 ]; then
+		CMD=$(ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | grep -v grep | sed 's/.* TCP\/Ports=\(.*\) .* TCP\/Address=\(.*\) .* VNCPassword=\(.*\)$/echo -n "\3" | xvncviewer -autopass \2:\1/')
+	else
+		PORT=$(ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | grep -v grep | sed 's/.* TCP\/Ports=\([^ ]*\).*$/\1/')
+		ADDR=$(ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | grep -v grep | sed 's/.* TCP\/Address=\([^ ]*\).*$/\1/')
+		CMD="rdesktop $ADDR:$PORT"
+	fi
 	sh -c "$CMD"
 }
 

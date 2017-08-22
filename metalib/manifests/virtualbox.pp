@@ -24,4 +24,9 @@ class metalib::virtualbox {
 		ensure => installed,
 		require => Apt::Source["virtualbox"],
 	}
+
+	# vrde requires extension pack
+	## wget http://download.virtualbox.org/virtualbox/5.1.0/Oracle_VM_VirtualBox_Extension_Pack-5.1.0-108711.vbox-extpack
+	## VBoxManage extpack install Oracle_VM_VirtualBox_Extension_Pack-5.1.0-108711.vbox-extpack
+	package { ["rdesktop"]: ensure => installed }
 }
