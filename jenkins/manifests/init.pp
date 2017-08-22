@@ -15,12 +15,14 @@ class jenkins() {
 		location   => 'http://pkg.jenkins-ci.org/debian',
 		release => 'binary/',
 		repos => '',
-		include_src => false,
-        	key         => '150FDE3F7787E7D11EF4E12A9B7D32F2D50582E6',
-	        key_source  => 'http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key',
+		include => { "src" => false },
+		key => {
+			"id" => "150FDE3F7787E7D11EF4E12A9B7D32F2D50582E6",
+			"source" => "http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key"
+		},
 	}
 
-	package { ["jenkins"]:
+	package { ["openjdk-8-jdk", "jenkins"]:
 		ensure => installed,
 		require => Apt::Source["jenkins"],
 	}
