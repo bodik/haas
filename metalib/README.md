@@ -98,6 +98,22 @@ include metalib::base
 Internal. Installs fail2ban with basic config (sshd)
 
 
+## puppet_classes: metalib::megaraid
+
+Class for installing megaraid and sas2ircu utils for Dell PERC raid controllers.
+
+### Parameters
+
+**type** -- 
+
+### Examples
+
+Usage
+
+```
+class { "metalib::megaraid": type => "megacli" }
+```
+
 ## puppet_classes: metalib::postfix
 
 Internal. Installs postfix as local MTA
@@ -112,6 +128,18 @@ Internal. Cleans up /var/lib/puppet from old files and reports
 
 Internal. Hardens networking on linux box.
 
+
+## puppet_classes: metalib::virtualbox
+
+Class for installing Oracle's Virtualbox for Debian Stretch.
+
+### Examples
+
+Usage
+
+```
+include metalib::virtualbox
+```
 
 ## puppet_classes: metalib::wget
 

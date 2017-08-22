@@ -1,3 +1,8 @@
+# Class for installing Oracle's Virtualbox for Debian Stretch.
+#
+# @example Usage
+#  include metalib::virtualbox
+#
 class metalib::virtualbox {
         notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 

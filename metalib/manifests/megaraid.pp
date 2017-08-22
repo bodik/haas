@@ -1,5 +1,7 @@
-# Class: megaraid
+# Class for installing megaraid and sas2ircu utils for Dell PERC raid controllers.
 #
+# @example Usage
+#  class { "metalib::megaraid": type => "megacli" }
 #
 class metalib::megaraid(
 	$type,
