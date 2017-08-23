@@ -80,25 +80,32 @@ vm_ssh() {
 
 
 vm_shutdown() {
-	/puppet/jenkins/bin/vbox.init ssh /bin/true
-	if [ $? -ne 0 ]; then
-		rreturn $? "shutdown vm not running"
-	fi
+        /puppet/jenkins/bin/vbox.init front "VBoxManage showvminfo $VMNAME --details | grep 'running (since'"
+        if [ $? -eq 0 ]; then
+                /puppet/jenkins/bin/vbox.init ssh /bin/true
+                if [ $? -eq 0 ]; then
+                        #running, connection ok, send poweroff
+                        echo "INFO: sending poweroff"
+                        timeout 60 /puppet/jenkins/bin/vbox.init ssh poweroff
+                else
+                        #running, connection failed, force shutdown vm
+                        echo "INFO: force vm shutdown"
+                        front_ssh "VMNAME=${VMNAME} sh /puppet/jenkins/bin/vboxlocal.init shutdown"
+                fi
 
-	echo "INFO: sending poweroff"
-	timeout 60 /puppet/jenkins/bin/vbox.init ssh poweroff
+                for i in `seq 1 60`; do
+                        /puppet/jenkins/bin/vbox.init front "pgrep -f '/usr/lib/virtualbox/VBoxHeadless -s $VMNAME'"
+                        if [ $? = 1 ]; then
+                                rreturn $? "shutdown"
+                        fi
+                        sleep 1
+                done
 
-	RET=1
-	for i in `seq 1 60`; do
-		/puppet/jenkins/bin/vbox.init front "pgrep -f '/usr/lib/virtualbox/VBoxHeadless -s $VMNAME'"
-		if [ $? = 1 ]; then
-			rreturn $? "shutdown"
-		fi
-		sleep 1
-	done
+                rreturn 1 "shutdown did not finished in time"
 
-
-	rreturn 1 "shutdown did not finished in time"
+        else
+                rreturn $? "shutdown vm not running"
+        fi
 }
 
 vm_destroy() {
