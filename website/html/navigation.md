@@ -3,7 +3,7 @@
 [Development](development.md)
 [Downloads](downloads.md)
 
-[gimmick:ForkMeOnGitHub](http://www.github.com/bodik/haas)
+[gimmick:ForkMeOnGitHub](https://www.github.com/bodik/haas)
 
 <!-- Code for collapse and expand -->
 <script type="text/javascript"> 

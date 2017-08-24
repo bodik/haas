@@ -1,1 +1,1 @@
-[gimmick:iframe](http://haas.cesnet.cz/downloads)
+[gimmick:iframe](https://haas.cesnet.cz/downloads)

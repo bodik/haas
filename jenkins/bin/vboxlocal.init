@@ -170,7 +170,9 @@ vm_export() {
 	fi
 	mkdir -p $(dirname $1)
 	rm -f "$OUTFILE"
-	VBoxManage export "${VMNAME}" --vsys 0 --producturl "https://github.com/bodik/haas.git" --output "${OUTFILE}"
+	VBoxManage export "${VMNAME}" --vsys 0 --producturl "https://haas.cesnet.cz" --output "${OUTFILE}"
+	sha256sum "${OUTFILE}" > ${OUTFILE}.sha256
+	cat ${OUTFILE}.sha256
 	ls -lh "${OUTFILE}"
 	rreturn $? "$0 export"
 }
