@@ -107,7 +107,7 @@ vm_start() {
 	if [ $? -eq 0 ]; then
 		VBOXOPTS="--vrdeproperty TCP/Ports=$(perl -e 'print int(50000+rand(1000));') --vrdeproperty TCP/Address=127.0.0.1 --vrdeproperty VNCPassword=$(/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print $1}' | sed 's/^.\{50\}//')"
 	else
-		VBOXOPTS="--vrdeproperty TCP/Ports=$(perl -e 'print int(50000+rand(1000));') --vrdeproperty TCP/Address=127.0.0.1"
+		VBOXOPTS="--vrde on --vrdeproperty TCP/Ports=$(perl -e 'print int(50000+rand(1000));') --vrdeproperty TCP/Address=127.0.0.1"
 	fi
 	VBoxHeadless -s ${VMNAME} $VBOXOPTS &
 	rreturn $? "$0 start"
