@@ -37,7 +37,7 @@
 /puppet/jenkins/bin/vbox.init start
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh jenkins/bin/haas_vm_prepare.sh&apos; || true
 /bin/sleep 60
-/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh jenkins/bin/haas_vm_finalize.sh -a -w &quot;$(/puppet/metalib/bin/avahi_findservice.sh _warden-server._tcp)&quot; -n &quot;$(/puppet/jenkins/bin/haas_vm_generate_w3cname.sh)&quot; -t DUMMY&apos;
+/puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh jenkins/bin/haas_vm_finalize.sh -a -w &quot;$(/puppet/metalib/bin/avahi_findservice.sh _warden-server._tcp)&quot; -n &quot;$(/puppet/jenkins/bin/haas_vm_generate_w3cname.sh).uchotcp&quot; -t DUMMY&apos;
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/tcp.sh&apos;
 </command>
     </hudson.tasks.Shell>
