@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cp /puppet/README.md html/readme.md
-cp /puppet/DEVELOPMENT.md html/development.md
+cp /puppet/README.md html/
+cp /puppet/DEVELOPMENT.md html/
 
