@@ -4,6 +4,8 @@ This software suite is designed to aid creating and maintaining cluster of
 honeypots with warden transport.  It is based on masterless puppet and bash
 automation.
 
+<div align="center"><img style="max-width: 15em;" src="https://haas.cesnet.cz/logo.png"></div>
+
 ### Acknowledgement
 
 Computational resources were provided by the MetaCentrum under the program
