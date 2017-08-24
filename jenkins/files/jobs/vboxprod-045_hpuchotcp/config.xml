@@ -17,7 +17,7 @@
 /puppet/jenkins/bin/vbox.init build small
 /puppet/jenkins/bin/vbox.init start
 /puppet/jenkins/bin/vbox.init fixup
-/puppet/jenkins/bin/vbox.init ssh &apos;wget http://esb.metacentrum.cz/haas.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/bin/vbox.init ssh &apos;wget https://haas.cesnet.cz/haas.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ###################
 
 /puppet/jenkins/bin/vbox.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;

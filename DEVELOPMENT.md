@@ -25,7 +25,7 @@ component.check.sh		-- script for state detection (noop show_diff)
 Bootstrap suite from a git repository, subsequent calls will pull from master repo.
 
 ```
-wget esb.metacentrum.cz/haas.git/bootstrap.install.sh && sh bootstrap.install.sh
+wget https://haas.cesnet.cz/haas.git/bootstrap.install.sh && sh bootstrap.install.sh
 cd /puppet && ls -l
 sh bootstrap.install.sh
 ```
@@ -64,7 +64,7 @@ Following commands will ensure installation of basic components for data analysi
 (elasticsearch data node, logstash processor, kibana frontend).
 
 ```
-wget esb.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
+wget https://haas.cesnet.cz/haas.git/bootstrap.install.sh && sh bootstrap.install.sh
 cd /puppet && ls -l
 sh phase2.install.sh
 sh glog2.install.sh
@@ -78,7 +78,7 @@ Commands will ensure installation of all components needed for running basic
 warden-server node along with warden_ca and glog2 analytics.
 
 ```
-wget esb.metacentrum.cz/haas.git/bootstrap.install.sh && sh bootstrap.install.sh
+wget https://haas.cesnet.cz/haas.git/bootstrap.install.sh && sh bootstrap.install.sh
 cd /puppet && ls -l
 sh phase2.install.sh
 sh metalib/tests/phase2.sh
