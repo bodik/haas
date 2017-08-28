@@ -171,8 +171,14 @@ vm_export() {
 	mkdir -p $(dirname $1)
 	rm -f "$OUTFILE"
 	VBoxManage export "${VMNAME}" --vsys 0 --producturl "https://haas.cesnet.cz" --output "${OUTFILE}"
-	sha256sum "${OUTFILE}" > ${OUTFILE}.sha256
-	cat ${OUTFILE}.sha256
+
+	cd $(dirname "$OUTFILE")
+	sha256sum $(basename ${OUTFILE}) > ${OUTFILE}.sha256
+	gpg --list-keys | grep haas.cesnet.cz 1>/dev/null 2>/dev/null
+	if [ $? -eq 0 ]; then
+		gpg --sign --clear-sign ${OUTFILE}.sha256
+	fi
+
 	ls -lh "${OUTFILE}"
 	rreturn $? "$0 export"
 }
