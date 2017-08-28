@@ -29,4 +29,6 @@ fi
 
 ln -sf /etc/ssl/certs/ca-certificates.crt cachain.pem
 
+find . -type f -exec chmod 644 {} \;
+
 echo "INFO: done generating certificate from warden_ra"
