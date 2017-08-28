@@ -397,7 +397,7 @@ class CertHandler(ObjectBase):
             self.log.debug(cmd)
             data = subprocess.check_output(shlex.split(cmd))
         except subprocess.CalledProcessError as e:
-            if ( e.returncode == 101 ):
+            if ( e.returncode == 250 ):
                 # client already register, we accept the state for cloud testing
                 self.log.warn("client already registerd")
             else:
