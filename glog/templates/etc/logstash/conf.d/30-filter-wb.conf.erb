@@ -23,7 +23,7 @@ filter {
 			add_field => { "[Source][hostname]" => "%{[Source][IP4]}" }
                 }
 
-		if [Node][Name] =~ /^cz\.cesnet\.flab/ {
+		if [Node][Name] =~ /^cz\.cesnet\.haas/ {
 			dns {
 				reverse => [ "[Source][hostname]" ]
 				action => "replace"
