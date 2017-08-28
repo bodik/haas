@@ -39,6 +39,12 @@ information exchange server.
 1. prepare VM
 
    1. download VM ova image from [HaaS VM repository](https://haas.cesnet.cz/downloads)
+	- check integrity using PGP key
+		```
+		address: haas-dev@cesnet.cz
+		keyid: C801516B
+		fingerprint: 33B8AE171C8E3D317121F57B32F0BAE1C801516B
+		```
 
    2. import VM into virtualization platform
 
