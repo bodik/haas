@@ -1,6 +1,6 @@
 # HaaS development information
 
-Masterless puppet ecoystem is split into set of components installable on
+Masterless puppet ecosystem is split into set of components installable on
 almost any Debian 9.x Stretch VM.
 
 ## Components
@@ -18,7 +18,7 @@ component.install.sh		-- script for masterless installation
 component.check.sh		-- script for state detection (noop show_diff)
 ```
 
-## Usecases
+## Use-Cases
 
 ### Ops/Maintenance
 
@@ -89,6 +89,23 @@ sh warden3-server.install.sh
 sh warden3/tests/server.sh
 sh glog2.install.sh
 sh glog/tests/glog2.sh
+```
+
+### Example installation of visualization node
+
+```
+wget https://haas.cesnet.cz/haas.git/bootstrap.install.sh && sh bootstrap.install.sh
+cd /puppet && ls -l
+sh phase2.install.sh
+sh metalib/tests/phase2.sh
+reboot
+
+sh lamp.install.sh
+sh lamp/tests/lamp.sh
+sh glog2.install.sh
+sh glog/tests/glog2.sh
+pa.sh -e 'warden3::cert { "cz.cesnet.haas.test.tologstash": destdir => "/opt/tologstash/racert", token=>"ABCDEFG"} '
+pa.sh -e 'class { "warden3::tologstash": warden_client_name=> "cz.cesnet.haas.test.tologstash", warden_server_url=>"https://warden-hub.cesnet.cz/warden3-sandbox" }
 ```
 
 ## Automating tasks with (Robert) Jenkins

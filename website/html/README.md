@@ -6,18 +6,11 @@ automation.
 
 <div align="center"><img style="max-width: 15em;" src="https://haas.cesnet.cz/logo.png"></div>
 
-### Acknowledgement
-
-Computational resources were provided by the MetaCentrum under the program
-LM2010005 and the CERIT-SC under the program Centre CERIT Scientific Cloud,
-part of the Operational Program Research and Development for Innovations, Reg.
-no. CZ.1.05/3.2.00/08.0144.
-
 
 
 ## Introduction
 
-HaaS is project to create develompment and build environment for generating
+HaaS is project to create development and build environment for generating
 honeypot VMs.
 
 Based on [Warden project](https://warden.cesnet.cz) -- a system for efficient
