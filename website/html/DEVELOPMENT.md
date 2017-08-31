@@ -1,7 +1,16 @@
 # HaaS development information
 
-Masterless puppet ecosystem is split into set of components installable on
-almost any Debian 9.x Stretch VM.
+The core of the HaaS is a masterless puppet ecosystem of components installable
+on almost any Debian 9.x Stretch VM.
+
+* manifests works well like installation scripts, almost like hand-crafted install.sh
+* applying manifests can repair things if they change or break during ops or development
+* allows to query state of the component/node at any given time, and show the differences
+
+* manifests are typically easy to read and works well as self documentation
+* masterless usage allows to manage offline nodes as well as dynamic cloud environment without need of central master server (which is SPoF)
+* manifests and defined resources could be reused on several places, inherited or applied by hand when needed
+
 
 ## Components
 
