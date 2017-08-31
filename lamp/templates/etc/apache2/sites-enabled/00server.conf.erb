@@ -16,6 +16,6 @@
 	CustomLog /var/log/apache2/<%= @fqdn %>-access.log combined
 
 	SSLEngine on
-        SSLCertificateKeyFile /etc/apache2/ssl/<%= @fqdn %>.key
-        SSLCertificateFile    /etc/apache2/ssl/<%= @fqdn %>.crt
+        SSLCertificateKeyFile /etc/apache2/ssl/default.key
+        SSLCertificateFile    /etc/apache2/ssl/default.crt
 </VirtualHost>
