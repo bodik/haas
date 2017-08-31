@@ -103,11 +103,11 @@ class lamp::apache2() {
 		require => File["/etc/apache2/ssl"],
 	}
 	file { "/etc/apache2/ssl/default.key":
-		ensure => link, target => "/etc/apache2/ssl/${fqdn}.key",
+		ensure => link, target => "/etc/apache2/ssl/${fqdn}.key", replace => false,
 		require => Exec["install_sslselfcert.sh"],
 	}
 	file { "/etc/apache2/ssl/default.crt":
-		ensure => link, target => "/etc/apache2/ssl/${fqdn}.crt",
+		ensure => link, target => "/etc/apache2/ssl/${fqdn}.crt", replace => false,
 		require => Exec["install_sslselfcert.sh"],
 	}
 
