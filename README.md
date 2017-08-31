@@ -6,18 +6,11 @@ automation.
 
 <div align="center"><img style="max-width: 15em;" src="https://haas.cesnet.cz/logo.png"></div>
 
-### Acknowledgement
-
-Computational resources were provided by the MetaCentrum under the program
-LM2010005 and the CERIT-SC under the program Centre CERIT Scientific Cloud,
-part of the Operational Program Research and Development for Innovations, Reg.
-no. CZ.1.05/3.2.00/08.0144.
-
 
 
 ## Introduction
 
-HaaS is project to create develompment and build environment for generating
+HaaS is project to create development and build environment for generating
 honeypot VMs.
 
 Based on [Warden project](https://warden.cesnet.cz) -- a system for efficient
@@ -39,6 +32,12 @@ information exchange server.
 1. prepare VM
 
    1. download VM ova image from [HaaS VM repository](https://haas.cesnet.cz/downloads)
+	- check integrity using PGP key
+		```
+		address: haas-dev@cesnet.cz
+		keyid: C801516B
+		fingerprint: 33B8AE171C8E3D317121F57B32F0BAE1C801516B
+		```
 
    2. import VM into virtualization platform
 
