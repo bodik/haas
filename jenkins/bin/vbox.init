@@ -94,9 +94,9 @@ vm_shutdown() {
                 fi
 
                 for i in `seq 1 60`; do
-                        /puppet/jenkins/bin/vbox.init front "pgrep -f '/usr/lib/virtualbox/VBoxHeadless -s $VMNAME'"
-                        if [ $? = 1 ]; then
-                                rreturn $? "shutdown"
+                        /puppet/jenkins/bin/vbox.init front "ps -o cmd | grep '^/usr/lib/virtualbox/VBoxHeadless -s $VMNAME '"
+                        if [ "$?" = "1" ]; then
+                                rreturn 0 "shutdown"
                         fi
                         sleep 1
                 done
