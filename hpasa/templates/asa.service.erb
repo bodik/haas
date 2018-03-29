@@ -1,0 +1,15 @@
+[Unit]
+Description=asa
+
+[Service]
+ExecStart=/bin/bash -c "/usr/bin/python3 <%= @install_dir %>/bin/asa_server.py --enable_ssl --cert <%= @install_dir %>/asacert/bundle.pem &> <%= @install_dir %>/log/asa.log"
+WorkingDirectory=<%= @install_dir %>/bin
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=asa_Server.py
+User=<%= @service_user %>
+Group=<%= @service_user %>
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+<%= @install_dir %>/log/*log
+{
+	rotate 60
+	daily
+	missingok
+	compress
+	sharedscripts
+	prerotate
+		su -c 'cd <%= @install_dir %>/bin && ./warden_sender_asa.py 1>/dev/null 2>/dev/null' <%= @service_user %>
+		rm -f <%= @install_dir %>/log/asa.log.offset
+	endscript
+	postrotate
+		invoke-rc.d asa restart > /dev/null
+	endscript
+}
+
