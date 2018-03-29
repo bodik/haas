@@ -14,5 +14,5 @@ if [ -f ${INSTALL_DIR}/bin/asa_server.py ]; then
 			token => '${TOKEN}',
 		}"
 	fi
-	pa.sh -e "class { 'hpjdwpd': warden_server_url => '${WARDEN_SERVER_URL}', warden_client_name => '${CLIENT_NAME}' }"
+	pa.sh -e "class { 'hpasa': warden_server_url => '${WARDEN_SERVER_URL}', warden_client_name => '${CLIENT_NAME}' }"
 fi
