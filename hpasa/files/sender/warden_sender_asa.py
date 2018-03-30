@@ -51,16 +51,11 @@ def gen_event_idea_asa(detect_time, src_ip, src_port, dst_ip, dst_port, proto, c
 events = []
 try:
 	for line in w3u.Pygtail(filename=aconfig.get('logfile'), wait_timeout=0):
-		raw = line.split()
-		log_time = raw.pop(0)
-		log_loggername = raw.pop(0)
-		log_level = raw.pop(0)
-		data = json.loads("".join(raw))
-
+		log = json.loads(line.strip())
 		a = gen_event_idea_asa(
-			detect_time = log_time, 
-			src_ip      = data['src'],
-			src_port    = data['spt'], 
+			detect_time = log["timestamp"],
+			src_ip      = log["asadata"]["src"],
+			src_port    = log["asadata"]["spt"],
 			dst_ip      = "0.0.0.0",
 			dst_port    = 443,
 			proto       = "tcp",
