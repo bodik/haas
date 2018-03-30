@@ -1,0 +1,7 @@
+# hpasa -- HaaS module for ciscoasa_honeypot
+
+## Scripts
+
+**bin/vm_cleanup.sh** -- haas helper
+
+**bin/vm_finalize.sh** -- haas helper

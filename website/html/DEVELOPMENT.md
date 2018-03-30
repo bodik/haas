@@ -147,4 +147,5 @@ documentation.
   * [hpjdwpd](https://github.com/bodik/haas/tree/master/hpjdwpd/)
   * [hptelnetd](https://github.com/bodik/haas/tree/master/hptelnetd/)
   * [hpucho](https://github.com/bodik/haas/tree/master/hpucho/)
+  * [hpasa](https://github.com/bodik/haas/tree/master/hpasa/)
 

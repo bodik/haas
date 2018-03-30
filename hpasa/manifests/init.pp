@@ -1,4 +1,16 @@
 # Installs wardenized https://github.com/Cymmetria/ciscoasa_honeypot
+#
+# @example Declaring the class
+#   class { "hpasa":
+#     warden_server => "warden-test.cesnet.cz",
+#   }
+#
+# @param install_dir Installation directory
+# @param service_user User to run service as
+#
+# @param warden_client_name reporting script warden client name
+# @param warden_server_url warden server url to connect
+# @param warden_server_service avahi name of warden server service for autodiscovery
 class hpasa (
 	$install_dir = "/opt/asa",
 	$service_user = "asa",
