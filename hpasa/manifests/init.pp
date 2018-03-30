@@ -25,7 +25,12 @@ class hpasa (
 
 	# application
 
-	package { ["python3", "python3-pip"]: ensure => installed, }
+	package { ["python3", "python3-pip", "libcap2-bin"]: ensure => installed, }
+	exec { "python cap_net":
+		command => "/sbin/setcap 'cap_net_bind_service=+ep' /usr/bin/python3.5",
+		unless => "/sbin/getcap /usr/bin/python3.5 | grep cap_net_bind_service",
+		require => [Package["python3"], Package["libcap2-bin"]]
+	}
 	user { "${service_user}":
                 ensure => present,
                 managehome => false,

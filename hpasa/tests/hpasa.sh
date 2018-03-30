@@ -3,7 +3,7 @@
 . /puppet/metalib/bin/lib.sh
 
 TESTID="autotest_$(date +%s)"
-python3 $(dirname $(readlink -f $0))/cisco_asa_cve-2018-0101_crash_poc.py "https://localhost:8443" $TESTID
+python3 $(dirname $(readlink -f $0))/cisco_asa_cve-2018-0101_crash_poc.py "https://localhost" $TESTID
 if [ $? -ne 0 ]; then
         rreturn 1 "$0 failed to test ciscoasa_honeypot"
 fi

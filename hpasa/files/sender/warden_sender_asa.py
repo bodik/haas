@@ -62,7 +62,7 @@ try:
 			src_ip      = data['src'],
 			src_port    = data['spt'], 
 			dst_ip      = "0.0.0.0",
-			dst_port    = 8443,
+			dst_port    = 443,
 			proto       = "tcp",
 			category    = "Attempt.Exploit",
 			data        = line
