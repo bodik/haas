@@ -31,8 +31,7 @@ class jenkins() {
 	augeas { "/etc/default/jenkins" :
 		context => "/files/etc/default/jenkins",
 		changes => [
-			"set HTTP_PORT 8081",
-			"set JAVA_ARGS '\"-Dhudson.diyChunking=false -Djava.awt.headless=true\"'",
+			"set HTTP_PORT 8081"
 		],
 		require => Package["jenkins"],
 		notify => Service["jenkins"],
