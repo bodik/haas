@@ -94,7 +94,7 @@ class hpcowrie (
 		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}",
 		creates => "${install_dir}/INSTALL.md",
 	}
-	$packages = ["git", "python-virtualenv", "libssl-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind", "python3-dev", "sudo"]
+	$packages = ["git", "python-virtualenv", "libssl-dev", "libffi-dev", "build-essential", "libpython-dev", "python2.7-minimal", "authbind", "python3-dev", "sudo", "libmariadbclient-dev"]
 	package { $packages: ensure => installed, }
 	exec { "cowrie build":
 		command => "/bin/sh /puppet/hpcowrie/bin/build.sh",
