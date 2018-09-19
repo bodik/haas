@@ -1,9 +1,3 @@
-[ssh]
-
+[sshd]
 # we don't want a fail2ban ssh on kippo/cowrie server
 enabled  = false
-port     = ssh
-filter   = sshd
-logpath  = /var/log/auth.log
-maxretry = 6
-

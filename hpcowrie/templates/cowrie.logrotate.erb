@@ -5,8 +5,6 @@
 	compress
 	sharedscripts
 	prerotate
-		/usr/bin/find <%= @install_dir %>/log/ <%= @install_dir %>/dl/ -type f -ctime +<%= @log_history %> -delete 1>/dev/null 2>/dev/null
-		/bin/sh <%= @install_dir %>/bin/mysql-clean.sh 1>/dev/null 2>/dev/null
+		/bin/sh <%= @install_dir %>/bin/logrotate-clean.sh 1>/dev/null 2>/dev/null
 	endscript
 }
-

@@ -4,7 +4,7 @@
 
 INSTALL_DIR=/opt/cowrie
 
-for all in $(cat $INSTALL_DIR/data/userdb.txt | grep -v "^#" ); do
+for all in $(cat $INSTALL_DIR/etc/userdb.txt | grep -v "^#" ); do
 	U=$(echo $all | awk -F':' '{print $1}')
 	P=$(echo $all | awk -F':' '{print $3}')
 	medusa -h $(facter ipaddress) -u $U -p $P -M ssh -n 45356 | grep "ACCOUNT FOUND" 1>/dev/null
