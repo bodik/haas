@@ -142,6 +142,7 @@ documentation.
 * [glog](https://github.com/bodik/haas/tree/master/glog/)
 * [warden3-server](https://github.com/bodik/haas/tree/master/warden3/)
   * [warden3-tologstash](https://github.com/bodik/haas/tree/master/warden3/)
+  * [hpasa](https://github.com/bodik/haas/tree/master/hpasa/)
   * [hpcowrie](https://github.com/bodik/haas/tree/master/hpcowrie/)
   * [hpdio](https://github.com/bodik/haas/tree/master/hpcowrie/)
   * [hpjdwpd](https://github.com/bodik/haas/tree/master/hpjdwpd/)
