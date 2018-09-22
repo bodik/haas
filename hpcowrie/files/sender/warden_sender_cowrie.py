@@ -9,7 +9,7 @@ from math import trunc
 from uuid import uuid4
 import MySQLdb as my
 import MySQLdb.cursors as mycursors
-import tempfile, subprocess, base64
+import subprocess, base64
 import json
 import string
 import os
@@ -148,13 +148,7 @@ def get_ttylog(sessionid):
 	crs.execute(query, (sessionid,))
         rows = crs.fetchall()
         for row in rows:
-		try:
-			tf = tempfile.NamedTemporaryFile(delete=False)
-			with open(tf.name, 'w') as f:
-				f.write(row['ttylog'])
-			ret = subprocess.check_output(["/opt/cowrie/bin/playlog", "-m0", tf.name])
-		finally:
-			os.remove(tf.name)
+		ret = subprocess.check_output(["/opt/cowrie/bin/playlog", "-m0", "../"+row['ttylog']])
 
 		#try to dumpit to json to see if there are some binary input and perhaps wrap it to base64
 		try:
